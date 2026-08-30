@@ -1,6 +1,6 @@
 import { bus } from "./core/EventBus";
 import { Game } from "./core/Game";
-import type { GamePhase } from "./core/types";
+import type { DockPanel, GamePhase, PlayableTribe } from "./core/types";
 import { UIRoot } from "./ui/UIRoot";
 import { SceneHost } from "./world/SceneHost";
 import "./style.css";
@@ -25,30 +25,75 @@ ui.bind(async (name, payload) => {
   if (name === "new-game") {
     game.newGame();
     await game.persist();
-    return go("build");
+    return go("pick");
   }
   if (name === "continue") {
     const ok = await game.bootFromDisk();
-    if (!ok) game.newGame();
-    return go("build");
+    if (!ok) {
+      game.newGame();
+      return go("pick");
+    }
+    return go(game.continueGame() ? "map" : "pick");
   }
-  if (name === "nav" && payload) return go(payload as GamePhase);
+  if (name === "choose-tribe" && payload) {
+    game.chooseTribe(payload as PlayableTribe);
+    world.syncMap(game.data);
+    return go("map");
+  }
   if (name === "menu") return go("menu");
-  if (name === "build" && payload) game.toast = game.buildOrUpgrade(payload as never);
-  if (name === "train" && payload) game.toast = game.train(payload as never);
-  if (name === "upgrade-unit" && payload) game.toast = game.upgradeUnit(payload as never);
+  if (name === "dock" && payload) game.togglePanel(payload as DockPanel);
+  if (name === "close-sheet") game.closePanel();
+  if (name === "deselect") game.selectHex(null);
+  if (name === "build" && payload) game.toast = game.buildOrUpgrade(payload);
+  if (name === "upgrade") game.toast = game.upgradeSelected();
+  if (name === "train") game.toast = game.train(1);
+  if (name === "train-five") game.toast = game.train(5);
+  if (name === "upgrade-unit") game.toast = game.upgradeUnit();
   if (name === "caravan") game.toast = game.sendCaravan();
-  if (name === "fight" && payload) {
-    game.fight(payload as never);
-    if (game.lastEnemy) world.battle.stage(playerArmy(), game.lastEnemy);
-    return go("battle");
+  if (name === "attack") {
+    game.toast = game.claimOrAttack(payload);
+    if (game.lastBattle) {
+      const mine = game.data.chosenTribe ?? "gokhanli";
+      world.battle.stage(
+        [
+          {
+            tribe: mine,
+            name: game.kit.unitName,
+            count: game.data.army,
+            level: game.data.unitLevel,
+            hp: 1,
+            maxHp: 1,
+            attack: 1,
+            defense: 1,
+            critChance: 0,
+            aoe: 0,
+          },
+        ],
+        game.lastEnemy ?? {
+          tribe: "sariklilar",
+          name: "Düşman",
+          count: 1,
+          level: 1,
+          hp: 1,
+          maxHp: 1,
+          attack: 1,
+          defense: 1,
+          critChance: 0,
+          aoe: 0,
+        },
+      );
+    }
   }
-  if (name === "quest" && payload) game.toast = game.completeQuest(payload);
   if (name === "ad" && payload) game.toast = await game.watchAd(payload as never);
   if (name === "save") {
     await game.persist();
-    game.toast = "Kayıt mühürlendi. Hançerin gölgesi yerel kasada uyuyor.";
+    game.toast = "Kayıt mühürlendi.";
   }
+  paint();
+});
+
+bus.on("hex-select", (id: string) => {
+  game.selectHex(id);
   paint();
 });
 
@@ -57,21 +102,6 @@ bus.on("levelup", () => {
   world.apply(game.narrative.palette(game.levels.currentLevel), painted);
   game.audio.setTheme(game.narrative.palette(game.levels.currentLevel).music).catch(() => undefined);
 });
-
-function playerArmy() {
-  return (["sariklilar", "gokhanli", "demirhisar"] as const).map((id) => ({
-    tribe: id,
-    name: id,
-    count: game.data.army[id],
-    level: game.data.unitLevels[id],
-    hp: 1,
-    maxHp: 1,
-    attack: 1,
-    defense: 1,
-    critChance: 0,
-    aoe: 0,
-  }));
-}
 
 function go(next: GamePhase) {
   try {
@@ -85,21 +115,12 @@ function go(next: GamePhase) {
   world.show(next);
   const painted = next === "intro" || next === "menu" || next === "boot";
   world.apply(game.narrative.palette(game.levels.currentLevel), painted);
-  plate(next);
-  world.village.sync(game.data);
+  world.syncMap(game.data);
   paint();
 }
 
-function plate(phase: GamePhase) {
-  const host = document.querySelector<HTMLDivElement>("#app");
-  if (!host) return;
-  host.style.backgroundImage = "";
-  host.style.backgroundColor = "#1a1410";
-  void phase;
-}
-
 function paint() {
-  world.village.sync(game.data);
+  world.syncMap(game.data);
   ui.render(game, screen);
 }
 

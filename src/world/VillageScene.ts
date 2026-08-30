@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { BuildingId, PlayerSave } from "../core/types";
+import type { PlayerSave } from "../core/types";
 import {
   caravanInn,
   darkTemple,
@@ -17,7 +17,7 @@ import { pbr } from "./textures";
 import { spawnProp, type PropId } from "./props";
 import { spawnUnit, tickUnit } from "./soldiers";
 
-const SLOTS: Record<BuildingId, THREE.Vector3> = {
+const SLOTS: Record<string, THREE.Vector3> = {
   goldMine: new THREE.Vector3(-3.6, 0, -2.1),
   barracks: new THREE.Vector3(-0.15, 0, -3.7),
   forge: new THREE.Vector3(3.6, 0, -2.0),
@@ -46,7 +46,7 @@ export class VillageScene {
   sync(save: PlayerSave) {
     this.buildings.clear();
     this.fx = [];
-    (Object.keys(SLOTS) as BuildingId[]).forEach((id) => {
+    Object.keys(SLOTS).forEach((id) => {
       const level = save.buildingLevels[id] ?? 0;
       if (id === "shadowTemple" && !save.shadowTempleRevealed && level <= 0) return;
       const shown = Math.max(level, id === "shadowTemple" ? 1 : level);
@@ -108,7 +108,7 @@ export class VillageScene {
     place("cannon", 0.7, -5.8, 3.4, 2.3);
   }
 
-  private makeBuilding(id: BuildingId, level: number): THREE.Group {
+  private makeBuilding(id: string, level: number): THREE.Group {
     if (id === "barracks") return timberCottage(level);
     if (id === "forge") return stoneForge(level);
     if (id === "goldMine") return goldStore(level);

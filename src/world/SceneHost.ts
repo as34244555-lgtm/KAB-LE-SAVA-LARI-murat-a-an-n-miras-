@@ -9,11 +9,13 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import type { GamePhase } from "../core/types";
 import type { Palette } from "../managers/NarrativeManager";
 import { BattleScene } from "./BattleScene";
+import { HexMapScene } from "./HexMapScene";
 import { applyPalette } from "./materials";
 import { loadProps } from "./props";
 import { ThroneScene } from "./ThroneScene";
 import { VillageScene } from "./VillageScene";
 import { loadSoldierRig } from "./soldiers";
+import type { PlayerSave } from "../core/types";
 
 export class SceneHost {
   readonly renderer: THREE.WebGLRenderer;
@@ -22,6 +24,7 @@ export class SceneHost {
   readonly throne = new ThroneScene();
   readonly village = new VillageScene();
   readonly battle = new BattleScene();
+  readonly hexMap: HexMapScene;
   private readonly ambient = new THREE.HemisphereLight(0xc9d4e0, 0x3d3228, 0.55);
   private readonly sun = new THREE.DirectionalLight(0xffe2c4, 2.6);
   private readonly rim = new THREE.DirectionalLight(0x7f93b0, 0.45);
@@ -61,7 +64,8 @@ export class SceneHost {
     this.sun.shadow.camera.top = 24;
     this.sun.shadow.camera.bottom = -24;
     this.rim.position.set(-14, 8, -10);
-    this.scene.add(this.ambient, this.sun, this.rim, this.fill, this.throne.root, this.village.root, this.battle.root);
+    this.hexMap = new HexMapScene(canvas, this.camera);
+    this.scene.add(this.ambient, this.sun, this.rim, this.fill, this.throne.root, this.village.root, this.battle.root, this.hexMap.root);
 
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
@@ -88,6 +92,10 @@ export class SceneHost {
     this.village.refreshUnits();
     this.village.dressProps();
     this.battle.refreshFighters();
+    this.apply(
+      { sky: "#8a9aa8", fog: 0x8a7a68, fogDensity: 0.01, ambient: 0x8a8074, torch: 0xffd2a0, bloom: 0.35, music: "overture" },
+      !this.throne.root.visible,
+    );
   }
 
   private loadHdri(pmrem: THREE.PMREMGenerator): Promise<void> {
@@ -124,11 +132,17 @@ export class SceneHost {
 
   show(phase: GamePhase) {
     this.throne.root.visible = phase === "intro" || phase === "menu" || phase === "boot";
-    this.village.root.visible = phase === "build" || phase === "journal" || phase === "dialogue" || phase === "explore";
+    this.village.root.visible = false;
+    this.hexMap.root.visible = phase === "map" || phase === "build" || phase === "pick" || phase === "battle";
+    this.hexMap.active = phase === "map" || phase === "build" || phase === "pick";
     this.battle.root.visible = phase === "battle";
     if (this.hdriReady) {
       this.scene.environmentIntensity = this.throne.root.visible ? 0.42 : 1.05;
     }
+  }
+
+  syncMap(save: PlayerSave) {
+    this.hexMap.sync(save);
   }
 
   resize() {
@@ -144,6 +158,7 @@ export class SceneHost {
     this.throne.update(this.elapsed);
     this.village.update(this.elapsed);
     this.battle.update(this.elapsed);
+    this.hexMap.update(this.elapsed);
     this.placeCamera();
     this.composer.render();
   }
@@ -158,6 +173,10 @@ export class SceneHost {
     if (this.battle.root.visible) {
       this.camera.position.set(1.2, 3.4, 8.6);
       this.camera.lookAt(0, 1.1, 0);
+      return;
+    }
+    if (this.hexMap.root.visible) {
+      this.hexMap.placeCamera();
       return;
     }
     this.camera.position.set(9.4, 6.2, 12.4);

@@ -39,11 +39,10 @@ html, body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
-#ui-root * { pointer-events: auto; }
+#ui-root > * { pointer-events: auto; }
 
 .neu-card, .neu-bar, .neu-btn {
   background: linear-gradient(160deg, #3a332c, #241e1a);
@@ -299,4 +298,233 @@ html, body {
   .hud { flex-direction: column; align-items: flex-start; }
   .ad-row { position: static; padding-bottom: 12px; }
   .stage { padding-bottom: 16px; }
+}
+
+.res-bar {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 4px solid #5a3a1c;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(90, 58, 28, 0.92), rgba(36, 24, 14, 0.92));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+.res-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.res {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #1a140e;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-weight: 800;
+  font-size: 0.78rem;
+  border: 1px solid rgba(201, 162, 39, 0.28);
+}
+
+.leader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.leader small { display: block; opacity: 0.7; font-size: 0.65rem; }
+
+.portrait {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, #e8c8a0, #6a3a22 62%, #2a1810);
+  border: 2px solid #c9a227;
+}
+
+.banner {
+  position: absolute;
+  left: 50%;
+  top: 78px;
+  transform: translateX(-50%);
+  max-width: min(92vw, 520px);
+  text-align: center;
+  padding: 8px 16px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  color: #3a2410;
+  background: linear-gradient(180deg, #e8d2a0, #c9a66b);
+  border: 2px solid #8a6a30;
+  border-radius: 6px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+.hex-inspect {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 118px;
+  display: none;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(42, 32, 24, 0.94), rgba(20, 14, 10, 0.94));
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  border-radius: 14px;
+}
+
+.hex-inspect.on { display: flex; }
+
+.hex-inspect strong, .hex-inspect span { display: block; }
+
+.circle-dock {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 10px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding: 8px 6px 6px;
+  background: linear-gradient(180deg, rgba(70, 46, 24, 0.88), rgba(28, 18, 10, 0.94));
+  border: 4px solid #5a3a1c;
+  border-radius: 22px 22px 10px 10px;
+}
+
+.circle {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 2px solid rgba(201, 162, 39, 0.45);
+  background: radial-gradient(circle at 30% 25%, #6a5340, #2a1e14);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font-weight: 800;
+}
+
+.circle span { font-size: 1.15rem; line-height: 1; }
+.circle small { font-size: 0.58rem; }
+.circle.on {
+  background: radial-gradient(circle at 30% 25%, #d4b24a, #6a4a10);
+  color: #1a1408;
+}
+
+.chat-fab {
+  position: absolute;
+  right: 16px;
+  bottom: 92px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #c9a227;
+  background: #2a2018;
+  font-size: 1.2rem;
+}
+
+.chat-fab i {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #8b1e24;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-style: normal;
+  padding: 1px 5px;
+}
+
+.hud-kit {
+  position: absolute;
+  left: 14px;
+  bottom: 92px;
+  margin: 0;
+}
+
+.sheet {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 88px;
+  max-height: 46vh;
+  overflow: auto;
+  padding: 12px 14px 16px;
+  background: linear-gradient(180deg, rgba(48, 36, 26, 0.96), rgba(18, 12, 8, 0.96));
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  border-radius: 18px 18px 8px 8px;
+}
+
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.sheet-head h2 { margin: 0; font-family: "Cinzel", serif; }
+
+.pick-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 6vh 5vw 7vh;
+  gap: 16px;
+}
+
+.pick-copy h1 {
+  font-family: "Cinzel", serif;
+  margin: 0.2rem 0 0.6rem;
+}
+
+.tribe-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tribe-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px 12px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  color: var(--ink);
+  text-align: left;
+  min-height: 150px;
+}
+
+.tribe-card strong { font-family: "Cinzel", serif; font-size: 1.05rem; }
+.tribe-card em { font-size: 0.78rem; opacity: 0.8; }
+
+.tribe-card.sariklilar { background: linear-gradient(160deg, #8a3a18, #2a140c); }
+.tribe-card.gokhanli { background: linear-gradient(160deg, #1e3a2c, #12180e); }
+.tribe-card.demirhisar { background: linear-gradient(160deg, #3a4a5a, #141820); }
+
+.battle-log {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 128px;
+}
+
+@media (max-width: 720px) {
+  .tribe-grid { grid-template-columns: 1fr; }
+  .res-bar { flex-direction: column; align-items: stretch; }
+  .banner { top: 118px; }
+  .circle { width: 56px; height: 56px; }
 }

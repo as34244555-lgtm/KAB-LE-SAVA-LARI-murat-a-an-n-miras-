@@ -1,0 +1,302 @@
+import * as THREE from "three";
+import { bus } from "../core/EventBus";
+import type { HexTile, OwnerId, PlayableTribe, PlayerSave } from "../core/types";
+import { HEX_SIZE, axialToWorld } from "./hexMath";
+import { hexBuildingMesh } from "./hexBuildings";
+import { garrisonFor } from "./warriors";
+import { pbr } from "./textures";
+
+const OWNER_RIM: Record<OwnerId, number> = {
+  sariklilar: 0xc45a22,
+  gokhanli: 0x3a7a58,
+  demirhisar: 0x7a8aaa,
+  neutral: 0x6a6054,
+};
+
+export class HexMapScene {
+  readonly root = new THREE.Group();
+  active = false;
+  private tiles = new THREE.Group();
+  private marks = new THREE.Group();
+  private selectRing: THREE.Mesh;
+  private ray = new THREE.Raycaster();
+  private pointer = new THREE.Vector2();
+  private dragging = false;
+  private moved = false;
+  private lastX = 0;
+  private lastY = 0;
+  private pinch = 0;
+  private target = new THREE.Vector3(0, 0.4, 0);
+  private yaw = 0.62;
+  private pitch = 0.92;
+  private dist = 18;
+  private lookId: string | null = null;
+  private save: PlayerSave | null = null;
+
+  constructor(
+    private readonly canvas: HTMLCanvasElement,
+    private readonly camera: THREE.PerspectiveCamera,
+  ) {
+    this.root.name = "hex-map";
+    this.root.add(this.tiles, this.marks);
+    this.selectRing = new THREE.Mesh(
+      new THREE.TorusGeometry(HEX_SIZE * 0.92, 0.045, 8, 6),
+      new THREE.MeshStandardMaterial({
+        color: 0xf0d060,
+        emissive: 0xc9a227,
+        emissiveIntensity: 0.65,
+        roughness: 0.35,
+        metalness: 0.25,
+      }),
+    );
+    this.selectRing.rotation.x = -Math.PI / 2;
+    this.selectRing.position.y = 0.42;
+    this.selectRing.visible = false;
+    this.root.add(this.selectRing);
+    this.paintWater();
+    this.bindInput();
+  }
+
+  sync(save: PlayerSave): void {
+    this.save = save;
+    this.tiles.clear();
+    this.marks.clear();
+    for (const tile of save.tiles) {
+      const cell = this.makeCell(tile);
+      this.tiles.add(cell);
+      this.dress(tile);
+    }
+    this.lookId = save.selectedHex;
+    this.placeSelect(save.selectedHex);
+  }
+
+  update(elapsed: number): void {
+    this.selectRing.rotation.z = elapsed * 0.6;
+    this.marks.children.forEach((child, index) => {
+      child.rotation.y = Math.sin(elapsed * 0.4 + index) * 0.15;
+    });
+  }
+
+  placeCamera(): void {
+    const focus = this.target.clone();
+    if (this.lookId && this.save) {
+      const tile = this.save.tiles.find((item) => item.id === this.lookId);
+      if (tile) {
+        const { x, z } = axialToWorld(tile.q, tile.r);
+        focus.lerp(new THREE.Vector3(x, 0.3, z), 0.12);
+        this.target.copy(focus);
+      }
+    }
+    const x = focus.x + Math.sin(this.yaw) * Math.cos(this.pitch) * this.dist;
+    const y = focus.y + Math.sin(this.pitch) * this.dist;
+    const z = focus.z + Math.cos(this.yaw) * Math.cos(this.pitch) * this.dist;
+    this.camera.position.set(x, y, z);
+    this.camera.lookAt(focus.x, 0.35, focus.z);
+  }
+
+  private paintWater(): void {
+    const sea = new THREE.Mesh(
+      new THREE.CircleGeometry(28, 64),
+      new THREE.MeshStandardMaterial({
+        color: 0x3a6a88,
+        roughness: 0.18,
+        metalness: 0.35,
+        transparent: true,
+        opacity: 0.92,
+      }),
+    );
+    sea.rotation.x = -Math.PI / 2;
+    sea.position.y = -0.55;
+    sea.receiveShadow = true;
+    const rim = new THREE.Mesh(
+      new THREE.TorusGeometry(11.6, 0.55, 8, 48),
+      pbr("wood", 0x6a4a28, { repeat: 6, roughness: 0.85 }),
+    );
+    rim.rotation.x = -Math.PI / 2;
+    rim.position.y = -0.15;
+    this.root.add(sea, rim);
+  }
+
+  private makeCell(tile: HexTile): THREE.Mesh {
+    const height = tile.biome === "ice" ? 0.38 : tile.biome === "forest" ? 0.3 : 0.24;
+    const mat =
+      tile.biome === "desert"
+        ? pbr("sand", 0xe8c888, { repeat: 2.4, roughness: 0.92 })
+        : tile.biome === "ice"
+          ? pbr("stone", 0xd8e8f4, { repeat: 2.1, metal: 0.18, roughness: 0.28 })
+          : pbr("wood", 0x3f6a3a, { repeat: 2.6, roughness: 0.78 });
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(HEX_SIZE * 0.96, HEX_SIZE * 0.96, height, 6), mat);
+    const { x, z } = axialToWorld(tile.q, tile.r);
+    mesh.position.set(x, height / 2, z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.userData.hexId = tile.id;
+    const rim = new THREE.Mesh(
+      new THREE.CylinderGeometry(HEX_SIZE * 0.97, HEX_SIZE * 0.97, 0.05, 6, 1, true),
+      new THREE.MeshStandardMaterial({
+        color: OWNER_RIM[tile.owner],
+        roughness: 0.45,
+        metalness: 0.2,
+        emissive: OWNER_RIM[tile.owner],
+        emissiveIntensity: tile.owner === "neutral" ? 0.04 : 0.18,
+      }),
+    );
+    rim.position.y = height / 2 + 0.01;
+    mesh.add(rim);
+    return mesh;
+  }
+
+  private dress(tile: HexTile): void {
+    const { x, z } = axialToWorld(tile.q, tile.r);
+    const tribe = (tile.owner === "neutral" ? biomeTribe(tile.biome) : tile.owner) as PlayableTribe;
+    const built = hexBuildingMesh(tile, tribe);
+    if (built) {
+      built.position.set(x, 0.28, z);
+      this.marks.add(built);
+    } else {
+      this.scatterNature(tile, x, z);
+    }
+    if (tile.owner !== "neutral" && (tile.garrison > 0 || tile.slot === "hall" || tile.slot === "camp")) {
+      const troops = garrisonFor(tile.owner, tile.slot === "hall" ? 4 : 2);
+      troops.position.set(x + 0.15, 0.26, z + 0.28);
+      troops.scale.setScalar(0.85);
+      this.marks.add(troops);
+    }
+  }
+
+  private scatterNature(tile: HexTile, x: number, z: number): void {
+    const group = new THREE.Group();
+    group.position.set(x, 0.22, z);
+    if (tile.biome === "desert") {
+      const dune = new THREE.Mesh(
+        new THREE.SphereGeometry(0.28, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2),
+        pbr("sand", 0xe8c070, { repeat: 1.4 }),
+      );
+      dune.position.set(-0.2, 0, 0.1);
+      const palm = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.03, 0.045, 0.55, 6),
+        pbr("wood", 0x8a5a28, { repeat: 1 }),
+      );
+      palm.position.set(0.22, 0.28, -0.1);
+      const leaf = new THREE.Mesh(
+        new THREE.ConeGeometry(0.22, 0.18, 6),
+        new THREE.MeshStandardMaterial({ color: 0x2f6a38, roughness: 0.7 }),
+      );
+      leaf.position.set(0.22, 0.58, -0.1);
+      group.add(dune, palm, leaf);
+    } else if (tile.biome === "forest") {
+      for (let i = 0; i < 3; i += 1) {
+        const trunk = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.04, 0.05, 0.4, 6),
+          pbr("wood", 0x4a2e18, { repeat: 1 }),
+        );
+        trunk.position.set(-0.22 + i * 0.2, 0.2, (i % 2) * 0.16);
+        const crown = new THREE.Mesh(
+          new THREE.ConeGeometry(0.2, 0.42, 7),
+          new THREE.MeshStandardMaterial({ color: 0x245a32, roughness: 0.72 }),
+        );
+        crown.position.set(trunk.position.x, 0.52, trunk.position.z);
+        group.add(trunk, crown);
+      }
+    } else {
+      const shard = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.22),
+        new THREE.MeshStandardMaterial({
+          color: 0xa8d8ff,
+          roughness: 0.12,
+          metalness: 0.35,
+          transparent: true,
+          opacity: 0.88,
+        }),
+      );
+      shard.position.set(0.1, 0.28, -0.08);
+      const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.16), pbr("stone", 0xc8d4e0, { repeat: 1 }));
+      rock.position.set(-0.22, 0.12, 0.12);
+      group.add(shard, rock);
+    }
+    this.marks.add(group);
+  }
+
+  private placeSelect(id: string | null): void {
+    if (!id || !this.save) {
+      this.selectRing.visible = false;
+      return;
+    }
+    const tile = this.save.tiles.find((item) => item.id === id);
+    if (!tile) {
+      this.selectRing.visible = false;
+      return;
+    }
+    const { x, z } = axialToWorld(tile.q, tile.r);
+    this.selectRing.position.set(x, 0.48, z);
+    this.selectRing.visible = true;
+  }
+
+  private bindInput(): void {
+    this.canvas.addEventListener("pointerdown", (event) => {
+      if (!this.active) return;
+      this.dragging = true;
+      this.moved = false;
+      this.lastX = event.clientX;
+      this.lastY = event.clientY;
+    });
+    this.canvas.addEventListener("pointermove", (event) => {
+      if (!this.active || !this.dragging) return;
+      const dx = event.clientX - this.lastX;
+      const dy = event.clientY - this.lastY;
+      if (Math.hypot(dx, dy) > 6) this.moved = true;
+      this.lastX = event.clientX;
+      this.lastY = event.clientY;
+      this.target.x -= (dx * 0.018 + dy * 0.01) * (this.dist / 16);
+      this.target.z -= (dy * 0.018 - dx * 0.006) * (this.dist / 16);
+      this.lookId = null;
+    });
+    this.canvas.addEventListener("pointerup", (event) => {
+      if (!this.active) return;
+      if (this.dragging && !this.moved) this.pick(event.clientX, event.clientY);
+      this.dragging = false;
+    });
+    this.canvas.addEventListener("wheel", (event) => {
+      if (!this.active) return;
+      event.preventDefault();
+      this.dist = THREE.MathUtils.clamp(this.dist + event.deltaY * 0.012, 10, 28);
+    }, { passive: false });
+    this.canvas.addEventListener("touchstart", (event) => {
+      if (!this.active) return;
+      if (event.touches.length === 2) {
+        this.pinch = gap(event.touches[0], event.touches[1]);
+      }
+    });
+    this.canvas.addEventListener("touchmove", (event) => {
+      if (!this.active || event.touches.length !== 2) return;
+      const next = gap(event.touches[0], event.touches[1]);
+      const delta = this.pinch - next;
+      this.dist = THREE.MathUtils.clamp(this.dist + delta * 0.02, 10, 28);
+      this.pinch = next;
+    });
+  }
+
+  private pick(cx: number, cy: number): void {
+    const rect = this.canvas.getBoundingClientRect();
+    this.pointer.x = ((cx - rect.left) / rect.width) * 2 - 1;
+    this.pointer.y = -((cy - rect.top) / rect.height) * 2 + 1;
+    this.ray.setFromCamera(this.pointer, this.camera);
+    const hits = this.ray.intersectObjects(this.tiles.children, true);
+    const hit = hits.find((item) => item.object.userData.hexId || item.object.parent?.userData.hexId);
+    const id = (hit?.object.userData.hexId ?? hit?.object.parent?.userData.hexId) as string | undefined;
+    if (!id) return;
+    this.lookId = id;
+    this.placeSelect(id);
+    bus.emit("hex-select", id);
+  }
+}
+
+function biomeTribe(biome: HexTile["biome"]): PlayableTribe {
+  if (biome === "desert") return "sariklilar";
+  if (biome === "ice") return "demirhisar";
+  return "gokhanli";
+}
+
+function gap(a: Touch, b: Touch): number {
+  return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+}

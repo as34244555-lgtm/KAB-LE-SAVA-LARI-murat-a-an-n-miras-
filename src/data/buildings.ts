@@ -1,60 +1,12 @@
-import type { BuildingDefinition } from "../core/types";
+import type { BuildingDefinition, BuildingId } from "../core/types";
 
 export const BUILDINGS: BuildingDefinition[] = [
-  {
-    id: "goldMine",
-    name: "Altın Ocağı",
-    lore: "Murat Ağa, madeni 'barışın nabzı' diye çağırırdı. Damarlar hâlâ atıyor; lider yok.",
-    baseGoldCost: 80,
-    baseDiamondUpgrade: 1,
-    goldPerTick: 2,
-    unlockLevel: 1,
-  },
-  {
-    id: "barracks",
-    name: "Yemin Kışlası",
-    lore: "Üç kabile burada omuz omuza talim ederdi. Şimdi aynı avluda birbirlerini ölçüyorlar.",
-    baseGoldCost: 120,
-    baseDiamondUpgrade: 2,
-    goldPerTick: 0,
-    unlockLevel: 1,
-  },
-  {
-    id: "forge",
-    name: "Aslan Demirhanesi",
-    lore: "Çeliğe vurulan her çekiç, Murat Ağa'nın kalkanındaki aslanı hatırlar.",
-    baseGoldCost: 160,
-    baseDiamondUpgrade: 2,
-    goldPerTick: 0,
-    unlockLevel: 1,
-  },
-  {
-    id: "caravanserai",
-    name: "Kervansaray",
-    lore: "Eski dostlar hâlâ yolu bilir. Haydutlar da öyle — ve bazen yol, bir savaş sahnesine döner.",
-    baseGoldCost: 200,
-    baseDiamondUpgrade: 3,
-    goldPerTick: 1,
-    unlockLevel: 1,
-  },
-  {
-    id: "scrollTower",
-    name: "Parşömen Kulesi",
-    lore: "Vârisin kulesi. Her kat, Murat Ağa'nın gizlediği bir cümleyi daha yakına taşır.",
-    baseGoldCost: 240,
-    baseDiamondUpgrade: 3,
-    goldPerTick: 0,
-    unlockLevel: 1,
-  },
-  {
-    id: "shadowTemple",
-    name: "Gölge Tapınağı",
-    lore: "Haritanın en karanlık yerinde beliren tarikat. İlk bakışta bilgi verirler. Son bakışta toprak isterler.",
-    baseGoldCost: 0,
-    baseDiamondUpgrade: 5,
-    goldPerTick: 0,
-    unlockLevel: 40,
-  },
+  { id: "hall", name: "Divan", lore: "Kabile merkezi.", baseGoldCost: 0, baseDiamondUpgrade: 2, goldPerTick: 3, unlockLevel: 1 },
+  { id: "resource", name: "Ocak", lore: "Arazi üretimi.", baseGoldCost: 40, baseDiamondUpgrade: 1, goldPerTick: 2, unlockLevel: 1 },
+  { id: "camp", name: "Kışla", lore: "Birlik eğitimi.", baseGoldCost: 70, baseDiamondUpgrade: 2, goldPerTick: 0, unlockLevel: 1 },
+  { id: "tower", name: "Kule", lore: "Savunma.", baseGoldCost: 40, baseDiamondUpgrade: 2, goldPerTick: 0, unlockLevel: 1 },
+  { id: "market", name: "Pazar", lore: "Ticaret.", baseGoldCost: 80, baseDiamondUpgrade: 3, goldPerTick: 4, unlockLevel: 1 },
+  { id: "forge", name: "Demirhane", lore: "Silah.", baseGoldCost: 90, baseDiamondUpgrade: 3, goldPerTick: 0, unlockLevel: 1 },
 ];
 
 export function buildingGoldCost(base: number, nextLevel: number): number {
@@ -63,4 +15,8 @@ export function buildingGoldCost(base: number, nextLevel: number): number {
 
 export function buildingDiamondCost(base: number, nextLevel: number): number {
   return base + Math.max(0, nextLevel - 1);
+}
+
+export function isBuildingId(id: string): id is BuildingId {
+  return BUILDINGS.some((item) => item.id === id);
 }

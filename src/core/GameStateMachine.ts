@@ -1,15 +1,14 @@
 import type { GamePhase } from "./types";
 
 const TRANSITIONS: Record<GamePhase, GamePhase[]> = {
-  boot: ["intro", "menu"],
-  intro: ["menu"],
-  menu: ["intro", "build", "loading"],
-  loading: ["build", "explore", "battle", "menu"],
-  build: ["explore", "battle", "dialogue", "journal", "menu"],
-  explore: ["build", "battle", "dialogue", "journal"],
-  battle: ["build", "explore", "dialogue"],
-  dialogue: ["build", "explore", "journal"],
-  journal: ["build", "explore", "dialogue"],
+  boot: ["intro", "menu", "pick"],
+  intro: ["menu", "pick"],
+  menu: ["intro", "pick", "map", "build", "loading"],
+  pick: ["map", "build", "menu"],
+  loading: ["map", "build", "menu"],
+  map: ["battle", "menu", "pick", "build"],
+  build: ["battle", "menu", "pick", "map"],
+  battle: ["map", "build", "menu"],
 };
 
 export class GameStateMachine {
@@ -26,9 +25,7 @@ export class GameStateMachine {
 
   enter(next: GamePhase): GamePhase {
     if (next === this.phase) return this.phase;
-    if (!this.canEnter(next)) {
-      throw new Error(`Geçersiz durum geçişi: ${this.phase} → ${next}`);
-    }
+    if (!this.canEnter(next)) throw new Error(`Geçersiz durum geçişi: ${this.phase} → ${next}`);
     this.phase = next;
     this.history.push(next);
     return this.phase;

@@ -1,49 +1,38 @@
-import type { BuildingId, PlayerSave, TribeId } from "../core/types";
+import type { PlayerSave } from "../core/types";
+import { generateWorld } from "../data/hexMap";
+import { startBag } from "./EconomyManager";
 
-const STORAGE_KEY = "ksmam.save.v1";
+const STORAGE_KEY = "ksmam.save.v2";
 const SECRET = "murat-aga-mirasi-v1";
 
-export function emptySave(playerName = "Vâris"): PlayerSave {
-  const buildings = {
-    goldMine: 1,
-    barracks: 1,
-    forge: 0,
-    caravanserai: 0,
-    scrollTower: 0,
-    shadowTemple: 0,
-  } satisfies Record<BuildingId, number>;
-
-  const army = {
-    sariklilar: 1,
-    gokhanli: 1,
-    demirhisar: 1,
-    player: 1,
-  } satisfies Record<TribeId, number>;
-
-  const unitLevels = {
-    sariklilar: 1,
-    gokhanli: 1,
-    demirhisar: 1,
-    player: 1,
-  } satisfies Record<TribeId, number>;
-
+export function emptySave(playerName = "Kabile Lideri"): PlayerSave {
   return {
-    version: 1,
+    version: 2,
     playerName,
+    chosenTribe: null,
     playerLevel: 1,
     xp: 0,
-    gold: 220,
     diamond: 6,
+    resources: startBag(),
+    tiles: generateWorld("gokhanli"),
+    army: 4,
+    unitLevel: 1,
     collectedScrolls: [1],
     discoveredSideTribes: [],
-    buildingLevels: buildings,
-    army,
-    unitLevels,
     completedQuests: [],
     caravan: null,
     shadowTempleRevealed: false,
     finaleRevealed: false,
     lastTickAt: Date.now(),
+    selectedHex: null,
+    buildingLevels: {
+      goldMine: 0,
+      barracks: 0,
+      forge: 0,
+      caravanserai: 0,
+      scrollTower: 0,
+      shadowTemple: 0,
+    },
   };
 }
 
@@ -78,9 +67,7 @@ export async function decryptPayload(payload: string): Promise<string> {
 export class SaveManager {
   async persist(save: PlayerSave): Promise<void> {
     const sealed = await encryptPayload(JSON.stringify(save));
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, sealed);
-    }
+    if (typeof localStorage !== "undefined") localStorage.setItem(STORAGE_KEY, sealed);
   }
 
   async load(): Promise<PlayerSave | null> {
@@ -89,35 +76,22 @@ export class SaveManager {
     if (!raw) return null;
     try {
       const parsed = JSON.parse(await decryptPayload(raw)) as PlayerSave;
-      if (parsed.version !== 1) return null;
+      if (parsed.version !== 2 || !parsed.resources || !parsed.tiles) return null;
       return parsed;
     } catch {
       return null;
     }
   }
 
-  clear(): void {
-    if (typeof localStorage !== "undefined") {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+  clear() {
+    if (typeof localStorage !== "undefined") localStorage.removeItem(STORAGE_KEY);
   }
 }
 
 async function deriveKey(): Promise<CryptoKey> {
-  const material = await globalThis.crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(SECRET),
-    "PBKDF2",
-    false,
-    ["deriveKey"],
-  );
+  const material = await globalThis.crypto.subtle.importKey("raw", new TextEncoder().encode(SECRET), "PBKDF2", false, ["deriveKey"]);
   return globalThis.crypto.subtle.deriveKey(
-    {
-      name: "PBKDF2",
-      salt: new TextEncoder().encode("kanli-taht"),
-      iterations: 120_000,
-      hash: "SHA-256",
-    },
+    { name: "PBKDF2", salt: new TextEncoder().encode("kanli-taht"), iterations: 120_000, hash: "SHA-256" },
     material,
     { name: "AES-GCM", length: 256 },
     false,
@@ -128,15 +102,13 @@ async function deriveKey(): Promise<CryptoKey> {
 function xorEncode(value: string): string {
   const bytes = new TextEncoder().encode(value);
   const key = new TextEncoder().encode(SECRET);
-  const out = bytes.map((byte, index) => byte ^ key[index % key.length]);
-  return bufferToB64(out);
+  return bufferToB64(bytes.map((byte, index) => byte ^ key[index % key.length]));
 }
 
 function xorDecode(value: string): string {
   const bytes = b64ToBytes(value);
   const key = new TextEncoder().encode(SECRET);
-  const out = bytes.map((byte, index) => byte ^ key[index % key.length]);
-  return new TextDecoder().decode(out);
+  return new TextDecoder().decode(bytes.map((byte, index) => byte ^ key[index % key.length]));
 }
 
 function bufferToB64(bytes: Uint8Array): string {
@@ -148,8 +120,7 @@ function bufferToB64(bytes: Uint8Array): string {
 }
 
 function b64ToBytes(value: string): Uint8Array {
-  const binary = atob(value);
-  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return Uint8Array.from(atob(value), (char) => char.charCodeAt(0));
 }
 
 function copyBytes(bytes: Uint8Array): Uint8Array {
