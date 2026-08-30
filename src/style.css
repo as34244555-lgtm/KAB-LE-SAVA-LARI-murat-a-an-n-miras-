@@ -152,12 +152,12 @@ html, body {
 .playfield {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 210px);
+  min-height: calc(100vh - 190px);
 }
 
 .world-gap {
-  flex: 1 1 220px;
-  min-height: 180px;
+  flex: 1 1 280px;
+  min-height: 260px;
   pointer-events: none;
 }
 
@@ -168,7 +168,7 @@ html, body {
 }
 
 .drawer {
-  max-height: 38vh;
+  max-height: 32vh;
   overflow: auto;
   padding-bottom: 8px;
 }

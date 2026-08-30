@@ -47,24 +47,32 @@ export function makeBanner(color: number, emblem: number): THREE.Group {
 
 export function stylizedPerson(primary: number, accent: number, hat: "turban" | "hood" | "helm" | "none" = "none"): THREE.Group {
   const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.42, 6, 10), toyMaterial(primary));
-  body.position.y = 0.55;
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), toyMaterial(0xffe0c0));
+  const legs = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 0.22, 6, 10), toyMaterial(0x4a3424));
+  legs.position.y = 0.28;
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.24, 0.28, 6, 10), toyMaterial(primary));
+  body.position.y = 0.62;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 16), toyMaterial(0xffe0c0));
   head.position.y = 1.05;
-  g.add(body, head);
+  g.add(legs, body, head);
   if (hat === "turban") {
-    const t = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.1, 10, 18), toyMaterial(accent, { metal: 0.35 }));
+    const t = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.12, 10, 18), toyMaterial(accent, { metal: 0.35 }));
     t.rotation.x = Math.PI / 2;
-    t.position.y = 1.2;
-    g.add(t);
+    t.position.y = 1.22;
+    const jewel = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), toyMaterial(0xc0392b, { metal: 0.4 }));
+    jewel.position.set(0, 1.34, 0.12);
+    g.add(t, jewel);
   } else if (hat === "hood") {
-    const h = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.32, 10), toyMaterial(accent, { emissive: 0x4a148c, emit: 0.35 }));
-    h.position.y = 1.28;
-    g.add(h);
+    const h = new THREE.Mesh(new THREE.ConeGeometry(0.28, 0.38, 10), toyMaterial(accent, { emissive: 0x4a148c, emit: 0.45 }));
+    h.position.y = 1.32;
+    const cape = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.45, 0.08), toyMaterial(0x4a148c, { roughness: 0.6 }));
+    cape.position.set(0, 0.62, -0.2);
+    g.add(h, cape);
   } else if (hat === "helm") {
-    const h = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12, 0, Math.PI * 2, 0, Math.PI / 2), toyMaterial(0xc0c4c8, { metal: 0.7 }));
-    h.position.y = 1.14;
-    g.add(h);
+    const h = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12, 0, Math.PI * 2, 0, Math.PI / 2), toyMaterial(0xc0c4c8, { metal: 0.75 }));
+    h.position.y = 1.16;
+    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.08, 0.12), toyMaterial(0x8d8a82, { metal: 0.7 }));
+    visor.position.set(0, 1.08, 0.18);
+    g.add(h, visor);
   }
   g.traverse((obj) => {
     if (obj instanceof THREE.Mesh) {

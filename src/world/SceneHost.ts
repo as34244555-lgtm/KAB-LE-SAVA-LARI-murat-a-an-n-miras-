@@ -1,8 +1,13 @@
 import * as THREE from "three";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import type { GamePhase } from "../core/types";
 import type { Palette } from "../managers/NarrativeManager";
 import { BattleScene } from "./BattleScene";
 import { applyPalette } from "./materials";
+import { maps } from "./textures";
 import { ThroneScene } from "./ThroneScene";
 import { VillageScene } from "./VillageScene";
 
@@ -13,9 +18,12 @@ export class SceneHost {
   readonly throne = new ThroneScene();
   readonly village = new VillageScene();
   readonly battle = new BattleScene();
-  private readonly ambient = new THREE.AmbientLight(0x7a5040, 0.7);
-  private readonly sun = new THREE.DirectionalLight(0xffcc66, 1.15);
-  private readonly rim = new THREE.DirectionalLight(0x8ec8ff, 0.35);
+  private readonly ambient = new THREE.HemisphereLight(0xffd4a8, 0x6a5340, 1.05);
+  private readonly sun = new THREE.DirectionalLight(0xffc27a, 1.85);
+  private readonly rim = new THREE.DirectionalLight(0x8eb8ff, 0.4);
+  private readonly fill = new THREE.AmbientLight(0xffe6c8, 0.28);
+  private readonly composer: EffectComposer;
+  private readonly bloom: UnrealBloomPass;
   private elapsed = 0;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -25,22 +33,39 @@ export class SceneHost {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.12;
-    this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 80);
-    this.sun.position.set(6, 10, 4);
+    this.renderer.toneMappingExposure = 1.18;
+    this.camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 120);
+    this.sun.position.set(10, 12, 6);
     this.sun.castShadow = true;
-    this.sun.intensity = 1.55;
-    this.sun.shadow.mapSize.set(1024, 1024);
-    this.rim.position.set(-8, 4, -6);
-    this.ambient.intensity = 0.95;
-    this.scene.add(this.ambient, this.sun, this.rim, this.throne.root, this.village.root, this.battle.root);
+    this.sun.shadow.mapSize.set(2048, 2048);
+    this.sun.shadow.camera.near = 1;
+    this.sun.shadow.camera.far = 40;
+    this.sun.shadow.camera.left = -16;
+    this.sun.shadow.camera.right = 16;
+    this.sun.shadow.camera.top = 16;
+    this.sun.shadow.camera.bottom = -16;
+    this.rim.position.set(-10, 6, -8);
+    const sky = new THREE.Mesh(
+      new THREE.SphereGeometry(60, 32, 18),
+      new THREE.MeshBasicMaterial({ map: maps.sky, side: THREE.BackSide }),
+    );
+    this.scene.add(this.ambient, this.sun, this.rim, this.fill, sky, this.throne.root, this.village.root, this.battle.root);
+
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    this.bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.28, 0.6, 0.72);
+    this.composer.addPass(this.bloom);
+    this.composer.addPass(new OutputPass());
+
     this.show("intro");
     window.addEventListener("resize", () => this.resize());
   }
 
   apply(palette: Palette) {
-    applyPalette(this.scene, { ambient: this.ambient, fill: this.sun }, palette);
-    this.renderer.toneMappingExposure = 0.95 + palette.bloom * 0.18;
+    applyPalette(this.scene, { ambient: this.fill, fill: this.sun }, palette);
+    this.ambient.color.setHex(palette.torch);
+    this.bloom.strength = 0.18 + palette.bloom * 0.16;
+    this.renderer.toneMappingExposure = 1.02 + palette.bloom * 0.12;
   }
 
   show(phase: GamePhase) {
@@ -53,6 +78,7 @@ export class SceneHost {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.composer.setSize(window.innerWidth, window.innerHeight);
   }
 
   frame(dt: number) {
@@ -61,7 +87,7 @@ export class SceneHost {
     this.village.update(this.elapsed);
     this.battle.update(this.elapsed);
     this.placeCamera();
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render();
   }
 
   private placeCamera() {
@@ -72,11 +98,11 @@ export class SceneHost {
       return;
     }
     if (this.battle.root.visible) {
-      this.camera.position.set(0.4, 5.4, 8.2);
-      this.camera.lookAt(0, 0.6, 0);
+      this.camera.position.set(0.6, 6.2, 9.4);
+      this.camera.lookAt(0, 0.7, 0);
       return;
     }
-    this.camera.position.set(-1.2, 7.4, 10.2);
-    this.camera.lookAt(0, 0.8, 0.2);
+    this.camera.position.set(2.4, 10.4, 14.2);
+    this.camera.lookAt(0, 0.9, -0.6);
   }
 }
