@@ -5,6 +5,7 @@ import { HEX_SIZE, axialToWorld, forEachHex, hexDistance, hexKey, worldToAxial }
 import { hexBuildingMesh } from "./hexBuildings";
 import { garrisonFor } from "./warriors";
 import { cachedPbr } from "./textures";
+import { hexTopMat } from "./hexTerrain";
 import { CARPET_RADIUS, DETAIL_RADIUS, biomeAt } from "../data/hexMap";
 import type { Biome } from "../core/types";
 
@@ -108,7 +109,9 @@ export class HexMapScene {
       new THREE.MeshStandardMaterial({ roughness: 0.72, metalness: 0.08 }),
       maxCarpet,
     );
-    this.carpet.receiveShadow = true;
+    this.carpet.receiveShadow = false;
+    this.carpet.castShadow = false;
+    this.carpet.position.y = -0.04;
     this.carpet.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     this.carpet.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(maxCarpet * 3), 3);
     this.root.add(this.carpet);
@@ -176,6 +179,7 @@ export class HexMapScene {
     this.carpetIds = [];
     let index = 0;
     forEachHex(q, r, CARPET_RADIUS, (qq, rr) => {
+      if (hexDistance(q, r, qq, rr) <= DETAIL_RADIUS) return;
       const biome = biomeAt(qq, rr);
       const { x, z } = axialToWorld(qq, rr);
       const height = biome === "ice" ? 0.38 : biome === "forest" ? 0.3 : 0.24;
@@ -206,17 +210,11 @@ export class HexMapScene {
   private makeCell(tile: HexTile): THREE.Mesh {
     const height = tile.biome === "ice" ? 0.38 : tile.biome === "forest" ? 0.3 : 0.24;
     const geo = HEX_GEO[tile.biome];
-    const mat =
-      tile.biome === "desert"
-        ? cachedPbr("sand", 0xe8c888, { repeat: 2.4, roughness: 0.92 })
-        : tile.biome === "ice"
-          ? cachedPbr("stone", 0xd8e8f4, { repeat: 2.1, metal: 0.18, roughness: 0.28 })
-          : cachedPbr("wood", 0x3f6a3a, { repeat: 2.6, roughness: 0.78 });
-    const mesh = new THREE.Mesh(geo, mat);
+    const mesh = new THREE.Mesh(geo, hexTopMat(tile.biome));
     const { x, z } = axialToWorld(tile.q, tile.r);
     mesh.position.set(x, height / 2, z);
     mesh.castShadow = false;
-    mesh.receiveShadow = true;
+    mesh.receiveShadow = false;
     mesh.userData.hexId = tile.id;
     const rim = new THREE.Mesh(HEX_GEO.rim, RIM_MAT[tile.owner]);
     rim.position.y = height / 2 + 0.01;

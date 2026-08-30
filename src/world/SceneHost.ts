@@ -80,8 +80,8 @@ export class SceneHost {
   apply(palette: Palette, paintedSky = true) {
     applyPalette(this.scene, { ambient: this.fill, fill: this.sun }, palette, paintedSky);
     this.ambient.color.setHex(palette.ambient);
-    if (this.bloom) this.bloom.strength = 0.08 + palette.bloom * 0.05;
-    this.renderer.toneMappingExposure = 1.0 + palette.bloom * 0.04;
+    if (this.bloom) this.bloom.strength = paintedSky ? 0.08 + palette.bloom * 0.05 : 0.02;
+    this.renderer.toneMappingExposure = paintedSky ? 1.0 + palette.bloom * 0.04 : 1.02;
     if (!paintedSky) {
       this.scene.background = new THREE.Color(0x3a3428);
       this.scene.fog = new THREE.FogExp2(0x4a4034, 0.01);
