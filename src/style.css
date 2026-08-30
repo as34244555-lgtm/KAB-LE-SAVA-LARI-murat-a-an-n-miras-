@@ -1,0 +1,259 @@
+:root {
+  --ink: #2b1b14;
+  --paper: #f3e6d2;
+  --gold: #d4a017;
+  --crimson: #9b1d2a;
+  --purple: #6a1b9a;
+  --shadow: #c4b39a;
+  --hi: #fff6e8;
+  --sky: #6a3a2c;
+  font-family: "Nunito", "Trebuchet MS", sans-serif;
+  color: var(--ink);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #1a1010;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#ui-root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+}
+
+#ui-root * { pointer-events: auto; }
+
+.neu-card, .neu-bar, .neu-btn {
+  background: linear-gradient(160deg, #f7ead6, #e8d3b4);
+  border: 0;
+  border-radius: 22px;
+  box-shadow:
+    8px 8px 18px rgba(90, 55, 30, 0.22),
+    -6px -6px 14px rgba(255, 248, 235, 0.72),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+}
+
+.neu-btn {
+  cursor: pointer;
+  padding: 0.7rem 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.neu-btn:hover:not(:disabled) { transform: translateY(-1px); }
+
+.neu-btn.pop {
+  transform: scale(0.94);
+  box-shadow:
+    inset 6px 6px 12px rgba(90, 55, 30, 0.22),
+    inset -4px -4px 10px rgba(255, 248, 235, 0.7);
+}
+
+.neu-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.neu-btn.gold {
+  background: linear-gradient(160deg, #f8e08a, #d4a017);
+}
+
+.neu-btn.slim {
+  padding: 0.45rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.78rem;
+}
+
+.neu-btn.ghost {
+  background: linear-gradient(160deg, #efe0c8, #dcc5a4);
+}
+
+.neu-btn.tab.on {
+  background: linear-gradient(160deg, #f3d48a, #c9872a);
+}
+
+.hud {
+  margin: 14px 14px 0;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.brand small { display: block; opacity: 0.7; }
+
+.gem {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  transform: rotate(45deg);
+  background: radial-gradient(circle at 30% 30%, #f3e5f5, #7b1fa2 55%, #4a148c);
+  box-shadow: 0 0 12px #ce93d8;
+}
+
+.meters { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.chip {
+  background: #efe0c8;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  box-shadow: inset 2px 2px 4px rgba(90, 55, 30, 0.12);
+}
+
+.gold-chip { color: #7a4f00; }
+.dia-chip { color: #4a148c; }
+
+.dock {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px 0;
+  flex-wrap: wrap;
+}
+
+.stage {
+  flex: 1;
+  overflow: auto;
+  padding: 10px 14px 72px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.span { grid-column: 1 / -1; }
+
+.neu-card { padding: 14px 16px; }
+
+.neu-card h2, .neu-card h3 { font-family: "Cinzel", serif; margin: 0 0 0.4rem; }
+
+.neu-card p { margin: 0.35rem 0; line-height: 1.45; }
+
+.memory { font-style: italic; color: #5a2e16; }
+
+.barb { font-weight: 800; color: var(--crimson); }
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  color: var(--purple);
+  font-weight: 800;
+}
+
+.meta, .fine { font-size: 0.8rem; opacity: 0.75; }
+
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.locked { opacity: 0.72; filter: saturate(0.7); }
+
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 78px;
+  transform: translateX(-50%);
+  max-width: min(640px, 92vw);
+  padding: 12px 16px;
+  z-index: 4;
+}
+
+.ad-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 12px;
+}
+
+.cinematic {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: end center;
+  padding: 6vh 6vw 8vh;
+}
+
+.plate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(1.15) contrast(1.05);
+}
+
+.art-card img {
+  width: 100%;
+  border-radius: 16px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 40%, transparent 20%, rgba(10, 4, 8, 0.62) 100%);
+}
+
+.crawl {
+  position: relative;
+  max-width: 680px;
+  padding: 22px 26px 24px;
+}
+
+.crawl h1 {
+  font-family: "Cinzel", serif;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  margin: 0.2rem 0 0.8rem;
+}
+
+.log ul { padding-left: 1.1rem; }
+
+.shadow {
+  background: linear-gradient(160deg, #d5c2e0, #8e6aa8);
+  color: #1a1020;
+}
+
+@media (max-width: 720px) {
+  .hud { flex-direction: column; align-items: flex-start; }
+  .ad-row { position: static; padding-bottom: 12px; }
+  .stage { padding-bottom: 16px; }
+}

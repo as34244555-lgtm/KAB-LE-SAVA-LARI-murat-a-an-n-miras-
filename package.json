@@ -1,0 +1,24 @@
+{
+  "name": "kabile-savaslari-murat-aga-mirasi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Kabile Savaşları: Murat Ağa'nın Mirası — hikaye odaklı strateji oyunu",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vitest": "^3.0.4"
+  }
+}
