@@ -11,9 +11,14 @@ export function toyMaterial(color: string | number, opts: { roughness?: number; 
   });
 }
 
-export function applyPalette(scene: THREE.Scene, lights: { ambient: THREE.AmbientLight; fill: THREE.DirectionalLight }, palette: Palette) {
-  scene.background = new THREE.Color(palette.sky);
-  scene.fog = new THREE.FogExp2(palette.fog, palette.fogDensity);
+export function applyPalette(
+  scene: THREE.Scene,
+  lights: { ambient: THREE.AmbientLight; fill: THREE.DirectionalLight },
+  palette: Palette,
+  paintedSky = true,
+) {
+  scene.background = paintedSky ? new THREE.Color(palette.sky) : null;
+  scene.fog = paintedSky ? new THREE.FogExp2(palette.fog, palette.fogDensity) : null;
   lights.ambient.color.setHex(palette.ambient);
   lights.fill.color.setHex(palette.torch);
 }

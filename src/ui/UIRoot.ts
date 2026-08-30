@@ -130,65 +130,41 @@ export class UIRoot {
   }
 
   private village(game: Game) {
-    const cards = BUILDINGS.map((building) => {
+    const chips = BUILDINGS.map((building) => {
       const level = game.data.buildingLevels[building.id] ?? 0;
       const locked = building.id === "shadowTemple" && !game.narrative.shadowTempleRevealed;
       const cost = locked ? null : game.economy.buildCost(building.id, level, game.levels);
       return `
-        <article class="neu-card building ${locked ? "locked" : ""}">
-          <h3>${building.name}</h3>
-          <p>${building.lore}</p>
-          <div class="meta">Seviye ${level} · Tavan ${game.levels.currentLevel}</div>
-          <button class="neu-btn gold" data-act="build" data-arg="${building.id as BuildingId}" ${locked || !cost ? "disabled" : ""}>
-            ${locked ? "Sis kilitli" : cost ? (level === 0 ? `Kur · ${cost.gold}A` : `Yükselt · ${cost.gold}A ${cost.diamond}E`) : "Seviye tavanı"}
-          </button>
-        </article>`;
+        <button class="neu-btn chip-btn ${locked ? "locked" : ""}" data-act="build" data-arg="${building.id as BuildingId}" ${locked || !cost ? "disabled" : ""}>
+          <strong>${building.name}</strong>
+          <span>${locked ? "Sis" : cost ? (level === 0 ? `Kur ${cost.gold}A` : `Sv${level} · ${cost.gold}A`) : `Sv${level} tavan`}</span>
+        </button>`;
     }).join("");
 
     const army = (["sariklilar", "gokhanli", "demirhisar"] as TribeId[])
       .map((id) => {
         const t = TRIBES[id];
         return `
-          <article class="neu-card unit">
-            <h3>${t.name}</h3>
-            <p>${t.combat.role} · ${game.data.army[id]} birim · sv ${game.data.unitLevels[id]}</p>
-            <div class="row">
-              <button class="neu-btn" data-act="train" data-arg="${id}">Eğit</button>
-              <button class="neu-btn gold" data-act="upgrade-unit" data-arg="${id}">Elmasla Yükselt</button>
-            </div>
-          </article>`;
+          <button class="neu-btn chip-btn" data-act="train" data-arg="${id}">
+            <strong>${t.name}</strong>
+            <span>${game.data.army[id]} birim · eğit</span>
+          </button>`;
       })
       .join("");
 
-    const quests = game.quests
-      .open(game.levels.currentLevel)
-      .slice(0, 3)
-      .map(
-        (q) => `
-        <article class="neu-card quest">
-          <h3>${q.title}</h3>
-          <p class="memory">${q.memoryOfMurat}</p>
-          <p>${q.objective}</p>
-          <button class="neu-btn" data-act="quest" data-arg="${q.id}">Yemini Tamamla</button>
-        </article>`,
-      )
-      .join("");
+    const quest = game.quests.open(game.levels.currentLevel)[0];
 
     return `
       <section class="playfield">
         <div class="world-gap"></div>
-        <div class="drawer">
-          <article class="neu-card span">
-            <h2>Köy — Boş tahtın gölgesi</h2>
-            <p>Hiçbir yapı veya asker, senin seviyenin üzerine çıkamaz. Büyüme, gerçeğin temposuna bağlı.</p>
-            <div class="row">
-              <button class="neu-btn gold" data-act="caravan">Kervan Gönder</button>
-              <span class="fine">${game.caravan.busy ? `Yolda · ${Math.ceil((game.caravan.current?.remainingMs ?? 0) / 1000)}s` : "Kervansaray hazır."}</span>
-            </div>
-          </article>
-          ${cards}
-          ${army}
-          ${quests || "<article class='neu-card'>Açık yemin kalmadı — sisin bir sonraki kabilesini bekle.</article>"}
+        <div class="dock-strip neu-card">
+          <div class="row">
+            <strong>Köy — Boş tahtın gölgesi</strong>
+            <button class="neu-btn gold slim" data-act="caravan">Kervan</button>
+            ${quest ? `<button class="neu-btn slim" data-act="quest" data-arg="${quest.id}">${quest.title}</button>` : ""}
+            <span class="fine">${game.caravan.busy ? `Yolda ${Math.ceil((game.caravan.current?.remainingMs ?? 0) / 1000)}s` : "Kervansaray hazır"}</span>
+          </div>
+          <div class="chips">${chips}${army}</div>
         </div>
       </section>`;
   }

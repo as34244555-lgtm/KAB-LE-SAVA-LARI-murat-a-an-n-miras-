@@ -24,10 +24,12 @@ export class SceneHost {
   private readonly fill = new THREE.AmbientLight(0xffe6c8, 0.28);
   private readonly composer: EffectComposer;
   private readonly bloom: UnrealBloomPass;
+  private readonly sky: THREE.Mesh;
   private elapsed = 0;
 
   constructor(canvas: HTMLCanvasElement) {
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    this.renderer.setClearColor(0x000000, 0);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.shadowMap.enabled = true;
@@ -45,11 +47,11 @@ export class SceneHost {
     this.sun.shadow.camera.top = 16;
     this.sun.shadow.camera.bottom = -16;
     this.rim.position.set(-10, 6, -8);
-    const sky = new THREE.Mesh(
+    this.sky = new THREE.Mesh(
       new THREE.SphereGeometry(60, 32, 18),
       new THREE.MeshBasicMaterial({ map: maps.sky, side: THREE.BackSide }),
     );
-    this.scene.add(this.ambient, this.sun, this.rim, this.fill, sky, this.throne.root, this.village.root, this.battle.root);
+    this.scene.add(this.ambient, this.sun, this.rim, this.fill, this.sky, this.throne.root, this.village.root, this.battle.root);
 
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
@@ -61,9 +63,10 @@ export class SceneHost {
     window.addEventListener("resize", () => this.resize());
   }
 
-  apply(palette: Palette) {
-    applyPalette(this.scene, { ambient: this.fill, fill: this.sun }, palette);
+  apply(palette: Palette, paintedSky = true) {
+    applyPalette(this.scene, { ambient: this.fill, fill: this.sun }, palette, paintedSky);
     this.ambient.color.setHex(palette.torch);
+    this.sky.visible = paintedSky;
     this.bloom.strength = 0.18 + palette.bloom * 0.16;
     this.renderer.toneMappingExposure = 1.02 + palette.bloom * 0.12;
   }
@@ -102,7 +105,7 @@ export class SceneHost {
       this.camera.lookAt(0, 0.7, 0);
       return;
     }
-    this.camera.position.set(2.4, 10.4, 14.2);
-    this.camera.lookAt(0, 0.9, -0.6);
+    this.camera.position.set(5.4, 4.6, 8.2);
+    this.camera.lookAt(0.1, 0.85, -1.1);
   }
 }

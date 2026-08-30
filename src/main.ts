@@ -53,7 +53,8 @@ ui.bind(async (name, payload) => {
 });
 
 bus.on("levelup", () => {
-  world.apply(game.narrative.palette(game.levels.currentLevel));
+  const painted = screen === "intro" || screen === "menu" || screen === "boot";
+  world.apply(game.narrative.palette(game.levels.currentLevel), painted);
   game.audio.setTheme(game.narrative.palette(game.levels.currentLevel).music).catch(() => undefined);
 });
 
@@ -82,9 +83,23 @@ function go(next: GamePhase) {
   }
   screen = next;
   world.show(next);
-  world.apply(game.narrative.palette(game.levels.currentLevel));
+  const painted = next === "intro" || next === "menu" || next === "boot";
+  world.apply(game.narrative.palette(game.levels.currentLevel), painted);
+  plate(next);
   world.village.sync(game.data);
   paint();
+}
+
+function plate(phase: GamePhase) {
+  const host = document.querySelector<HTMLDivElement>("#app");
+  if (!host) return;
+  if (phase === "intro" || phase === "menu" || phase === "boot") {
+    host.style.backgroundImage = "";
+    return;
+  }
+  host.style.backgroundImage = "url(/art/citadel.png)";
+  host.style.backgroundSize = "cover";
+  host.style.backgroundPosition = "center 30%";
 }
 
 function paint() {

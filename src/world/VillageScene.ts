@@ -4,20 +4,16 @@ import {
   blacksmith,
   cottage,
   crystalTemple,
-  cornerTower,
   deck,
   domeHouse,
-  heraldicShield,
-  heroPlate,
   inn,
   scrollMinaret,
   stall,
   torch,
-  wallGuard,
-  wallSegment,
+  heroPlate,
 } from "./kit";
 import { maps } from "./textures";
-import { makeBanner, stylizedPerson, toyMaterial } from "./materials";
+import { stylizedPerson, toyMaterial } from "./materials";
 
 const SLOTS: Record<BuildingId, THREE.Vector3> = {
   goldMine: new THREE.Vector3(-2.6, 0, -1.6),
@@ -41,7 +37,10 @@ export class VillageScene {
     this.dressCourtyard();
     this.root.add(this.buildings, this.folks);
     this.scatterPeople();
-    this.placeBackdrop();
+    const citadel = heroPlate("/art/citadel.png", 30, 16);
+    citadel.position.set(-2.2, 4.4, -11);
+    citadel.lookAt(5.4, 3.2, 8.2);
+    this.root.add(citadel);
   }
 
   sync(save: PlayerSave) {
@@ -54,6 +53,7 @@ export class VillageScene {
       if (shown <= 0 && id !== "shadowTemple") return;
       const built = this.makeBuilding(id, Math.max(1, shown));
       built.position.copy(SLOTS[id]);
+      built.scale.setScalar(1.28);
       this.collectFx(built);
       this.buildings.add(built);
     });
@@ -83,22 +83,8 @@ export class VillageScene {
   }
 
   private makeBuilding(id: BuildingId, level: number): THREE.Group {
-    if (id === "barracks") {
-      const g = cottage(level);
-      const plate = heroPlate("/art/cottage.png", 1.55, 1.7);
-      plate.position.set(0, 1.15, 1.28);
-      plate.rotation.x = -0.12;
-      g.add(plate);
-      return g;
-    }
-    if (id === "forge") {
-      const g = blacksmith(level);
-      const plate = heroPlate("/art/forge.png", 1.6, 1.75);
-      plate.position.set(0, 1.2, 1.32);
-      plate.rotation.x = -0.12;
-      g.add(plate);
-      return g;
-    }
+    if (id === "barracks") return cottage(level);
+    if (id === "forge") return blacksmith(level);
     if (id === "goldMine") return domeHouse(level, 0xe8c96a);
     if (id === "caravanserai") return inn(level);
     if (id === "scrollTower") return scrollMinaret(level);
@@ -106,7 +92,7 @@ export class VillageScene {
   }
 
   private paintGround() {
-    const soil = new THREE.Mesh(new THREE.CylinderGeometry(10.4, 10.4, 0.36, 48), toyMaterial(0xc4b396, { roughness: 0.88 }));
+    const soil = new THREE.Mesh(new THREE.CylinderGeometry(7.4, 7.4, 0.36, 48), toyMaterial(0xc4b396, { roughness: 0.88 }));
     (soil.material as THREE.MeshStandardMaterial).map = maps.sand;
     soil.position.y = -0.18;
     soil.receiveShadow = true;
@@ -117,53 +103,15 @@ export class VillageScene {
   }
 
   private buildFort() {
-    const half = 7.6;
-    const front = wallSegment(10.2);
-    front.position.set(0, 0, half);
-    const back = wallSegment(10.2);
-    back.position.set(0, 0, -half);
-    back.rotation.y = Math.PI;
-    const left = wallSegment(10.2);
-    left.position.set(-half, 0, 0);
-    left.rotation.y = Math.PI / 2;
-    const right = wallSegment(10.2);
-    right.position.set(half, 0, 0);
-    right.rotation.y = -Math.PI / 2;
-    const gate = new THREE.Mesh(new THREE.BoxGeometry(3.2, 2.6, 0.7), toyMaterial(0x6d4c3d, { roughness: 0.65 }));
-    gate.position.set(0, 1.3, half + 0.15);
-    gate.castShadow = true;
-    const arch = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.16, 8, 16, Math.PI), toyMaterial(0x8d8374));
-    arch.position.set(0, 1.7, half + 0.45);
-    arch.rotation.z = Math.PI;
-    const shield = heraldicShield();
-    shield.position.set(0, 2.55, half + 0.5);
-    const towers = [
-      [-half, -half],
-      [half, -half],
-      [-half, half],
-      [half, half],
-    ].map(([x, z]) => {
-      const t = cornerTower();
-      t.position.set(x, 0, z);
-      return t;
-    });
-    const bannerL = makeBanner(0xb71c1c, 0xf4d03f);
-    bannerL.position.set(-2.4, 2.3, half + 0.2);
-    const bannerR = makeBanner(0x4a148c, 0xce93d8);
-    bannerR.position.set(2.4, 2.3, half + 0.2);
-    this.root.add(front, back, left, right, gate, arch, shield, bannerL, bannerR, ...towers);
-
-    const guards: Array<["turban" | "hood" | "helm", number, number]> = [
-      ["turban", -3.6, half - 0.15],
-      ["hood", -1.2, half - 0.15],
-      ["hood", 1.2, half - 0.15],
-      ["helm", 3.6, half - 0.15],
-    ];
-    for (const [kind, x, z] of guards) {
-      const unit = wallGuard(kind);
-      unit.position.set(x, 1.72, z);
-      this.root.add(unit);
-    }
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(7.2, 0.38, 10, 48),
+      toyMaterial(0x8d8a82, { roughness: 0.8 }),
+    );
+    (ring.material as THREE.MeshStandardMaterial).map = maps.stone;
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = 0.28;
+    ring.receiveShadow = true;
+    this.root.add(ring);
   }
 
   private dressCourtyard() {
@@ -202,13 +150,6 @@ export class VillageScene {
       person.scale.setScalar(0.72);
       this.folks.add(person);
     });
-  }
-
-  private placeBackdrop() {
-    const plate = heroPlate("/art/citadel.png", 22, 11);
-    plate.position.set(0, 4.2, -13.5);
-    plate.receiveShadow = false;
-    this.root.add(plate);
   }
 
   private collectFx(root: THREE.Object3D) {
