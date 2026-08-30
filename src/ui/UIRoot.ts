@@ -134,9 +134,9 @@ export class UIRoot {
         </div>
       </header>
       <div class="banner">${game.mapBanner()}</div>
-      <div class="hex-inspect ${tile ? "on" : ""}">
+      ${!game.openPanel ? `<div class="hex-inspect ${tile ? "on" : ""}">
         ${tile ? this.inspect(game, tile.id) : "<span>Haritadan bir altıgen seç</span>"}
-      </div>
+      </div>` : ""}
       ${game.openPanel ? `<section class="sheet">${this.sheet(game, game.openPanel)}</section>` : ""}
       ${toast ? `<aside class="toast neu-card">${toast}</aside>` : ""}
       ${battle && game.lastBattle ? `<aside class="battle-log neu-card"><strong>${game.lastBattle.winner === "player" ? "Zafer" : "Saha karışık"}</strong><p>${game.lastBattle.log.at(-1) ?? ""}</p></aside>` : ""}
@@ -171,7 +171,7 @@ export class UIRoot {
       <div class="row">
         ${mine && tile.slot ? `<button class="neu-btn slim gold" data-act="upgrade">Yükselt</button>` : ""}
         ${!mine ? `<button class="neu-btn slim gold" data-act="attack" data-arg="${tile.id}">${enemy ? "Saldır" : "Bağla"}</button>` : ""}
-        <button class="neu-btn slim ghost" data-act="deselect">Kapat</button>
+        <button class="neu-btn slim ghost" data-act="deselect">Seçimi bırak</button>
       </div>`;
   }
 
@@ -187,7 +187,7 @@ export class UIRoot {
     const scroll = game.narrative.knownScrolls().at(-1);
     const side = game.unlockedTribes().at(-1);
     return `
-      <div class="sheet-head"><h2>Yönetim</h2><button class="neu-btn slim ghost" data-act="close-sheet">Kapat</button></div>
+      <div class="sheet-head"><h2>Yönetim</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
       <p>Seviye ${game.levels.currentLevel} · ${game.kit.biomeLabel}</p>
       ${scroll ? `<article class="neu-card"><h3>${scroll.title}</h3><p>${scroll.body}</p></article>` : ""}
       ${side ? `<article class="neu-card"><h3>${side.name}</h3><p>${side.clue}</p></article>` : "<p>Yan kabileler her 10 seviyede haritaya düşer.</p>"}
@@ -199,7 +199,7 @@ export class UIRoot {
 
   private trade(game: Game) {
     return `
-      <div class="sheet-head"><h2>Ticaret</h2><button class="neu-btn slim ghost" data-act="close-sheet">Kapat</button></div>
+      <div class="sheet-head"><h2>Ticaret</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
       <p>Pazar kur, kervanı yola çıkar. Dönüşte altın ve deri gelir — bazen baskın.</p>
       <p class="fine">${game.caravan.busy ? `Yolda ${Math.ceil((game.caravan.current?.remainingMs ?? 0) / 1000)}s` : "Kervan bekliyor"}</p>
       <div class="row">
@@ -221,14 +221,14 @@ export class UIRoot {
         </button>`;
     }).join("");
     return `
-      <div class="sheet-head"><h2>İnşa · ${game.kit.hallTitle}</h2><button class="neu-btn slim ghost" data-act="close-sheet">Kapat</button></div>
+      <div class="sheet-head"><h2>İnşa · ${game.kit.hallTitle}</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
       <p>Kendi altıgenini seç, sonra yapıyı kur. Türler kabilene özeldir.</p>
       <div class="chips">${buttons}</div>`;
   }
 
   private army(game: Game) {
     return `
-      <div class="sheet-head"><h2>Birlikler</h2><button class="neu-btn slim ghost" data-act="close-sheet">Kapat</button></div>
+      <div class="sheet-head"><h2>Birlikler</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
       <p>${game.kit.unitName}: <strong>${game.data.army}</strong> · Sv ${game.data.unitLevel}</p>
       <p class="fine">${game.kit.unitTitle}. Kamp olmadan eğitim olmaz. Saldırı yalnızca komşu altıgene.</p>
       <div class="row">
@@ -241,7 +241,7 @@ export class UIRoot {
   private research(game: Game) {
     const locked = game.narrative.lockedCount();
     return `
-      <div class="sheet-head"><h2>Araştırma</h2><button class="neu-btn slim ghost" data-act="close-sheet">Kapat</button></div>
+      <div class="sheet-head"><h2>Araştırma</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
       <p>Parşömenler fetihle açılır. Kalan mühür: ${locked}.</p>
       <div class="row">
         <button class="neu-btn slim" data-act="ad" data-arg="fast_production">Reklam: Üretim</button>
