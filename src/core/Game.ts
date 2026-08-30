@@ -132,6 +132,7 @@ export class Game {
     this.data.unitLevel = 1;
     this.data.diplomacy = defaultDiplomacy();
     this.data.visitedLandmarks = [];
+    this.data.lastDailyAt = Math.floor(Date.now() / 86_400_000);
     this.data.selectedHex = this.data.tiles.find((tile) => tile.owner === tribe && tile.slot === "hall")?.id ?? null;
     this.mapDirty = true;
     this.toast = `Vâris olarak ${TRIBES[tribe].name} sancağını aldın. Murat Ağa'nın hançerini bu toprakta ara.`;

@@ -29,7 +29,7 @@ export function emptySave(playerName = "Kabile Lideri"): PlayerSave {
     selectedHex: null,
     diplomacy: defaultDiplomacy(),
     visitedLandmarks: [],
-    lastDailyAt: 0,
+    lastDailyAt: Math.floor(Date.now() / 86_400_000),
     buildingLevels: {
       goldMine: 0,
       barracks: 0,

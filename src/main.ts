@@ -12,6 +12,9 @@ if (!app || !canvas) throw new Error("Sahne kökü bulunamadı.");
 const game = new Game();
 const ui = new UIRoot(app);
 const world = new SceneHost(canvas);
+if (import.meta.env.DEV) {
+  (window as Window & { ks?: Game }).ks = game;
+}
 
 let screen: GamePhase = "intro";
 game.state.force("intro");
