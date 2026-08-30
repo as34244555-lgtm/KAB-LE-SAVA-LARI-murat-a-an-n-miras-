@@ -314,16 +314,6 @@ export function inn(level: number): THREE.Group {
   return g;
 }
 
-export function heroPlate(url: string, w: number, h: number): THREE.Mesh {
-  const map = new THREE.TextureLoader().load(url, (texture) => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-  });
-  const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.45, metalness: 0.05, transparent: true });
-  const plane = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
-  plane.castShadow = true;
-  return plane;
-}
-
 export function wallGuard(kind: "turban" | "hood" | "helm"): THREE.Group {
   const colors: Record<"turban" | "hood" | "helm", { primary: number; accent: number }> = {
     turban: { primary: 0xc0392b, accent: 0xf4d03f },

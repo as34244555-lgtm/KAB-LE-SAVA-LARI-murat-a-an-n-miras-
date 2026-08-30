@@ -3,7 +3,7 @@ import type { BattleParticipant, TribeId } from "../core/types";
 import { cornerTower, heraldicShield, stall, wallSegment } from "./kit";
 import { toyMaterial } from "./materials";
 import { spawnUnit, tickUnit } from "./soldiers";
-import { mapped, maps } from "./textures";
+import { pbr } from "./textures";
 
 const HATS: Record<TribeId, "turban" | "hood" | "helm" | "none"> = {
   sariklilar: "turban",
@@ -25,10 +25,7 @@ export class BattleScene {
 
   constructor() {
     this.root.name = "battle";
-    const ground = new THREE.Mesh(
-      new THREE.CircleGeometry(9, 40),
-      mapped(0x6b5a42, maps.sand, { roughness: 0.95, normal: maps.sandN }),
-    );
+    const ground = new THREE.Mesh(new THREE.CircleGeometry(9, 40), pbr("sand", 0xffffff, { repeat: 5 }));
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     const ring = new THREE.Mesh(new THREE.TorusGeometry(6.4, 0.14, 8, 40), toyMaterial(0xd4af37, { metal: 0.55 }));
@@ -49,6 +46,24 @@ export class BattleScene {
     this.root.add(ground, ring, wall, t1, t2, market, crest, this.fighters);
   }
 
+  refreshFighters() {
+    const snapshot = this.fighters.children.map((child) => ({
+      side: child.userData.side as string,
+      tribe: child.userData.tribe as TribeId | undefined,
+      position: child.position.clone(),
+    }));
+    if (!snapshot.length || snapshot.some((item) => !item.tribe)) return;
+    this.fighters.clear();
+    for (const item of snapshot) {
+      if (!item.tribe) continue;
+      const mesh = spawnUnit(...COLORS[item.tribe], HATS[item.tribe]);
+      mesh.position.copy(item.position);
+      mesh.userData.side = item.side;
+      mesh.userData.tribe = item.tribe;
+      this.fighters.add(mesh);
+    }
+  }
+
   stage(player: BattleParticipant[], enemy: BattleParticipant) {
     this.fighters.clear();
     player.forEach((unit, index) => {
@@ -57,6 +72,7 @@ export class BattleScene {
         const mesh = spawnUnit(...COLORS[unit.tribe], HATS[unit.tribe]);
         mesh.position.set(-2.6 - (i % 2) * 0.75, 0, -1.2 + index * 1.15 + i * 0.12);
         mesh.userData.side = "player";
+        mesh.userData.tribe = unit.tribe;
         this.fighters.add(mesh);
       }
     });
@@ -65,6 +81,7 @@ export class BattleScene {
       const mesh = spawnUnit(...COLORS[enemy.tribe], HATS[enemy.tribe]);
       mesh.position.set(2.5 + (i % 2) * 0.7, 0, -1.5 + i * 0.85);
       mesh.userData.side = "enemy";
+      mesh.userData.tribe = enemy.tribe;
       this.fighters.add(mesh);
     }
   }

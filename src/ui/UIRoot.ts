@@ -60,7 +60,6 @@ export class UIRoot {
   private intro() {
     return `
       <section class="cinematic">
-        <img class="plate" src="/art/throne.png" alt="Kanlı taht ve mor hançer" />
         <div class="vignette"></div>
         <div class="crawl neu-card">
           <p class="eyebrow">Hüzünlü ama kararlı</p>
@@ -75,7 +74,6 @@ export class UIRoot {
   private menu() {
     return `
       <section class="cinematic menu">
-        <img class="plate" src="/art/throne.png" alt="Kanlı taht" />
         <div class="vignette"></div>
         <div class="crawl neu-card">
           <p class="eyebrow">Kanlı Taht</p>
@@ -210,9 +208,6 @@ export class UIRoot {
       .join("");
     return `
       <section class="grid">
-        <article class="neu-card span art-card">
-          <img src="/art/heroes.png" alt="Dört figür: Sarıklılar, Gök-Hanlı, Demir-Hisar ve Vâris" />
-        </article>
         ${tribes}
       </section>`;
   }
@@ -232,8 +227,7 @@ export class UIRoot {
       .join("");
     return `
       <section class="grid">
-        <article class="neu-card span art-card">
-          <img src="/art/fortress.png" alt="Toy-box kale ve dört bölmeli arma" />
+        <article class="neu-card span">
           <h2>Sisli Harita</h2>
           <p>Her 10 seviyede bir yan kabile. Hepsi Murat Ağa'nın eski dostu veya düşmanı; her anı bir yapboz parçası.</p>
         </article>

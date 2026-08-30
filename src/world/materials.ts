@@ -17,8 +17,8 @@ export function applyPalette(
   palette: Palette,
   paintedSky = true,
 ) {
-  scene.background = paintedSky ? new THREE.Color(palette.sky) : null;
-  scene.fog = paintedSky ? new THREE.FogExp2(palette.fog, palette.fogDensity) : null;
+  if (paintedSky) scene.background = new THREE.Color(palette.sky);
+  scene.fog = new THREE.FogExp2(palette.fog, paintedSky ? palette.fogDensity : palette.fogDensity * 0.4);
   lights.ambient.color.setHex(palette.ambient);
   lights.fill.color.setHex(palette.torch);
 }

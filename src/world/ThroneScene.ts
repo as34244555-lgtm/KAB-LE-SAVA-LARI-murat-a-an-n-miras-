@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { makeBanner, stylizedPerson, toyMaterial } from "./materials";
+import { pbr } from "./textures";
 
 export class ThroneScene {
   readonly root = new THREE.Group();
@@ -32,36 +33,39 @@ export class ThroneScene {
   }
 
   private buildHall() {
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(16, 0.35, 18), toyMaterial(0x6b3f24, { roughness: 0.7 }));
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(16, 0.35, 18), pbr("wood", 0xffffff, { repeat: 4 }));
     floor.position.y = -0.17;
     floor.receiveShadow = true;
-    const rug = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.06, 7), toyMaterial(0x8b1e1e, { roughness: 0.55 }));
+    const rug = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.06, 7), pbr("plaster", 0x8b1e1e, { repeat: 2 }));
     rug.position.set(0, 0.04, 1.2);
-    const back = new THREE.Mesh(new THREE.BoxGeometry(16, 9, 0.4), toyMaterial(0x4a3328, { roughness: 0.65 }));
+    const back = new THREE.Mesh(new THREE.BoxGeometry(16, 9, 0.4), pbr("stone", 0xffffff, { repeat: 3 }));
     back.position.set(0, 4.2, -6.4);
-    const window = new THREE.Mesh(new THREE.CircleGeometry(1.7, 32), toyMaterial(0x9fd4ff, { emissive: 0x7ec8ff, emit: 0.65, roughness: 0.2 }));
+    const window = new THREE.Mesh(
+      new THREE.CircleGeometry(1.7, 32),
+      new THREE.MeshPhysicalMaterial({ color: 0x9fd4ff, emissive: 0x7ec8ff, emissiveIntensity: 0.7, roughness: 0.15, transmission: 0.2 }),
+    );
     window.position.set(0, 5.1, -6.15);
-    const left = new THREE.Mesh(new THREE.BoxGeometry(0.4, 9, 18), toyMaterial(0x3d2a22));
+    const left = new THREE.Mesh(new THREE.BoxGeometry(0.4, 9, 18), pbr("wall", 0xffffff, { repeat: 2.4 }));
     left.position.set(-8, 4.2, 0);
     const right = left.clone();
     right.position.x = 8;
-    const beam = new THREE.Mesh(new THREE.BoxGeometry(16, 0.35, 0.35), toyMaterial(0x2d1b14, { roughness: 0.8 }));
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(16, 0.35, 0.35), pbr("beam", 0xffffff, { repeat: 2 }));
     beam.position.set(0, 7.6, -2);
     this.root.add(floor, rug, back, window, left, right, beam);
   }
 
   private buildThrone() {
-    const seat = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.35, 1.4), toyMaterial(0x5a2e16, { roughness: 0.45, metal: 0.1 }));
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.35, 1.4), pbr("wood", 0xffffff, { repeat: 1.4 }));
     seat.position.set(0, 0.85, -2.1);
-    const cushion = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.18, 1.15), toyMaterial(0xa11d2a, { roughness: 0.5 }));
+    const cushion = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.18, 1.15), pbr("plaster", 0xa11d2a, { repeat: 1 }));
     cushion.position.set(0, 1.1, -2.05);
-    const back = new THREE.Mesh(new THREE.BoxGeometry(1.7, 2.2, 0.32), toyMaterial(0x4a2412, { metal: 0.12 }));
+    const back = new THREE.Mesh(new THREE.BoxGeometry(1.7, 2.2, 0.32), pbr("beam", 0xffffff, { repeat: 1.2 }));
     back.position.set(0, 2.1, -2.7);
     const crest = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), toyMaterial(0xd4af37, { metal: 0.7, roughness: 0.25 }));
     crest.position.set(0, 3.35, -2.7);
     const jewel = new THREE.Mesh(new THREE.OctahedronGeometry(0.1), toyMaterial(0x7b1fa2, { emissive: 0x9c27b0, emit: 0.8 }));
     jewel.position.set(0, 3.55, -2.55);
-    const armL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.7, 1.2), toyMaterial(0x5a2e16));
+    const armL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.7, 1.2), pbr("wood"));
     armL.position.set(-0.85, 1.15, -2.15);
     const armR = armL.clone();
     armR.position.x = 0.85;

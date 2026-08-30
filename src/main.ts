@@ -93,13 +93,9 @@ function go(next: GamePhase) {
 function plate(phase: GamePhase) {
   const host = document.querySelector<HTMLDivElement>("#app");
   if (!host) return;
-  if (phase === "intro" || phase === "menu" || phase === "boot") {
-    host.style.backgroundImage = "";
-    return;
-  }
-  host.style.backgroundImage = "url(/art/citadel.png)";
-  host.style.backgroundSize = "cover";
-  host.style.backgroundPosition = "center 30%";
+  host.style.backgroundImage = "";
+  host.style.backgroundColor = "#1a1410";
+  void phase;
 }
 
 function paint() {
