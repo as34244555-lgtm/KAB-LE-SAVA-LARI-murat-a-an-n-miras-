@@ -2,7 +2,7 @@ import * as THREE from "three";
 import type { BattleParticipant, TribeId } from "../core/types";
 import { cornerTower, heraldicShield, stall, wallSegment } from "./kit";
 import { toyMaterial } from "./materials";
-import { spawnUnit } from "./soldiers";
+import { spawnUnit, tickUnit } from "./soldiers";
 import { mapped, maps } from "./textures";
 
 const HATS: Record<TribeId, "turban" | "hood" | "helm" | "none"> = {
@@ -69,11 +69,15 @@ export class BattleScene {
     }
   }
 
+  private lastElapsed = 0;
+
   update(elapsed: number) {
+    const dt = Math.max(0, elapsed - this.lastElapsed);
+    this.lastElapsed = elapsed;
     this.fighters.children.forEach((child, index) => {
+      tickUnit(child, dt);
       const dir = child.userData.side === "player" ? 1 : -1;
-      child.position.x += Math.sin(elapsed * 6 + index) * 0.01 * dir;
-      child.position.y = Math.abs(Math.sin(elapsed * 8 + index)) * 0.08;
+      child.position.x += Math.sin(elapsed * 6 + index) * 0.004 * dir;
     });
   }
 }

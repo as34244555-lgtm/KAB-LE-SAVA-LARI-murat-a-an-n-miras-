@@ -1,19 +1,18 @@
 import * as THREE from "three";
 import type { BuildingId, PlayerSave } from "../core/types";
 import {
-  cottage,
   crystalTemple,
   deck,
-  domeHouse,
   inn,
   scrollMinaret,
   stall,
   torch,
+  crate,
   heroPlate,
 } from "./kit";
 import { mapped, maps } from "./textures";
 import { toyMaterial } from "./materials";
-import { spawnUnit } from "./soldiers";
+import { spawnUnit, tickUnit } from "./soldiers";
 
 const SLOTS: Record<BuildingId, THREE.Vector3> = {
   goldMine: new THREE.Vector3(-3.4, 0, -2.2),
@@ -29,6 +28,7 @@ export class VillageScene {
   private buildings = new THREE.Group();
   private folks = new THREE.Group();
   private fx: THREE.Object3D[] = [];
+  private lastElapsed = 0;
 
   constructor() {
     this.root.name = "village";
@@ -60,6 +60,9 @@ export class VillageScene {
   }
 
   update(elapsed: number) {
+    const dt = Math.max(0, elapsed - this.lastElapsed);
+    this.lastElapsed = elapsed;
+    this.folks.children.forEach((child) => tickUnit(child, dt));
     for (const obj of this.fx) {
       if (obj.userData.smoke) {
         obj.position.y += 0.006;
@@ -91,20 +94,31 @@ export class VillageScene {
     if (id === "barracks") {
       const g = new THREE.Group();
       g.add(deck(2.6, 1.4));
-      const plate = heroPlate("/art/cottage.png", 3.4, 3.6);
-      plate.position.set(0, 2.05, 0.2);
+      const plate = heroPlate("/art/cottage.png", 4.2, 4.4);
+      plate.position.set(0, 2.3, 0.35);
+      plate.lookAt(7.2, 3.4, 10.4);
       g.add(plate);
       return g;
     }
     if (id === "forge") {
       const g = new THREE.Group();
       g.add(deck(2.6, 1.4));
-      const plate = heroPlate("/art/forge.png", 3.4, 3.6);
-      plate.position.set(0, 2.05, 0.2);
+      const plate = heroPlate("/art/forge.png", 4.2, 4.4);
+      plate.position.set(0, 2.3, 0.35);
+      plate.lookAt(7.2, 3.4, 10.4);
       g.add(plate);
       return g;
     }
-    if (id === "goldMine") return domeHouse(level, 0xe8c96a);
+    if (id === "goldMine") {
+      const g = new THREE.Group();
+      g.add(deck(2.2, 1.6));
+      const a = crate(1.4);
+      a.position.set(-0.4, 0.28, 0.3);
+      const b = crate(1.1);
+      b.position.set(0.35, 0.28, 0.15);
+      g.add(a, b);
+      return g;
+    }
     if (id === "caravanserai") return inn(level);
     if (id === "scrollTower") return scrollMinaret(level);
     return crystalTemple(level);
@@ -135,18 +149,9 @@ export class VillageScene {
   }
 
   private dressCourtyard() {
-    const extras = [
-      domeHouse(1, 0xf5e6c8),
-      stall(),
-      stall(),
-      cottage(1),
-    ];
-    extras[0].position.set(-6.2, 0, -4.6);
-    extras[0].scale.setScalar(0.85);
-    extras[1].position.set(1.8, 0, 0.4);
-    extras[2].position.set(-1.8, 0, 0.5);
-    extras[3].position.set(6.4, 0, -4.4);
-    extras[3].scale.setScalar(0.82);
+    const extras = [stall(), stall()];
+    extras[0].position.set(1.8, 0, 0.4);
+    extras[1].position.set(-1.8, 0, 0.5);
     const well = deck(0.7);
     well.position.set(0.2, 0, 0.1);
     const bucket = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.14, 0.28, 10), toyMaterial(0x6b4226));
