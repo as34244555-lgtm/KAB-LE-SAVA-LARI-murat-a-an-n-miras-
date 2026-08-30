@@ -49,6 +49,12 @@ ui.bind(async (name, payload) => {
   if (name === "train-five") game.toast = game.train(5);
   if (name === "upgrade-unit") game.toast = game.upgradeUnit();
   if (name === "caravan") game.toast = game.sendCaravan();
+  if (name === "stance" && payload) game.setStance(payload as "assault" | "ambush" | "hold");
+  if (name === "commit" && payload) {
+    if (payload === "all") game.setCommit(null);
+    else if (payload === "half") game.setCommit(Math.max(4, Math.floor(game.data.army / 2)));
+    else game.setCommit(Number(payload));
+  }
   if (name === "attack") {
     game.toast = game.claimOrAttack(payload);
     if (game.lastBattle) {
@@ -94,6 +100,11 @@ ui.bind(async (name, payload) => {
 bus.on("hex-select", (id: string) => {
   game.selectHex(id);
   paint();
+});
+
+bus.on("explore", (at: { q: number; r: number }) => {
+  if (game.ensureAround(at.q, at.r)) paint();
+  else world.syncMap(game.data);
 });
 
 bus.on("levelup", () => {

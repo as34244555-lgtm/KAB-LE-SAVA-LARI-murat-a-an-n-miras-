@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { LevelManager } from "../src/managers/LevelManager";
 import { enemyPowerAtLevel, rpsMultiplier } from "../src/data/tribes";
-import { enemyArmy, resolveBattle, scaleUnit } from "../src/units/CombatResolver";
+import { biomeAffinity, enemyArmy, resolveBattle, scaleUnit } from "../src/units/CombatResolver";
 
 const rng = () => 0.1;
 
@@ -24,5 +24,11 @@ describe("Savaş dengesi", () => {
     const result = resolveBattle(player, enemy, rng);
     expect(result.winner).toBe("player");
     expect(result.xpReward).toBeGreaterThan(0);
+  });
+
+  it("iklim kabileye avantaj verir", () => {
+    expect(biomeAffinity("sariklilar", "desert")).toBeGreaterThan(biomeAffinity("sariklilar", "ice"));
+    expect(biomeAffinity("gokhanli", "forest")).toBeGreaterThan(biomeAffinity("gokhanli", "desert"));
+    expect(biomeAffinity("demirhisar", "ice")).toBeGreaterThan(biomeAffinity("demirhisar", "forest"));
   });
 });

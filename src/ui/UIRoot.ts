@@ -2,7 +2,7 @@ import { GAME_TITLE, type BuildingSlot, type DockPanel, type GamePhase, type Pla
 import type { Game } from "../core/Game";
 import { TRIBES } from "../data/tribes";
 import { kitFor, slotKit } from "../data/tribeKits";
-import { hexById } from "../data/hexMap";
+import { climateHint, hexById } from "../data/hexMap";
 import { OPENING_CRAWL } from "../data/dialogues";
 
 const DOCK: Array<{ id: DockPanel; label: string; icon: string }> = [
@@ -168,11 +168,17 @@ export class UIRoot {
       <div>
         <strong>${tile.label}</strong>
         <span>${kitName} · Sv ${tile.level} · Garnizon ${tile.garrison}</span>
+        <span class="fine">${climateHint(tile.biome)}</span>
         ${enemy && tile.owner !== "neutral" ? `<p class="barb">${TRIBES[tile.owner].accusation}</p>` : ""}
       </div>
       <div class="row">
         ${mine && tile.slot ? `<button class="neu-btn slim gold" data-act="upgrade">Yükselt</button>` : ""}
-        ${!mine ? `<button class="neu-btn slim gold" data-act="attack" data-arg="${tile.id}">${enemy ? "Yüzleş" : "Bağla"}</button>` : ""}
+        ${!mine ? `
+          <button class="neu-btn slim ${game.stance === "assault" ? "gold" : ""}" data-act="stance" data-arg="assault">Hücum</button>
+          <button class="neu-btn slim ${game.stance === "ambush" ? "gold" : ""}" data-act="stance" data-arg="ambush">Pusu</button>
+          <button class="neu-btn slim ${game.stance === "hold" ? "gold" : ""}" data-act="stance" data-arg="hold">Kalkan</button>
+          <button class="neu-btn slim gold" data-act="attack" data-arg="${tile.id}">${enemy ? "Yüzleş" : "Bağla"} · ${game.sentTroops()}</button>
+        ` : ""}
         <button class="neu-btn slim ghost" data-act="deselect">Seçimi bırak</button>
       </div>`;
   }
@@ -239,8 +245,18 @@ export class UIRoot {
   private army(game: Game) {
     return `
       <div class="sheet-head"><h2>Birlikler</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
-      <p>${game.kit.unitName}: <strong>${game.data.army}</strong> · Sv ${game.data.unitLevel}</p>
-      <p class="fine">${game.kit.unitTitle}. Kamp olmadan eğitim olmaz. Saldırı yalnızca komşu altıgene.</p>
+      <p>${game.kit.unitName}: <strong>${game.data.army}</strong> · Sv ${game.data.unitLevel} · sefere ${game.sentTroops()}</p>
+      <p class="fine">${game.kit.unitTitle}. Sarıklılar zırhı yakar, Demir-Hisar gölgeyi ezer, Gök-Hanlı barutu keser. İklim ve duruş bunu çevirir.</p>
+      <div class="row">
+        <button class="neu-btn slim ${game.stance === "assault" ? "gold" : ""}" data-act="stance" data-arg="assault">Hücum</button>
+        <button class="neu-btn slim ${game.stance === "ambush" ? "gold" : ""}" data-act="stance" data-arg="ambush">Pusu</button>
+        <button class="neu-btn slim ${game.stance === "hold" ? "gold" : ""}" data-act="stance" data-arg="hold">Kalkan</button>
+      </div>
+      <div class="row">
+        <button class="neu-btn slim" data-act="commit" data-arg="4">4 gönder</button>
+        <button class="neu-btn slim" data-act="commit" data-arg="half">Yarısı</button>
+        <button class="neu-btn slim" data-act="commit" data-arg="all">Hepsi</button>
+      </div>
       <div class="row">
         <button class="neu-btn gold" data-act="train">1 Birlik Eğit</button>
         <button class="neu-btn" data-act="train-five">5 Birlik</button>

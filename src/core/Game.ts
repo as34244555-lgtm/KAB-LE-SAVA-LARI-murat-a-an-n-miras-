@@ -1,4 +1,4 @@
-import type { BattleResult, BuildingSlot, DockPanel, PlayableTribe, ResourceBag, ResourceId, TribeId } from "./types";
+import type { BattleResult, BattleStance, BuildingSlot, DockPanel, PlayableTribe, ResourceBag, ResourceId, TribeId } from "./types";
 import { GameStateMachine } from "./GameStateMachine";
 import { SaveManager, emptySave } from "../managers/SaveManager";
 import { EconomyManager } from "../managers/EconomyManager";
@@ -8,15 +8,15 @@ import { QuestManager } from "../managers/QuestManager";
 import { AdsManager, type RewardKind } from "../managers/AdsManager";
 import { CaravanSystem } from "../economy/CaravanSystem";
 import { Soundtrack } from "../audio/Soundtrack";
-import { generateWorld, hexById } from "../data/hexMap";
+import { EXPLORE_RADIUS, climateHint, ensureTiles, generateWorld, hexById } from "../data/hexMap";
 import { scrollForLevel } from "../data/scrolls";
 import { sideTribeForLevel } from "../data/sideTribes";
 import { kitFor, TRAIN_COST, UPGRADE_COST, canPay, pay, slotKit } from "../data/tribeKits";
 import { TRIBES } from "../data/tribes";
 import { TRIBE_DIALOGUES } from "../data/dialogues";
 import { SIDE_TRIBES } from "../data/sideTribes";
-import { neighbors } from "../world/hexMath";
-import { enemyArmy, resolveBattle, scaleUnit } from "../units/CombatResolver";
+import { neighbors, parseKey } from "../world/hexMath";
+import { enemyArmy, enemyFromGarrison, resolveBattle, scaleUnit } from "../units/CombatResolver";
 import type { PlayerSave } from "./types";
 import { bus } from "./EventBus";
 
@@ -41,6 +41,8 @@ export class Game {
   lastEnemy: ReturnType<typeof enemyArmy> | null = null;
   mapDirty = true;
   lastStoryBeat = "";
+  stance: BattleStance = "assault";
+  commit: number | null = null;
   private prodAcc = 0;
 
   constructor(initial?: PlayerSave) {
@@ -123,11 +125,38 @@ export class Game {
 
   hydrate(): void {
     this.bootManagers();
+    const hall = this.data.tiles.find((tile) => tile.slot === "hall" && this.isMine(tile.owner));
+    if (hall) this.ensureAround(hall.q, hall.r);
+    else this.ensureAround(0, 0);
   }
 
   selectHex(id: string | null): void {
     this.data.selectedHex = id;
+    if (id) {
+      const { q, r } = parseKey(id);
+      this.ensureAround(q, r);
+    }
     bus.emit("hex", id);
+  }
+
+  setStance(stance: BattleStance): void {
+    this.stance = stance;
+  }
+
+  setCommit(count: number | null): void {
+    this.commit = count;
+  }
+
+  ensureAround(q: number, r: number, radius = EXPLORE_RADIUS): boolean {
+    const added = ensureTiles(this.data.tiles, q, r, radius);
+    if (added > 0) this.mapDirty = true;
+    return added > 0;
+  }
+
+  sentTroops(): number {
+    const all = this.data.army;
+    if (this.commit == null) return all;
+    return Math.max(1, Math.min(all, this.commit));
   }
 
   togglePanel(panel: DockPanel): void {
@@ -250,7 +279,13 @@ export class Game {
     if (!this.adjacentToPlayer(tile.id)) return "Sadece komşu altıgene yürüyebilirsin.";
     if (this.data.army < 4) return "Yeterli birliğin yok.";
 
-    if (tile.owner === "neutral") {
+    const sent = this.sentTroops();
+    const flanking = neighbors(tile.q, tile.r).filter((n) => {
+      const next = this.data.tiles.find((item) => item.q === n.q && item.r === n.r);
+      return next ? this.isMine(next.owner) : false;
+    }).length;
+
+    if (tile.owner === "neutral" && tile.garrison <= 3 && tile.slot !== "tower") {
       const loss = 1;
       this.data.army = Math.max(0, this.data.army - loss);
       tile.owner = this.data.chosenTribe;
@@ -258,31 +293,50 @@ export class Game {
       this.gainProgress(8);
       this.mapDirty = true;
       this.flush();
-      return this.withStory(`${tile.label} bağlandı. Kayıp: ${loss}`);
+      return this.withStory(`${tile.label} bağlandı. ${climateHint(tile.biome)} Kayıp: ${loss}`);
     }
 
-    const result = this.fight(tile.owner);
+    const result = this.fightTile(tile, sent, flanking);
     this.mapDirty = true;
     if (result.winner === "player") {
       tile.owner = this.data.chosenTribe;
       tile.garrison = Math.max(2, result.playerRemaining);
       this.flush();
-      return this.withStory(`${tile.label} ele geçirildi.`);
+      return this.withStory(`${tile.label} ele geçirildi. ${result.log[0] ?? ""}`);
     }
     this.flush();
-    return result.winner === "enemy" ? "Pusuya düştük." : "Saha berabere kaldı.";
+    return result.winner === "enemy" ? `Pusuya düştük. ${result.log.at(-2) ?? ""}` : "Saha berabere kaldı.";
   }
 
   fight(enemyTribe: TribeId): BattleResult {
+    const fake = {
+      biome: "forest" as const,
+      owner: enemyTribe === "player" ? "gokhanli" : enemyTribe,
+      slot: undefined,
+      garrison: 6,
+      hall: false,
+    };
+    return this.fightTile(fake, this.sentTroops(), 0);
+  }
+
+  fightTile(tile: { biome: import("./types").Biome; owner: string; slot?: string; garrison: number }, sent: number, flanking: number): BattleResult {
     const tribe = this.data.chosenTribe ?? "gokhanli";
-    const player = [
-      scaleUnit(tribe, Math.max(1, this.data.army), this.data.unitLevel, this.levels),
-    ];
-    const enemy = enemyArmy(this.levels.currentLevel, enemyTribe, this.levels);
+    const defender: TribeId =
+      tile.owner === "neutral" ? (tile.biome === "desert" ? "sariklilar" : tile.biome === "ice" ? "demirhisar" : "gokhanli") : (tile.owner as TribeId);
+    const player = [scaleUnit(tribe, Math.max(1, sent), this.data.unitLevel, this.levels)];
+    const enemy = enemyFromGarrison(defender, Math.max(1, tile.garrison), this.levels.currentLevel, this.levels);
+    if (tile.owner === "neutral") enemy.name = "Vahşi sürü";
     this.lastEnemy = enemy;
-    const result = resolveBattle(player, enemy);
+    const result = resolveBattle(player, enemy, Math.random, {
+      biome: tile.biome,
+      tower: tile.slot === "tower",
+      hall: tile.slot === "hall",
+      flanking,
+      stance: this.stance,
+      garrison: tile.garrison,
+    });
     this.lastBattle = result;
-    this.data.army = Math.max(0, result.playerRemaining);
+    this.data.army = Math.max(0, this.data.army - sent + result.playerRemaining);
     if (result.winner === "player") {
       this.economy.grant("gold", result.goldLoot);
       this.gainProgress(result.xpReward);

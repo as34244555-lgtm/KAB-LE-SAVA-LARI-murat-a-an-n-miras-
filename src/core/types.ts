@@ -16,6 +16,7 @@ export type BuildingSlot = "hall" | "resource" | "camp" | "tower" | "market" | "
 export type UnitClass = "bomber" | "skirmisher" | "guardian";
 export type Atmosphere = "peace" | "suspicion" | "shadow" | "reckoning";
 export type DockPanel = "yonetim" | "ticaret" | "insa" | "birlikler" | "arastirma";
+export type BattleStance = "assault" | "ambush" | "hold";
 
 export type BuildingId = BuildingSlot;
 
@@ -146,6 +147,7 @@ export interface BattleParticipant {
   tribe: TribeId;
   name: string;
   count: number;
+  startCount?: number;
   level: number;
   hp: number;
   maxHp: number;
@@ -153,6 +155,15 @@ export interface BattleParticipant {
   defense: number;
   critChance: number;
   aoe: number;
+}
+
+export interface BattleField {
+  biome: Biome;
+  tower: boolean;
+  hall: boolean;
+  flanking: number;
+  stance: BattleStance;
+  garrison: number;
 }
 
 export interface BattleResult {

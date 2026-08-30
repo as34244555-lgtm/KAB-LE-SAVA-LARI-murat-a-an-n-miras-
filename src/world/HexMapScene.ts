@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { bus } from "../core/EventBus";
 import type { HexTile, OwnerId, PlayableTribe, PlayerSave } from "../core/types";
-import { HEX_SIZE, axialToWorld } from "./hexMath";
+import { HEX_SIZE, axialToWorld, hexDistance, worldToAxial } from "./hexMath";
 import { hexBuildingMesh } from "./hexBuildings";
 import { garrisonFor } from "./warriors";
 import { cachedPbr } from "./textures";
@@ -67,6 +67,9 @@ export class HexMapScene {
   private worldKey = "";
   private focus = new THREE.Vector3();
   private lookAt = new THREE.Vector3();
+  private lastExplore = "";
+  private exploreAt = 0;
+  private followSelect = true;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -94,12 +97,19 @@ export class HexMapScene {
 
   sync(save: PlayerSave): void {
     this.save = save;
-    const next = save.tiles.map(tileKey).join(";");
+    if (this.followSelect) this.lookId = save.selectedHex;
+    const selected = this.followSelect && save.selectedHex
+      ? save.tiles.find((tile) => tile.id === save.selectedHex)
+      : undefined;
+    const focus = selected
+      ? { q: selected.q, r: selected.r }
+      : worldToAxial(this.target.x, this.target.z);
+    const visible = save.tiles.filter((tile) => hexDistance(focus.q, focus.r, tile.q, tile.r) <= 7);
+    const next = `${focus.q},${focus.r}|` + visible.map(tileKey).join(";");
     if (next !== this.worldKey) {
       this.worldKey = next;
-      this.rebuild(save);
+      this.rebuild(visible);
     }
-    this.lookId = save.selectedHex;
     this.placeSelect(save.selectedHex);
   }
 
@@ -125,10 +135,10 @@ export class HexMapScene {
     this.camera.lookAt(this.lookAt);
   }
 
-  private rebuild(save: PlayerSave): void {
+  private rebuild(visible: HexTile[]): void {
     this.tiles.clear();
     this.marks.clear();
-    for (const tile of save.tiles) {
+    for (const tile of visible) {
       this.tiles.add(this.makeCell(tile));
       this.dress(tile);
     }
@@ -136,23 +146,28 @@ export class HexMapScene {
 
   private paintWater(): void {
     const sea = new THREE.Mesh(
-      new THREE.CircleGeometry(22, 32),
+      new THREE.PlaneGeometry(240, 240),
       new THREE.MeshStandardMaterial({
         color: 0x3a6a88,
-        roughness: 0.22,
-        metalness: 0.28,
+        roughness: 0.28,
+        metalness: 0.22,
       }),
     );
     sea.rotation.x = -Math.PI / 2;
     sea.position.y = -0.55;
     sea.receiveShadow = true;
-    const rim = new THREE.Mesh(
-      new THREE.TorusGeometry(11.6, 0.5, 6, 32),
-      cachedPbr("wood", 0x6a4a28, { repeat: 6, roughness: 0.85 }),
-    );
-    rim.rotation.x = -Math.PI / 2;
-    rim.position.y = -0.15;
-    this.root.add(sea, rim);
+    this.root.add(sea);
+  }
+
+  private emitExplore(): void {
+    const now = performance.now();
+    if (now - this.exploreAt < 180) return;
+    this.exploreAt = now;
+    const focus = worldToAxial(this.target.x, this.target.z);
+    const key = `${focus.q},${focus.r}`;
+    if (key === this.lastExplore) return;
+    this.lastExplore = key;
+    bus.emit("explore", focus);
   }
 
   private makeCell(tile: HexTile): THREE.Mesh {
@@ -258,9 +273,11 @@ export class HexMapScene {
       if (Math.hypot(dx, dy) > 6) this.moved = true;
       this.lastX = event.clientX;
       this.lastY = event.clientY;
-      this.target.x -= (dx * 0.018 + dy * 0.01) * (this.dist / 16);
-      this.target.z -= (dy * 0.018 - dx * 0.006) * (this.dist / 16);
+      this.target.x -= (dx * 0.022 + dy * 0.012) * (this.dist / 16);
+      this.target.z -= (dy * 0.022 - dx * 0.008) * (this.dist / 16);
       this.lookId = null;
+      this.followSelect = false;
+      this.emitExplore();
     });
     this.canvas.addEventListener("pointerup", (event) => {
       if (!this.active) return;
@@ -272,7 +289,7 @@ export class HexMapScene {
       (event) => {
         if (!this.active) return;
         event.preventDefault();
-        this.dist = THREE.MathUtils.clamp(this.dist + event.deltaY * 0.012, 10, 28);
+        this.dist = THREE.MathUtils.clamp(this.dist + event.deltaY * 0.014, 10, 42);
       },
       { passive: false },
     );
@@ -283,7 +300,7 @@ export class HexMapScene {
     this.canvas.addEventListener("touchmove", (event) => {
       if (!this.active || event.touches.length !== 2) return;
       const next = gap(event.touches[0], event.touches[1]);
-      this.dist = THREE.MathUtils.clamp(this.dist + (this.pinch - next) * 0.02, 10, 28);
+      this.dist = THREE.MathUtils.clamp(this.dist + (this.pinch - next) * 0.02, 10, 42);
       this.pinch = next;
     });
   }
@@ -298,6 +315,7 @@ export class HexMapScene {
     const id = (hit?.object.userData.hexId ?? hit?.object.parent?.userData.hexId) as string | undefined;
     if (!id) return;
     this.lookId = id;
+    this.followSelect = true;
     this.placeSelect(id);
     bus.emit("hex-select", id);
   }

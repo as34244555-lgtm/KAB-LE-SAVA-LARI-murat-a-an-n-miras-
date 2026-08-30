@@ -37,13 +37,13 @@ export class SceneHost {
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.08;
-    this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.2, 80);
+    this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.2, 420);
 
     const pmrem = new THREE.PMREMGenerator(this.renderer);
     this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.08).texture;
     this.scene.environmentIntensity = 0.85;
     this.scene.background = new THREE.Color(0x6a8498);
-    this.scene.fog = new THREE.FogExp2(0x8a7a68, 0.012);
+    this.scene.fog = new THREE.FogExp2(0x8a7a68, 0.008);
 
     this.sun.position.set(14, 18, 9);
     this.sun.castShadow = !this.mobile;
