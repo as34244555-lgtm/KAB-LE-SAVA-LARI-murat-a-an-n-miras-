@@ -87,7 +87,7 @@ export class SceneHost {
 
   show(phase: GamePhase) {
     this.throne.root.visible = phase === "intro" || phase === "menu" || phase === "boot";
-    this.hexMap.root.visible = phase === "map" || phase === "build" || phase === "pick" || phase === "battle";
+    this.hexMap.root.visible = phase === "map" || phase === "build" || phase === "pick";
     this.hexMap.active = phase === "map" || phase === "build" || phase === "pick";
     this.battle.root.visible = phase === "battle";
     this.scene.environmentIntensity = this.throne.root.visible ? 0.45 : 0.9;

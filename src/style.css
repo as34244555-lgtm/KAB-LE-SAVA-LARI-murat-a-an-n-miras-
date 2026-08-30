@@ -377,7 +377,7 @@ html, body {
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: linear-gradient(180deg, rgba(42, 32, 24, 0.94), rgba(20, 14, 10, 0.94));
   border: 1px solid rgba(201, 162, 39, 0.35);
   border-radius: 14px;
@@ -423,36 +423,22 @@ html, body {
   color: #1a1408;
 }
 
-.chat-fab {
+.res-bar.slim { padding: 6px 10px; }
+
+.battle-sheet {
   position: absolute;
-  right: 16px;
-  bottom: 92px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 2px solid #c9a227;
-  background: #2a2018;
-  font-size: 1.2rem;
+  left: 12px;
+  right: 12px;
+  top: 88px;
+  z-index: 6;
+  padding: 14px 16px 18px;
+  max-height: 62vh;
+  overflow: auto;
 }
 
-.chat-fab i {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #8b1e24;
-  color: #fff;
-  border-radius: 999px;
-  font-size: 0.65rem;
-  font-style: normal;
-  padding: 1px 5px;
-}
-
-.hud-kit {
-  position: absolute;
-  left: 14px;
-  bottom: 92px;
-  margin: 0;
-}
+.battle-sheet h2 { margin: 0.2rem 0 0.8rem; font-family: "Cinzel", serif; }
+.battle-sheet ul { padding-left: 1.1rem; margin: 0 0 1rem; }
+.battle-sheet li { margin: 0.25rem 0; font-size: 0.88rem; }
 
 .sheet {
   position: absolute;

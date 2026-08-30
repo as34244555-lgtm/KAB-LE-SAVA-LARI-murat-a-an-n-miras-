@@ -1,5 +1,6 @@
-import type { Biome, HexTile, OwnerId, PlayableTribe } from "../core/types";
+import type { Biome, DiplomacyMood, HexTile, OwnerId, PlayableTribe } from "../core/types";
 import { TRIBES } from "./tribes";
+import { LANDMARKS, landmarkAt, landmarkGarrison } from "./landmarks";
 import { forEachHex, hash01, hexDistance, hexKey, valueNoise } from "../world/hexMath";
 
 export const HALLS: Record<PlayableTribe, { q: number; r: number }> = {
@@ -52,12 +53,32 @@ function isHall(q: number, r: number, owner: OwnerId): boolean {
   return hall.q === q && hall.r === r;
 }
 
+export function applyLandmark(tile: HexTile): void {
+  const def = landmarkAt(tile.q, tile.r);
+  if (!def) return;
+  tile.landmark = def.kind;
+  tile.sideId = def.sideId;
+  tile.label = def.title;
+  tile.owner = "neutral";
+  tile.slot = def.kind === "finale" ? "hall" : def.kind === "temple" ? "tower" : undefined;
+  tile.garrison = landmarkGarrison(def);
+}
+
+export function stampLandmarks(tiles: HexTile[]): void {
+  for (const def of LANDMARKS) {
+    ensureTiles(tiles, def.q, def.r, 1);
+    const tile = tiles.find((item) => item.q === def.q && item.r === def.r);
+    if (tile && !tile.landmark) applyLandmark(tile);
+  }
+}
+
 export function makeTile(q: number, r: number): HexTile {
+  const mark = landmarkAt(q, r);
   const biome = biomeAt(q, r);
-  const owner = ownerAt(q, r);
+  const owner = mark ? "neutral" : ownerAt(q, r);
   const hall = isHall(q, r, owner);
   const wild = Math.floor(hexDistance(q, r, 0, 0) / 4);
-  return {
+  const tile: HexTile = {
     id: hexKey(q, r),
     q,
     r,
@@ -68,6 +89,8 @@ export function makeTile(q: number, r: number): HexTile {
     garrison: owner === "neutral" ? 2 + wild : hall ? 8 : 4 + wild,
     label: hall ? `${TRIBES[owner as PlayableTribe].name} merkezi` : tileLabel(biome, owner),
   };
+  if (mark) applyLandmark(tile);
+  return tile;
 }
 
 export function ensureTiles(tiles: HexTile[], q: number, r: number, radius: number): number {
@@ -89,6 +112,7 @@ export function generateWorld(player: PlayableTribe): HexTile[] {
   (Object.keys(HALLS) as PlayableTribe[]).forEach((tribe) => {
     ensureTiles(tiles, HALLS[tribe].q, HALLS[tribe].r, HALL_CLUSTER);
   });
+  stampLandmarks(tiles);
   return tiles;
 }
 
@@ -102,7 +126,15 @@ export function tileLabel(biome: Biome, owner: OwnerId): string {
   return `${TRIBES[owner].name} ${land.toLowerCase()}ı`;
 }
 
-export function startingBanner(tribe: PlayableTribe): string {
+export function startingBanner(tribe: PlayableTribe, diplomacy?: Record<PlayableTribe, DiplomacyMood>): string {
+  if (diplomacy) {
+    const others = (["sariklilar", "gokhanli", "demirhisar"] as PlayableTribe[]).filter((id) => id !== tribe);
+    if (others.some((id) => diplomacy[id] === "war")) return "KABİLELER SAVAŞTA — SANCAKLAR AÇILDI";
+    if (others.every((id) => diplomacy[id] === "talks")) {
+      return `${TRIBES[others[0]].name.toUpperCase()} & ${TRIBES[others[1]].name.toUpperCase()} GÖRÜŞMESİ AKTİF`;
+    }
+    if (others.some((id) => diplomacy[id] === "trade")) return "KABİLELER TİCARET BULUŞMASINDA";
+  }
   if (tribe === "sariklilar") return "GÖK-HANLI & DEMİR-HİSAR GÖRÜŞMESİ AKTİF";
   if (tribe === "gokhanli") return "YAN KABİLELER TİCARET BULUŞMASI";
   return "ÇÖL VE ORMAN KABİLELERİ HAREKETTE";
@@ -120,4 +152,10 @@ export function climateHint(biome: Biome): string {
   if (biome === "desert") return "Çöl: Sarıklılar avantajlı, Demir-Hisar zorlanır.";
   if (biome === "ice") return "Buz: Demir-Hisar avantajlı, Sarıklılar zorlanır.";
   return "Orman: Gök-Hanlı avantajlı, Demir-Hisar zorlanır.";
+}
+
+export function climateShort(biome: Biome): string {
+  if (biome === "desert") return "Çöl";
+  if (biome === "ice") return "Buz";
+  return "Orman";
 }

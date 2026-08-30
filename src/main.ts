@@ -47,6 +47,7 @@ ui.bind(async (name, payload) => {
   if (name === "upgrade") game.toast = game.upgradeSelected();
   if (name === "train") game.toast = game.train(1);
   if (name === "train-five") game.toast = game.train(5);
+  if (name === "train-unit" && payload) game.toast = game.trainUnit(payload);
   if (name === "upgrade-unit") game.toast = game.upgradeUnit();
   if (name === "caravan") game.toast = game.sendCaravan();
   if (name === "stance" && payload) game.setStance(payload as "assault" | "ambush" | "hold");
@@ -57,37 +58,14 @@ ui.bind(async (name, payload) => {
   }
   if (name === "attack") {
     game.toast = game.claimOrAttack(payload);
-    if (game.lastBattle) {
-      const mine = game.data.chosenTribe ?? "gokhanli";
-      world.battle.stage(
-        [
-          {
-            tribe: mine,
-            name: game.kit.unitName,
-            count: game.data.army,
-            level: game.data.unitLevel,
-            hp: 1,
-            maxHp: 1,
-            attack: 1,
-            defense: 1,
-            critChance: 0,
-            aoe: 0,
-          },
-        ],
-        game.lastEnemy ?? {
-          tribe: "sariklilar",
-          name: "Düşman",
-          count: 1,
-          level: 1,
-          hp: 1,
-          maxHp: 1,
-          attack: 1,
-          defense: 1,
-          critChance: 0,
-          aoe: 0,
-        },
-      );
+    if (game.wantsBattle && game.lastBattle && game.lastEnemy) {
+      world.battle.stage(game.lastPlayerLine, game.lastEnemy);
+      return go("battle");
     }
+  }
+  if (name === "continue-battle") {
+    game.clearBattleFlag();
+    return go("map");
   }
   if (name === "ad" && payload) game.toast = await game.watchAd(payload as never);
   if (name === "save") {

@@ -42,7 +42,7 @@ function rimMat(color: number, emit: number): THREE.MeshStandardMaterial {
 }
 
 function tileKey(tile: HexTile): string {
-  return `${tile.id}|${tile.owner}|${tile.slot ?? ""}|${tile.level}|${tile.garrison}`;
+  return `${tile.id}|${tile.owner}|${tile.slot ?? ""}|${tile.level}|${tile.garrison}|${tile.landmark ?? ""}|${tile.stars ?? 0}`;
 }
 
 export class HexMapScene {
@@ -194,14 +194,23 @@ export class HexMapScene {
   private dress(tile: HexTile): void {
     const { x, z } = axialToWorld(tile.q, tile.r);
     const tribe = (tile.owner === "neutral" ? biomeTribe(tile.biome) : tile.owner) as PlayableTribe;
-    const built = hexBuildingMesh(tile, tribe);
-    if (built) {
-      built.position.set(x, 0.28, z);
-      this.marks.add(built);
+    if (tile.landmark) {
+      const mark = landmarkMesh(tile.landmark);
+      mark.position.set(x, 0.3, z);
+      this.marks.add(mark);
     } else {
-      this.scatterNature(tile, x, z);
+      const built = hexBuildingMesh(tile, tribe);
+      if (built) {
+        built.position.set(x, 0.28, z);
+        this.marks.add(built);
+      } else {
+        this.scatterNature(tile, x, z);
+      }
     }
-    if (tile.owner !== "neutral" && (tile.slot === "hall" || tile.slot === "camp")) {
+    if (tile.stars && tile.stars > 0) {
+      this.marks.add(starMarks(x, z, tile.stars));
+    }
+    if (tile.owner !== "neutral" && (tile.slot === "hall" || tile.slot === "camp") && !tile.landmark) {
       const troops = garrisonFor(tile.owner, tile.slot === "hall" ? 2 : 1);
       troops.position.set(x + 0.15, 0.26, z + 0.28);
       troops.scale.setScalar(0.85);
@@ -319,6 +328,67 @@ export class HexMapScene {
     this.placeSelect(id);
     bus.emit("hex-select", id);
   }
+}
+
+function landmarkMesh(kind: NonNullable<HexTile["landmark"]>): THREE.Group {
+  const group = new THREE.Group();
+  if (kind === "side") {
+    const pole = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.05, 0.7, 6),
+      new THREE.MeshStandardMaterial({ color: 0x6a4a28, roughness: 0.7 }),
+    );
+    pole.position.y = 0.35;
+    const cloth = new THREE.Mesh(
+      new THREE.ConeGeometry(0.42, 0.38, 6),
+      new THREE.MeshStandardMaterial({ color: 0xc9a66b, roughness: 0.55, emissive: 0x4a3010, emissiveIntensity: 0.12 }),
+    );
+    cloth.position.y = 0.72;
+    group.add(pole, cloth);
+  } else if (kind === "temple") {
+    const crystal = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.42),
+      new THREE.MeshStandardMaterial({
+        color: 0x4a1a6a,
+        roughness: 0.18,
+        metalness: 0.35,
+        emissive: 0x6a1b9a,
+        emissiveIntensity: 0.55,
+      }),
+    );
+    crystal.position.y = 0.48;
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.38, 0.04, 6, 16),
+      new THREE.MeshStandardMaterial({ color: 0x2a1020, emissive: 0x3a1048, emissiveIntensity: 0.3 }),
+    );
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = 0.18;
+    group.add(crystal, ring);
+  } else {
+    const keep = new THREE.Mesh(
+      new THREE.BoxGeometry(0.55, 0.9, 0.55),
+      new THREE.MeshStandardMaterial({ color: 0x1a1218, roughness: 0.5, metalness: 0.25, emissive: 0x2a0810, emissiveIntensity: 0.2 }),
+    );
+    keep.position.y = 0.5;
+    const spire = new THREE.Mesh(
+      new THREE.ConeGeometry(0.22, 0.4, 5),
+      new THREE.MeshStandardMaterial({ color: 0x4a1020, emissive: 0x6a1028, emissiveIntensity: 0.35 }),
+    );
+    spire.position.y = 1.1;
+    group.add(keep, spire);
+  }
+  return group;
+}
+
+function starMarks(x: number, z: number, stars: number): THREE.Group {
+  const group = new THREE.Group();
+  group.position.set(x, 0.95, z);
+  const mat = new THREE.MeshStandardMaterial({ color: 0xf0d060, emissive: 0xc9a227, emissiveIntensity: 0.55, roughness: 0.3 });
+  for (let i = 0; i < stars; i += 1) {
+    const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.07), mat);
+    star.position.set((i - (stars - 1) / 2) * 0.2, 0, 0);
+    group.add(star);
+  }
+  return group;
 }
 
 function biomeTribe(biome: HexTile["biome"]): PlayableTribe {

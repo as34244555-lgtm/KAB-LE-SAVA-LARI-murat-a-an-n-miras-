@@ -2,7 +2,9 @@ import { GAME_TITLE, type BuildingSlot, type DockPanel, type GamePhase, type Pla
 import type { Game } from "../core/Game";
 import { TRIBES } from "../data/tribes";
 import { kitFor, slotKit } from "../data/tribeKits";
-import { climateHint, hexById } from "../data/hexMap";
+import { climateShort, hexById } from "../data/hexMap";
+import { moodLabel, starterUnitId } from "../data/roster";
+import { SIDE_TRIBES } from "../data/sideTribes";
 import { OPENING_CRAWL } from "../data/dialogues";
 
 const DOCK: Array<{ id: DockPanel; label: string; icon: string }> = [
@@ -113,25 +115,39 @@ export class UIRoot {
   private hud(game: Game, toast: string, battle: boolean) {
     const bag = game.economy.bag;
     const tile = game.selectedTile;
-    const tribe = game.data.chosenTribe;
-    const kit = game.kit;
     const name = game.data.playerName;
+    if (battle && game.lastBattle) {
+      const title = game.lastBattle.winner === "player" ? "Zafer" : game.lastBattle.winner === "enemy" ? "Yenilgi" : "Berabere";
+      const lines = game.lastBattle.log.slice(-6).map((line) => `<li>${line}</li>`).join("");
+      return `
+        <header class="res-bar slim">
+          <div class="res-chips">${this.res("🪙", game.economy.gold)}${this.res("🛡️", game.data.army)}</div>
+          <div class="leader"><strong>${name}</strong></div>
+        </header>
+        <aside class="battle-sheet neu-card">
+          <p class="eyebrow">Saha</p>
+          <h2>${title}</h2>
+          <ul>${lines}</ul>
+          <button class="neu-btn gold" data-act="continue-battle">Devam</button>
+        </aside>`;
+    }
     return `
       <header class="res-bar">
         <div class="res-chips">
+          ${this.res("🪙", game.economy.gold)}
           ${this.res("🪵", bag.wood)}
           ${this.res("🪨", bag.stone)}
           ${this.res("🦬", bag.leather)}
           ${this.res("💎", bag.crystal)}
           ${this.res("🍖", bag.food)}
+          ${this.res("🛡️", game.data.army)}
         </div>
         <div class="leader">
           <span class="portrait"></span>
           <div>
-            <small>Vâris</small>
+            <small>Vâris · Sv ${game.levels.currentLevel}</small>
             <strong>${name}</strong>
           </div>
-          <span class="chip gold-chip">${fmt(game.economy.gold)}</span>
         </div>
       </header>
       <div class="banner">${game.mapBanner()}</div>
@@ -140,7 +156,6 @@ export class UIRoot {
       </div>` : ""}
       ${game.openPanel ? `<section class="sheet">${this.sheet(game, game.openPanel)}</section>` : ""}
       ${toast ? `<aside class="toast neu-card">${toast}</aside>` : ""}
-      ${battle && game.lastBattle ? `<aside class="battle-log neu-card"><strong>${game.lastBattle.winner === "player" ? "Zafer" : "Saha karışık"}</strong><p>${game.lastBattle.log.at(-1) ?? ""}</p></aside>` : ""}
       <nav class="circle-dock">
         ${DOCK.map((item) => `
           <button class="circle ${game.openPanel === item.id ? "on" : ""}" data-act="dock" data-arg="${item.id}">
@@ -148,8 +163,6 @@ export class UIRoot {
             <small>${item.label}</small>
           </button>`).join("")}
       </nav>
-      <button class="chat-fab" data-act="dock" data-arg="yonetim">💬<i>3</i></button>
-      <p class="fine hud-kit">${tribe ? `${kit.hallTitle} · ${kit.unitName} ${game.data.army}` : "Kabile seçilmedi"}</p>
     `;
   }
 
@@ -162,23 +175,17 @@ export class UIRoot {
     if (!tile) return "";
     const mine = game.isMine(tile.owner);
     const enemy = tile.owner !== "neutral" && !mine;
-    const ownerTribe = tile.owner === "neutral" ? game.data.chosenTribe : tile.owner;
-    const kitName = tile.slot && ownerTribe ? slotKit(ownerTribe, tile.slot).name : "Boş arazi";
+    const stars = tile.stars ? "★".repeat(tile.stars) : "";
+    const side = tile.sideId ? SIDE_TRIBES.find((item) => item.id === tile.sideId) : undefined;
     return `
       <div>
-        <strong>${tile.label}</strong>
-        <span>${kitName} · Sv ${tile.level} · Garnizon ${tile.garrison}</span>
-        <span class="fine">${climateHint(tile.biome)}</span>
-        ${enemy && tile.owner !== "neutral" ? `<p class="barb">${TRIBES[tile.owner].accusation}</p>` : ""}
+        <strong>${tile.label} ${stars}</strong>
+        <span>${climateShort(tile.biome)} · Garnizon ${tile.garrison}${tile.landmark ? " · hikâye" : ""}</span>
+        ${side && mine ? `<span class="fine">${side.clue}</span>` : ""}
       </div>
       <div class="row">
         ${mine && tile.slot ? `<button class="neu-btn slim gold" data-act="upgrade">Yükselt</button>` : ""}
-        ${!mine ? `
-          <button class="neu-btn slim ${game.stance === "assault" ? "gold" : ""}" data-act="stance" data-arg="assault">Hücum</button>
-          <button class="neu-btn slim ${game.stance === "ambush" ? "gold" : ""}" data-act="stance" data-arg="ambush">Pusu</button>
-          <button class="neu-btn slim ${game.stance === "hold" ? "gold" : ""}" data-act="stance" data-arg="hold">Kalkan</button>
-          <button class="neu-btn slim gold" data-act="attack" data-arg="${tile.id}">${enemy ? "Yüzleş" : "Bağla"} · ${game.sentTroops()}</button>
-        ` : ""}
+        ${!mine ? `<button class="neu-btn slim gold" data-act="attack" data-arg="${tile.id}">${enemy ? "Yüzleş" : "Bağla"} · ${game.sentTroops()}</button>` : ""}
         <button class="neu-btn slim ghost" data-act="deselect">Seçimi bırak</button>
       </div>`;
   }
@@ -198,7 +205,8 @@ export class UIRoot {
     const voices = others
       .map((id) => {
         const line = game.talk(id)[0];
-        return `<article class="neu-card talk"><h3>${TRIBES[id].name}</h3><p class="eyebrow">${TRIBES[id].voice}</p><p>“${line?.text ?? TRIBES[id].accusation}”</p></article>`;
+        const mood = moodLabel(game.data.diplomacy[id]);
+        return `<article class="neu-card talk"><h3>${TRIBES[id].name}</h3><p class="eyebrow">${mood} · ${TRIBES[id].voice}</p><p>“${line?.text ?? TRIBES[id].accusation}”</p></article>`;
       })
       .join("");
     return `
@@ -243,10 +251,22 @@ export class UIRoot {
   }
 
   private army(game: Game) {
+    const starter = game.data.chosenTribe ? starterUnitId(game.data.chosenTribe) : "";
+    const rows = game.unitsOfTribe()
+      .map((unit) => {
+        const n = game.data.roster[unit.id] ?? 0;
+        const elite = unit.id !== starter;
+        return `<article class="neu-card talk">
+          <h3>${unit.name} · ${n}</h3>
+          <p class="fine">${unit.lore}</p>
+          <button class="neu-btn slim gold" data-act="train-unit" data-arg="${unit.id}">${elite ? "Elit eğit" : "Eğit"}</button>
+        </article>`;
+      })
+      .join("");
     return `
       <div class="sheet-head"><h2>Birlikler</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
-      <p>${game.kit.unitName}: <strong>${game.data.army}</strong> · Sv ${game.data.unitLevel} · sefere ${game.sentTroops()}</p>
-      <p class="fine">${game.kit.unitTitle}. Sarıklılar zırhı yakar, Demir-Hisar gölgeyi ezer, Gök-Hanlı barutu keser. İklim ve duruş bunu çevirir.</p>
+      <p>Toplam <strong>${game.data.army}</strong> · Sv ${game.data.unitLevel} · sefere ${game.sentTroops()}</p>
+      <p class="fine">${game.kit.unitTitle}. Duruş burada seçilir; harita kartı kısa kalır.</p>
       <div class="row">
         <button class="neu-btn slim ${game.stance === "assault" ? "gold" : ""}" data-act="stance" data-arg="assault">Hücum</button>
         <button class="neu-btn slim ${game.stance === "ambush" ? "gold" : ""}" data-act="stance" data-arg="ambush">Pusu</button>
@@ -257,6 +277,7 @@ export class UIRoot {
         <button class="neu-btn slim" data-act="commit" data-arg="half">Yarısı</button>
         <button class="neu-btn slim" data-act="commit" data-arg="all">Hepsi</button>
       </div>
+      ${rows}
       <div class="row">
         <button class="neu-btn gold" data-act="train">1 Birlik Eğit</button>
         <button class="neu-btn" data-act="train-five">5 Birlik</button>

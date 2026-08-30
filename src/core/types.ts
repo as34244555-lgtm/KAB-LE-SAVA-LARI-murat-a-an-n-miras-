@@ -17,6 +17,8 @@ export type UnitClass = "bomber" | "skirmisher" | "guardian";
 export type Atmosphere = "peace" | "suspicion" | "shadow" | "reckoning";
 export type DockPanel = "yonetim" | "ticaret" | "insa" | "birlikler" | "arastirma";
 export type BattleStance = "assault" | "ambush" | "hold";
+export type DiplomacyMood = "talks" | "trade" | "war";
+export type LandmarkKind = "side" | "temple" | "finale";
 
 export type BuildingId = BuildingSlot;
 
@@ -102,6 +104,9 @@ export interface HexTile {
   level: number;
   garrison: number;
   label: string;
+  landmark?: LandmarkKind;
+  sideId?: string;
+  stars?: number;
 }
 
 export interface ResourceBag {
@@ -123,6 +128,7 @@ export interface PlayerSave {
   resources: ResourceBag;
   tiles: HexTile[];
   army: number;
+  roster: Record<string, number>;
   unitLevel: number;
   collectedScrolls: number[];
   discoveredSideTribes: string[];
@@ -132,6 +138,9 @@ export interface PlayerSave {
   finaleRevealed: boolean;
   lastTickAt: number;
   selectedHex: string | null;
+  diplomacy: Record<PlayableTribe, DiplomacyMood>;
+  visitedLandmarks: string[];
+  lastDailyAt: number;
   /** Eski köy testleri ve Gölge Tapınağı kilidi için. */
   buildingLevels: Record<string, number>;
 }

@@ -1,5 +1,6 @@
 import type { PlayerSave } from "../core/types";
 import { generateWorld } from "../data/hexMap";
+import { defaultDiplomacy } from "../data/roster";
 import { startBag } from "./EconomyManager";
 
 const STORAGE_KEY = "ksmam.save.v2";
@@ -16,6 +17,7 @@ export function emptySave(playerName = "Kabile Lideri"): PlayerSave {
     resources: startBag(),
     tiles: generateWorld("gokhanli"),
     army: 4,
+    roster: {},
     unitLevel: 1,
     collectedScrolls: [1],
     discoveredSideTribes: [],
@@ -25,6 +27,9 @@ export function emptySave(playerName = "Kabile Lideri"): PlayerSave {
     finaleRevealed: false,
     lastTickAt: Date.now(),
     selectedHex: null,
+    diplomacy: defaultDiplomacy(),
+    visitedLandmarks: [],
+    lastDailyAt: 0,
     buildingLevels: {
       goldMine: 0,
       barracks: 0,
@@ -77,7 +82,7 @@ export class SaveManager {
     try {
       const parsed = JSON.parse(await decryptPayload(raw)) as PlayerSave;
       if (parsed.version !== 2 || !parsed.resources || !parsed.tiles) return null;
-      return parsed;
+      return migrateSave(parsed);
     } catch {
       return null;
     }
@@ -86,6 +91,14 @@ export class SaveManager {
   clear() {
     if (typeof localStorage !== "undefined") localStorage.removeItem(STORAGE_KEY);
   }
+}
+
+export function migrateSave(save: PlayerSave): PlayerSave {
+  save.roster ??= {};
+  save.diplomacy ??= defaultDiplomacy();
+  save.visitedLandmarks ??= [];
+  save.lastDailyAt ??= 0;
+  return save;
 }
 
 async function deriveKey(): Promise<CryptoKey> {

@@ -2,18 +2,18 @@ import type { BattleField, BattleParticipant, BattleResult, BattleStance, Biome,
 import { TRIBES, UNITS, enemyPowerAtLevel, rpsMultiplier } from "../data/tribes";
 import type { LevelManager } from "../managers/LevelManager";
 
-export function scaleUnit(
-  tribe: TribeId,
+export function scaleById(
+  id: string,
   count: number,
   level: number,
   playerLevels: LevelManager,
 ): BattleParticipant {
-  const def = UNITS.find((unit) => unit.tribe === tribe) ?? UNITS[2];
+  const def = UNITS.find((unit) => unit.id === id) ?? UNITS[2];
   const capped = playerLevels.capFor(level);
   const mul = 1 + (capped - 1) * 0.12;
   const hp = Math.round(def.baseHp * mul * Math.max(1, count));
   return {
-    tribe,
+    tribe: def.tribe,
     name: def.name,
     count,
     startCount: count,
@@ -25,6 +25,16 @@ export function scaleUnit(
     critChance: def.critChance,
     aoe: def.aoe,
   };
+}
+
+export function scaleUnit(
+  tribe: TribeId,
+  count: number,
+  level: number,
+  playerLevels: LevelManager,
+): BattleParticipant {
+  const def = UNITS.find((unit) => unit.tribe === tribe) ?? UNITS[2];
+  return scaleById(def.id, count, level, playerLevels);
 }
 
 export function enemyArmy(level: number, tribe: TribeId, playerLevels: LevelManager): BattleParticipant {
