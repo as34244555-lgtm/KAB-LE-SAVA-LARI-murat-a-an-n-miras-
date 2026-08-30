@@ -9,8 +9,10 @@ export const HALLS: Record<PlayableTribe, { q: number; r: number }> = {
   demirhisar: { q: 7, r: -3 },
 };
 
-export const EXPLORE_RADIUS = 8;
-const START_VIEW = 7;
+export const EXPLORE_RADIUS = 14;
+export const DETAIL_RADIUS = 8;
+export const CARPET_RADIUS = 18;
+const START_VIEW = 10;
 const HALL_CLUSTER = 2;
 
 export function biomeAt(q: number, r: number): Biome {

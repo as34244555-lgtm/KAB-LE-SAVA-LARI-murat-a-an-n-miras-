@@ -1,9 +1,10 @@
 import * as THREE from "three";
-import type { BattleParticipant, TribeId } from "../core/types";
+import type { BattleParticipant, BattleResult, TribeId } from "../core/types";
 import { cornerTower, heraldicShield, stall, wallSegment } from "./kit";
 import { toyMaterial } from "./materials";
-import { spawnUnit, tickUnit } from "./soldiers";
+import { spawnUnit } from "./soldiers";
 import { pbr } from "./textures";
+import { BATTLE_CHARGE_S, BATTLE_CLASH_S, doomedFlags } from "./combatAnim";
 
 const HATS: Record<TribeId, "turban" | "hood" | "helm" | "none"> = {
   sariklilar: "turban",
@@ -19,9 +20,24 @@ const COLORS: Record<TribeId, [number, number]> = {
   player: [0x2471a3, 0xd4a574],
 };
 
+interface Fighter {
+  mesh: THREE.Group;
+  side: "player" | "enemy";
+  home: THREE.Vector3;
+  clash: THREE.Vector3;
+  doomed: boolean;
+  fallen: boolean;
+  pair: number;
+}
+
 export class BattleScene {
   readonly root = new THREE.Group();
-  private fighters = new THREE.Group();
+  finished = false;
+  private fighters: Fighter[] = [];
+  private sparks = new THREE.Group();
+  private clock = 0;
+  private lastElapsed = 0;
+  private announced = false;
 
   constructor() {
     this.root.name = "battle";
@@ -43,58 +59,145 @@ export class BattleScene {
     market.position.set(-4.2, 0, 3.4);
     const crest = heraldicShield();
     crest.position.set(0, 2.3, -6.1);
-    this.root.add(ground, ring, wall, t1, t2, market, crest, this.fighters);
+    this.root.add(ground, ring, wall, t1, t2, market, crest, this.sparks);
   }
 
   refreshFighters() {
-    const snapshot = this.fighters.children.map((child) => ({
-      side: child.userData.side as string,
-      tribe: child.userData.tribe as TribeId | undefined,
-      position: child.position.clone(),
-    }));
-    if (!snapshot.length || snapshot.some((item) => !item.tribe)) return;
-    this.fighters.clear();
-    for (const item of snapshot) {
-      if (!item.tribe) continue;
-      const mesh = spawnUnit(...COLORS[item.tribe], HATS[item.tribe]);
-      mesh.position.copy(item.position);
-      mesh.userData.side = item.side;
-      mesh.userData.tribe = item.tribe;
-      this.fighters.add(mesh);
-    }
+    /* canlı savaşta figürler sahnede yeniden kurulmaz */
   }
 
-  stage(player: BattleParticipant[], enemy: BattleParticipant) {
-    this.fighters.clear();
-    player.forEach((unit, index) => {
-      const n = Math.min(4, Math.max(1, unit.count));
+  stage(player: BattleParticipant[], enemy: BattleParticipant, result?: BattleResult) {
+    this.fighters.forEach((item) => this.root.remove(item.mesh));
+    this.fighters = [];
+    this.sparks.clear();
+    this.clock = 0;
+    this.finished = false;
+    this.announced = false;
+    this.lastElapsed = 0;
+
+    const playerShown = player.reduce((sum, unit) => sum + Math.min(4, Math.max(1, unit.startCount ?? unit.count)), 0);
+    const foeShown = Math.min(5, Math.max(2, enemy.count));
+    const playerSent = player.reduce((sum, unit) => sum + Math.max(1, unit.startCount ?? unit.count), 0);
+    const playerLeft = result?.playerRemaining ?? playerSent;
+    const enemyLeft = result?.enemyRemaining ?? foeShown;
+    const playerDoom = doomedFlags(playerShown, playerLeft, playerSent);
+    const enemyDoom = doomedFlags(foeShown, enemyLeft, Math.max(1, enemy.startCount ?? enemy.count));
+
+    let pIndex = 0;
+    player.forEach((unit) => {
+      const n = Math.min(4, Math.max(1, unit.startCount ?? unit.count));
       for (let i = 0; i < n; i += 1) {
-        const mesh = spawnUnit(...COLORS[unit.tribe], HATS[unit.tribe]);
-        mesh.position.set(-2.6 - (i % 2) * 0.75, 0, -1.2 + index * 1.15 + i * 0.12);
-        mesh.userData.side = "player";
-        mesh.userData.tribe = unit.tribe;
-        this.fighters.add(mesh);
+        const z = -1.4 + pIndex * 0.85;
+        this.addFighter("player", unit.tribe, new THREE.Vector3(-3.4 - (i % 2) * 0.35, 0, z), z, playerDoom[pIndex] ?? false, pIndex);
+        pIndex += 1;
       }
     });
-    const foes = Math.min(5, Math.max(2, enemy.count));
-    for (let i = 0; i < foes; i += 1) {
-      const mesh = spawnUnit(...COLORS[enemy.tribe], HATS[enemy.tribe]);
-      mesh.position.set(2.5 + (i % 2) * 0.7, 0, -1.5 + i * 0.85);
-      mesh.userData.side = "enemy";
-      mesh.userData.tribe = enemy.tribe;
-      this.fighters.add(mesh);
+    for (let i = 0; i < foeShown; i += 1) {
+      const z = -1.4 + i * 0.85;
+      this.addFighter("enemy", enemy.tribe, new THREE.Vector3(3.4 + (i % 2) * 0.35, 0, z), z, enemyDoom[i] ?? false, i);
     }
   }
 
-  private lastElapsed = 0;
-
-  update(elapsed: number) {
-    const dt = Math.max(0, elapsed - this.lastElapsed);
-    this.lastElapsed = elapsed;
-    this.fighters.children.forEach((child, index) => {
-      tickUnit(child, dt);
-      const dir = child.userData.side === "player" ? 1 : -1;
-      child.position.x += Math.sin(elapsed * 6 + index) * 0.004 * dir;
-    });
+  consumeFinished(): boolean {
+    if (!this.finished || this.announced) return false;
+    this.announced = true;
+    return true;
   }
+
+  update(elapsed: number, frameDt = 1 / 60) {
+    if (!this.lastElapsed) {
+      this.lastElapsed = elapsed;
+      return;
+    }
+    const dt = Math.max(0, Math.min(0.05, frameDt));
+    this.lastElapsed = elapsed;
+    if (!this.fighters.length) return;
+    this.clock += dt;
+    const t = this.clock;
+
+    for (const fighter of this.fighters) {
+      if (fighter.fallen) continue;
+      if (t < BATTLE_CHARGE_S) {
+        const u = t / BATTLE_CHARGE_S;
+        fighter.mesh.position.lerpVectors(fighter.home, fighter.clash, easeOut(u));
+        fighter.mesh.rotation.y = fighter.side === "player" ? Math.PI / 2 : -Math.PI / 2;
+        walkBob(fighter.mesh, t, 10);
+      } else if (t < BATTLE_CLASH_S) {
+        const clashT = t - BATTLE_CHARGE_S;
+        const lunge = Math.sin(clashT * 9 + fighter.pair) * 0.22;
+        const dir = fighter.side === "player" ? 1 : -1;
+        fighter.mesh.position.x = fighter.clash.x + lunge * dir;
+        fighter.mesh.position.z = fighter.clash.z + Math.sin(clashT * 7 + fighter.pair * 0.6) * 0.06;
+        fighter.mesh.rotation.y = fighter.side === "player" ? Math.PI / 2 : -Math.PI / 2;
+        fighter.mesh.rotation.z = Math.sin(clashT * 11 + fighter.pair) * 0.18 * dir;
+        walkBob(fighter.mesh, t, 16);
+        if (fighter.doomed && clashT > 1.4 + fighter.pair * 0.18) {
+          this.fall(fighter);
+        }
+        if (Math.floor(clashT * 6 + fighter.pair) !== Math.floor((clashT - dt) * 6 + fighter.pair)) {
+          this.spark(fighter.clash.x, 1.1, fighter.clash.z);
+        }
+      } else if (fighter.doomed && !fighter.fallen) {
+        this.fall(fighter);
+      } else {
+        fighter.mesh.position.lerp(fighter.clash, 0.08);
+        fighter.mesh.rotation.z *= 0.9;
+        fighter.mesh.position.y = 0;
+      }
+    }
+
+    this.sparks.children.forEach((spark) => {
+      spark.position.y += dt * 1.4;
+      spark.scale.multiplyScalar(1 - dt * 3);
+      (spark as THREE.Mesh).rotation.z += dt * 8;
+    });
+    if (t >= BATTLE_CLASH_S + 0.35) this.finished = true;
+  }
+
+  private addFighter(side: "player" | "enemy", tribe: TribeId, home: THREE.Vector3, z: number, doomed: boolean, pair: number) {
+    const mesh = spawnUnit(...COLORS[tribe], HATS[tribe]);
+    mesh.position.copy(home);
+    mesh.rotation.y = side === "player" ? Math.PI / 2 : -Math.PI / 2;
+    mesh.add(weapon(side === "player" ? 0xd4b24a : 0x8a8a8a));
+    const clash = new THREE.Vector3(side === "player" ? -0.45 : 0.45, 0, z);
+    this.root.add(mesh);
+    this.fighters.push({ mesh, side, home: home.clone(), clash, doomed, fallen: false, pair });
+  }
+
+  private fall(fighter: Fighter) {
+    fighter.fallen = true;
+    fighter.mesh.rotation.x = Math.PI / 2;
+    fighter.mesh.rotation.z = fighter.side === "player" ? -0.4 : 0.4;
+    fighter.mesh.position.y = 0.08;
+  }
+
+  private spark(x: number, y: number, z: number) {
+    const flash = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.08),
+      new THREE.MeshBasicMaterial({ color: 0xffe08a }),
+    );
+    flash.position.set(x + (Math.random() - 0.5) * 0.3, y, z + (Math.random() - 0.5) * 0.2);
+    this.sparks.add(flash);
+    if (this.sparks.children.length > 14) this.sparks.remove(this.sparks.children[0]);
+  }
+}
+
+function walkBob(mesh: THREE.Group, t: number, speed: number) {
+  mesh.position.y = Math.abs(Math.sin(t * speed)) * 0.06;
+}
+
+function easeOut(u: number) {
+  return 1 - (1 - Math.min(1, Math.max(0, u))) ** 2;
+}
+
+function weapon(color: number): THREE.Group {
+  const g = new THREE.Group();
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.02, 0.85, 5), toyMaterial(0x5a3a18, { roughness: 0.7 }));
+  shaft.position.set(0.22, 1.15, 0.12);
+  shaft.rotation.z = -0.55;
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.14, 5), toyMaterial(color, { metal: 0.6, roughness: 0.28 }));
+  tip.position.set(0.42, 1.48, 0.12);
+  tip.rotation.z = -0.55;
+  g.add(shaft, tip);
+  return g;
 }

@@ -62,7 +62,7 @@ ui.bind(async (name, payload) => {
   if (name === "attack") {
     game.toast = game.claimOrAttack(payload);
     if (game.wantsBattle && game.lastBattle && game.lastEnemy) {
-      world.battle.stage(game.lastPlayerLine, game.lastEnemy);
+      world.battle.stage(game.lastPlayerLine, game.lastEnemy, game.lastBattle);
       return go("battle");
     }
   }
@@ -112,7 +112,7 @@ function go(next: GamePhase) {
 function paint() {
   world.syncMap(game.data);
   game.mapDirty = false;
-  ui.render(game, screen);
+  ui.render(game, screen, "", screen === "battle" && !world.battle.finished);
 }
 
 let last = performance.now();
@@ -127,6 +127,7 @@ function loop(now: number) {
     void game.persist();
   }
   world.frame(dt / 1000);
+  if (screen === "battle" && world.battle.consumeFinished()) paint();
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);

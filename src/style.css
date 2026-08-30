@@ -367,6 +367,12 @@ html, body {
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
 }
 
+.banner.live {
+  background: linear-gradient(180deg, #c45a3a, #8a2a18);
+  color: #fff4e0;
+  border-color: #5a1810;
+}
+
 .hex-inspect {
   position: absolute;
   left: 12px;

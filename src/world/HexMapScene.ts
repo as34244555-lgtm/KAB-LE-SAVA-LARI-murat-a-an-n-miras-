@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import { bus } from "../core/EventBus";
 import type { HexTile, OwnerId, PlayableTribe, PlayerSave } from "../core/types";
-import { HEX_SIZE, axialToWorld, hexDistance, worldToAxial } from "./hexMath";
+import { HEX_SIZE, axialToWorld, forEachHex, hexDistance, hexKey, worldToAxial } from "./hexMath";
 import { hexBuildingMesh } from "./hexBuildings";
 import { garrisonFor } from "./warriors";
 import { cachedPbr } from "./textures";
+import { CARPET_RADIUS, DETAIL_RADIUS, biomeAt } from "../data/hexMap";
+import type { Biome } from "../core/types";
 
 const OWNER_RIM: Record<OwnerId, number> = {
   sariklilar: 0xc45a22,
@@ -70,6 +72,15 @@ export class HexMapScene {
   private lastExplore = "";
   private exploreAt = 0;
   private followSelect = true;
+  private carpet: THREE.InstancedMesh;
+  private carpetIds: string[] = [];
+  private carpetKey = "";
+  private readonly dummy = new THREE.Object3D();
+  private readonly carpetColors: Record<Biome, THREE.Color> = {
+    desert: new THREE.Color(0xc4a05a),
+    forest: new THREE.Color(0x3f6a3a),
+    ice: new THREE.Color(0xc8d8e8),
+  };
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -91,7 +102,16 @@ export class HexMapScene {
     this.selectRing.position.y = 0.42;
     this.selectRing.visible = false;
     this.root.add(this.selectRing);
-    this.paintWater();
+    const maxCarpet = 3 * CARPET_RADIUS * (CARPET_RADIUS + 1) + 1;
+    this.carpet = new THREE.InstancedMesh(
+      new THREE.CylinderGeometry(HEX_SIZE * 0.96, HEX_SIZE * 0.96, 0.28, 6),
+      new THREE.MeshStandardMaterial({ roughness: 0.72, metalness: 0.08 }),
+      maxCarpet,
+    );
+    this.carpet.receiveShadow = true;
+    this.carpet.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.carpet.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(maxCarpet * 3), 3);
+    this.root.add(this.carpet);
     this.bindInput();
   }
 
@@ -104,7 +124,12 @@ export class HexMapScene {
     const focus = selected
       ? { q: selected.q, r: selected.r }
       : worldToAxial(this.target.x, this.target.z);
-    const visible = save.tiles.filter((tile) => hexDistance(focus.q, focus.r, tile.q, tile.r) <= 7);
+    this.layoutCarpet(focus.q, focus.r);
+    if (`${focus.q},${focus.r}` !== this.lastExplore) {
+      this.lastExplore = `${focus.q},${focus.r}`;
+      bus.emit("explore", focus);
+    }
+    const visible = save.tiles.filter((tile) => hexDistance(focus.q, focus.r, tile.q, tile.r) <= DETAIL_RADIUS);
     const next = `${focus.q},${focus.r}|` + visible.map(tileKey).join(";");
     if (next !== this.worldKey) {
       this.worldKey = next;
@@ -144,19 +169,27 @@ export class HexMapScene {
     }
   }
 
-  private paintWater(): void {
-    const sea = new THREE.Mesh(
-      new THREE.PlaneGeometry(240, 240),
-      new THREE.MeshStandardMaterial({
-        color: 0x3a6a88,
-        roughness: 0.28,
-        metalness: 0.22,
-      }),
-    );
-    sea.rotation.x = -Math.PI / 2;
-    sea.position.y = -0.55;
-    sea.receiveShadow = true;
-    this.root.add(sea);
+  private layoutCarpet(q: number, r: number): void {
+    const key = `${q},${r}`;
+    if (key === this.carpetKey) return;
+    this.carpetKey = key;
+    this.carpetIds = [];
+    let index = 0;
+    forEachHex(q, r, CARPET_RADIUS, (qq, rr) => {
+      const biome = biomeAt(qq, rr);
+      const { x, z } = axialToWorld(qq, rr);
+      const height = biome === "ice" ? 0.38 : biome === "forest" ? 0.3 : 0.24;
+      this.dummy.position.set(x, height / 2, z);
+      this.dummy.scale.set(1, height / 0.28, 1);
+      this.dummy.updateMatrix();
+      this.carpet.setMatrixAt(index, this.dummy.matrix);
+      this.carpet.setColorAt(index, this.carpetColors[biome]);
+      this.carpetIds[index] = hexKey(qq, rr);
+      index += 1;
+    });
+    this.carpet.count = index;
+    this.carpet.instanceMatrix.needsUpdate = true;
+    if (this.carpet.instanceColor) this.carpet.instanceColor.needsUpdate = true;
   }
 
   private emitExplore(): void {
@@ -319,9 +352,13 @@ export class HexMapScene {
     this.pointer.x = ((cx - rect.left) / rect.width) * 2 - 1;
     this.pointer.y = -((cy - rect.top) / rect.height) * 2 + 1;
     this.ray.setFromCamera(this.pointer, this.camera);
-    const hits = this.ray.intersectObjects(this.tiles.children, true);
-    const hit = hits.find((item) => item.object.userData.hexId || item.object.parent?.userData.hexId);
-    const id = (hit?.object.userData.hexId ?? hit?.object.parent?.userData.hexId) as string | undefined;
+    const detailHits = this.ray.intersectObjects(this.tiles.children, true);
+    const detail = detailHits.find((item) => item.object.userData.hexId || item.object.parent?.userData.hexId);
+    let id = (detail?.object.userData.hexId ?? detail?.object.parent?.userData.hexId) as string | undefined;
+    if (!id) {
+      const carpetHit = this.ray.intersectObject(this.carpet, false)[0];
+      if (carpetHit && carpetHit.instanceId != null) id = this.carpetIds[carpetHit.instanceId];
+    }
     if (!id) return;
     this.lookId = id;
     this.followSelect = true;

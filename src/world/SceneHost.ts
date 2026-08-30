@@ -42,8 +42,8 @@ export class SceneHost {
     const pmrem = new THREE.PMREMGenerator(this.renderer);
     this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.08).texture;
     this.scene.environmentIntensity = 0.85;
-    this.scene.background = new THREE.Color(0x6a8498);
-    this.scene.fog = new THREE.FogExp2(0x8a7a68, 0.008);
+    this.scene.background = new THREE.Color(0x3a3428);
+    this.scene.fog = new THREE.FogExp2(0x4a4034, 0.01);
 
     this.sun.position.set(14, 18, 9);
     this.sun.castShadow = !this.mobile;
@@ -82,7 +82,12 @@ export class SceneHost {
     this.ambient.color.setHex(palette.ambient);
     if (this.bloom) this.bloom.strength = 0.08 + palette.bloom * 0.05;
     this.renderer.toneMappingExposure = 1.0 + palette.bloom * 0.04;
-    this.scene.fog = new THREE.FogExp2(palette.fog, Math.min(0.018, palette.fogDensity * 0.35));
+    if (!paintedSky) {
+      this.scene.background = new THREE.Color(0x3a3428);
+      this.scene.fog = new THREE.FogExp2(0x4a4034, 0.01);
+    } else {
+      this.scene.fog = new THREE.FogExp2(palette.fog, Math.min(0.018, palette.fogDensity * 0.35));
+    }
   }
 
   show(phase: GamePhase) {
@@ -108,7 +113,7 @@ export class SceneHost {
     if (this.hidden) return;
     this.elapsed += dt;
     if (this.throne.root.visible) this.throne.update(this.elapsed);
-    if (this.battle.root.visible) this.battle.update(this.elapsed);
+    if (this.battle.root.visible) this.battle.update(this.elapsed, dt);
     if (this.hexMap.root.visible) this.hexMap.update(this.elapsed);
     this.placeCamera();
     if (this.composer) this.composer.render();
@@ -123,8 +128,9 @@ export class SceneHost {
       return;
     }
     if (this.battle.root.visible) {
-      this.camera.position.set(1.2, 3.4, 8.6);
-      this.camera.lookAt(0, 1.1, 0);
+      const t = this.elapsed;
+      this.camera.position.set(Math.sin(t * 0.35) * 2.4 + 0.4, 3.6, 7.8 + Math.cos(t * 0.28) * 0.8);
+      this.camera.lookAt(0, 1.05, 0);
       return;
     }
     if (this.hexMap.root.visible) {

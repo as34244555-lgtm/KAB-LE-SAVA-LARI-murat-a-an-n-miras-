@@ -38,7 +38,7 @@ export class UIRoot {
     this.onAction = handler;
   }
 
-  render(game: Game, screen: GamePhase, notice = "") {
+  render(game: Game, screen: GamePhase, notice = "", watching = false) {
     const toast = notice || game.toast;
     game.toast = "";
     if (screen === "intro" || screen === "boot") {
@@ -53,7 +53,7 @@ export class UIRoot {
       this.layer.innerHTML = this.pick();
       return;
     }
-    this.layer.innerHTML = this.hud(game, toast, screen === "battle");
+    this.layer.innerHTML = this.hud(game, toast, screen === "battle", watching);
   }
 
   private intro() {
@@ -112,11 +112,19 @@ export class UIRoot {
       </section>`;
   }
 
-  private hud(game: Game, toast: string, battle: boolean) {
+  private hud(game: Game, toast: string, battle: boolean, watching = false) {
     const bag = game.economy.bag;
     const tile = game.selectedTile;
     const name = game.data.playerName;
     if (battle && game.lastBattle) {
+      if (watching) {
+        return `
+          <header class="res-bar slim">
+            <div class="res-chips">${this.res("🪙", game.economy.gold)}${this.res("🛡️", game.data.army)}</div>
+            <div class="leader"><strong>${name}</strong></div>
+          </header>
+          <div class="banner live">SAVAŞ SÜRÜYOR — SAFLAR ÇARPIŞIYOR</div>`;
+      }
       const title = game.lastBattle.winner === "player" ? "Zafer" : game.lastBattle.winner === "enemy" ? "Yenilgi" : "Berabere";
       const lines = game.lastBattle.log.slice(-6).map((line) => `<li>${line}</li>`).join("");
       return `
