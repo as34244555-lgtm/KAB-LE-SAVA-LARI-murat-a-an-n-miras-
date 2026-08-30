@@ -12,16 +12,16 @@ import {
   torch,
   heroPlate,
 } from "./kit";
-import { maps } from "./textures";
+import { mapped, maps } from "./textures";
 import { stylizedPerson, toyMaterial } from "./materials";
 
 const SLOTS: Record<BuildingId, THREE.Vector3> = {
-  goldMine: new THREE.Vector3(-2.6, 0, -1.6),
-  barracks: new THREE.Vector3(-0.1, 0, -2.8),
-  forge: new THREE.Vector3(2.7, 0, -1.4),
-  caravanserai: new THREE.Vector3(-3.2, 0, 1.5),
-  scrollTower: new THREE.Vector3(3.1, 0, 1.7),
-  shadowTemple: new THREE.Vector3(0.1, 0, 3.4),
+  goldMine: new THREE.Vector3(-3.4, 0, -2.2),
+  barracks: new THREE.Vector3(-0.2, 0, -3.6),
+  forge: new THREE.Vector3(3.5, 0, -2.0),
+  caravanserai: new THREE.Vector3(-4.0, 0, 1.8),
+  scrollTower: new THREE.Vector3(3.8, 0, 2.0),
+  shadowTemple: new THREE.Vector3(0.2, 0, 4.2),
 };
 
 export class VillageScene {
@@ -37,9 +37,9 @@ export class VillageScene {
     this.dressCourtyard();
     this.root.add(this.buildings, this.folks);
     this.scatterPeople();
-    const citadel = heroPlate("/art/citadel.png", 30, 16);
-    citadel.position.set(-2.2, 4.4, -11);
-    citadel.lookAt(5.4, 3.2, 8.2);
+    const citadel = heroPlate("/art/citadel.png", 36, 18);
+    citadel.position.set(-1.5, 5.2, -14);
+    citadel.lookAt(7, 3.4, 10);
     this.root.add(citadel);
   }
 
@@ -53,7 +53,7 @@ export class VillageScene {
       if (shown <= 0 && id !== "shadowTemple") return;
       const built = this.makeBuilding(id, Math.max(1, shown));
       built.position.copy(SLOTS[id]);
-      built.scale.setScalar(1.28);
+      built.scale.setScalar(1.05);
       this.collectFx(built);
       this.buildings.add(built);
     });
@@ -92,26 +92,27 @@ export class VillageScene {
   }
 
   private paintGround() {
-    const soil = new THREE.Mesh(new THREE.CylinderGeometry(7.4, 7.4, 0.36, 48), toyMaterial(0xc4b396, { roughness: 0.88 }));
-    (soil.material as THREE.MeshStandardMaterial).map = maps.sand;
-    soil.position.y = -0.18;
+    const soil = new THREE.Mesh(
+      new THREE.CircleGeometry(14, 48),
+      mapped(0x6b5a42, maps.sand, { roughness: 0.95, normal: maps.sandN }),
+    );
+    soil.rotation.x = -Math.PI / 2;
     soil.receiveShadow = true;
-    const path = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.06, 12), toyMaterial(0xb08960, { roughness: 0.75 }));
+    const path = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.04, 16), mapped(0x5a4a36, maps.sand, { roughness: 0.9, normal: maps.sandN }));
     path.position.y = 0.02;
     path.receiveShadow = true;
     this.root.add(soil, path);
   }
 
   private buildFort() {
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(7.2, 0.38, 10, 48),
-      toyMaterial(0x8d8a82, { roughness: 0.8 }),
+    const curb = new THREE.Mesh(
+      new THREE.BoxGeometry(18, 0.45, 0.55),
+      mapped(0x5d5a54, maps.stone, { roughness: 0.88, normal: maps.stoneN }),
     );
-    (ring.material as THREE.MeshStandardMaterial).map = maps.stone;
-    ring.rotation.x = Math.PI / 2;
-    ring.position.y = 0.28;
-    ring.receiveShadow = true;
-    this.root.add(ring);
+    curb.position.set(0, 0.2, 8.4);
+    curb.castShadow = true;
+    curb.receiveShadow = true;
+    this.root.add(curb);
   }
 
   private dressCourtyard() {
@@ -121,12 +122,12 @@ export class VillageScene {
       stall(),
       cottage(1),
     ];
-    extras[0].position.set(-4.6, 0, -3.8);
-    extras[0].scale.setScalar(0.72);
-    extras[1].position.set(1.6, 0, 0.2);
-    extras[2].position.set(-1.5, 0, 0.35);
-    extras[3].position.set(4.8, 0, -3.6);
-    extras[3].scale.setScalar(0.68);
+    extras[0].position.set(-6.2, 0, -4.6);
+    extras[0].scale.setScalar(0.85);
+    extras[1].position.set(1.8, 0, 0.4);
+    extras[2].position.set(-1.8, 0, 0.5);
+    extras[3].position.set(6.4, 0, -4.4);
+    extras[3].scale.setScalar(0.82);
     const well = deck(0.7);
     well.position.set(0.2, 0, 0.1);
     const bucket = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.14, 0.28, 10), toyMaterial(0x6b4226));
@@ -147,7 +148,7 @@ export class VillageScene {
     casts.forEach(([hat, primary, accent, x, z]) => {
       const person = stylizedPerson(primary, accent, hat);
       person.position.set(x, 0, z);
-      person.scale.setScalar(0.72);
+      person.scale.setScalar(1);
       this.folks.add(person);
     });
   }

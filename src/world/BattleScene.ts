@@ -2,7 +2,7 @@ import * as THREE from "three";
 import type { BattleParticipant, TribeId } from "../core/types";
 import { cornerTower, heraldicShield, stall, wallSegment } from "./kit";
 import { stylizedPerson, toyMaterial } from "./materials";
-import { maps } from "./textures";
+import { mapped, maps } from "./textures";
 
 const HATS: Record<TribeId, "turban" | "hood" | "helm" | "none"> = {
   sariklilar: "turban",
@@ -24,8 +24,10 @@ export class BattleScene {
 
   constructor() {
     this.root.name = "battle";
-    const ground = new THREE.Mesh(new THREE.CircleGeometry(8.2, 40), toyMaterial(0xc4b396, { roughness: 0.82 }));
-    (ground.material as THREE.MeshStandardMaterial).map = maps.sand;
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(9, 40),
+      mapped(0x6b5a42, maps.sand, { roughness: 0.95, normal: maps.sandN }),
+    );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     const ring = new THREE.Mesh(new THREE.TorusGeometry(6.4, 0.14, 8, 40), toyMaterial(0xd4af37, { metal: 0.55 }));

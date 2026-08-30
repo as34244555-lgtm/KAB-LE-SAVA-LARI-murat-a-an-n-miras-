@@ -8,22 +8,22 @@ export function lit(mesh: THREE.Mesh): THREE.Mesh {
   return mesh;
 }
 
-export function deck(radius = 1.55, y = 0.08): THREE.Group {
+export function deck(w = 2.2, d = 1.8): THREE.Group {
   const g = new THREE.Group();
-  const top = lit(new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, 0.14, 28), mapped(0x7a4a28, maps.wood, { roughness: 0.7 })));
-  top.position.y = y;
-  const stones = lit(new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.92, radius * 0.98, 0.22, 14), mapped(0x8d8a82, maps.stone, { roughness: 0.85 })));
-  stones.position.y = y - 0.16;
-  g.add(top, stones);
+  const plinth = lit(
+    new THREE.Mesh(new THREE.BoxGeometry(w, 0.28, d), mapped(0x6a6660, maps.stone, { roughness: 0.88, normal: maps.stoneN })),
+  );
+  plinth.position.y = 0.12;
+  g.add(plinth);
   return g;
 }
 
 export function timberHouse(w: number, h: number, d: number, plaster = 0xead7b8): THREE.Group {
   const g = new THREE.Group();
-  const body = lit(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mapped(plaster, maps.plaster, { roughness: 0.72 })));
+  const body = lit(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mapped(plaster, maps.plaster, { roughness: 0.78, normal: maps.plasterN })));
   body.position.y = h / 2;
   g.add(body);
-  const beamMat = mapped(0x4a2c18, maps.wood, { roughness: 0.62 });
+  const beamMat = mapped(0x4a2c18, maps.wood, { roughness: 0.7, normal: maps.woodN });
   const posts = [
     [-w / 2 + 0.06, d / 2 + 0.02],
     [w / 2 - 0.06, d / 2 + 0.02],
@@ -45,7 +45,7 @@ export function timberHouse(w: number, h: number, d: number, plaster = 0xead7b8)
 
 export function gableRoof(w: number, d: number, rise = 0.72): THREE.Group {
   const g = new THREE.Group();
-  const mat = mapped(0xc45c32, maps.tile, { roughness: 0.48 });
+  const mat = mapped(0x8a3e24, maps.tile, { roughness: 0.62, normal: maps.tileN });
   const slope = new THREE.BoxGeometry(w + 0.28, 0.1, d * 0.62);
   const left = lit(new THREE.Mesh(slope, mat));
   left.rotation.x = 0.62;
@@ -190,78 +190,78 @@ export function stall(): THREE.Group {
 
 export function cottage(level: number): THREE.Group {
   const g = new THREE.Group();
-  const s = 1 + Math.min(level, 6) * 0.06;
-  g.add(deck(1.7 * s));
-  const house = timberHouse(1.7 * s, 1.05 * s, 1.25 * s);
-  house.position.y = 0.16;
-  const roof = gableRoof(1.9 * s, 1.45 * s, 0.78 * s);
-  roof.position.y = 1.22 * s;
-  const door = lit(new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.62, 0.06), mapped(0x5a3518, maps.wood)));
-  door.position.set(0, 0.52 * s, 0.66 * s);
+  const s = 1.15 + Math.min(level, 6) * 0.08;
+  g.add(deck(2.3 * s, 1.9 * s));
+  const house = timberHouse(2.05 * s, 1.55 * s, 1.55 * s);
+  house.position.y = 0.26;
+  const roof = gableRoof(2.35 * s, 1.8 * s, 0.95 * s);
+  roof.position.y = 1.82 * s;
+  const door = lit(new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.95, 0.07), mapped(0x5a3518, maps.wood, { normal: maps.woodN })));
+  door.position.set(0, 0.78 * s, 0.8 * s);
   const emblem = lionEmblem(0.16 * s);
-  emblem.position.set(0, 0.95 * s, 0.7 * s);
-  const winL = windowGlow();
-  winL.position.set(-0.48 * s, 0.62 * s, 0.64 * s);
-  const winR = windowGlow();
-  winR.position.set(0.48 * s, 0.62 * s, 0.64 * s);
+  emblem.position.set(0, 1.42 * s, 0.84 * s);
+  const winL = windowGlow(0.28, 0.34);
+  winL.position.set(-0.58 * s, 1.05 * s, 0.79 * s);
+  const winR = windowGlow(0.28, 0.34);
+  winR.position.set(0.58 * s, 1.05 * s, 0.79 * s);
   const t1 = torch();
-  t1.position.set(-0.72 * s, 0.2, 0.7 * s);
+  t1.position.set(-0.95 * s, 0.28, 0.88 * s);
   const t2 = torch();
-  t2.position.set(0.72 * s, 0.2, 0.7 * s);
-  const c1 = crate(1.1);
-  c1.position.set(-0.85 * s, 0.16, 0.95 * s);
+  t2.position.set(0.95 * s, 0.28, 0.88 * s);
+  const c1 = crate(1.2);
+  c1.position.set(-1.05 * s, 0.26, 1.15 * s);
   const shield = lionEmblem(0.2);
-  shield.position.set(-0.55 * s, 0.38, 1.05 * s);
-  shield.rotation.x = -0.4;
+  shield.position.set(-0.7 * s, 0.55, 1.2 * s);
+  shield.rotation.x = -0.35;
   g.add(house, roof, door, emblem, winL, winR, t1, t2, c1, shield);
   return g;
 }
 
 export function blacksmith(level: number): THREE.Group {
   const g = new THREE.Group();
-  const s = 1 + Math.min(level, 6) * 0.06;
-  g.add(deck(1.75 * s));
-  const house = timberHouse(1.75 * s, 1.1 * s, 1.35 * s, 0x6d6a66);
-  house.position.y = 0.16;
-  const plates = lit(new THREE.Mesh(new THREE.BoxGeometry(1.78 * s, 0.55 * s, 1.38 * s), toyMaterial(0x5d5d5d, { metal: 0.55, roughness: 0.35 })));
-  plates.position.y = 0.5 * s;
-  const roof = gableRoof(1.95 * s, 1.5 * s, 0.7 * s);
-  roof.position.y = 1.28 * s;
+  const s = 1.15 + Math.min(level, 6) * 0.08;
+  g.add(deck(2.4 * s, 2 * s));
+  const house = timberHouse(2.1 * s, 1.65 * s, 1.7 * s, 0x6d6a66);
+  house.position.y = 0.26;
+  const plates = lit(new THREE.Mesh(new THREE.BoxGeometry(2.14 * s, 0.7 * s, 1.74 * s), toyMaterial(0x5d5d5d, { metal: 0.72, roughness: 0.28 })));
+  plates.position.y = 0.7 * s;
+  const roof = gableRoof(2.4 * s, 1.9 * s, 0.85 * s);
+  roof.position.y = 1.95 * s;
   const stack = chimney();
-  stack.position.set(-0.45 * s, 1.35 * s, -0.15);
-  const door = lit(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.06), mapped(0x5a3518, maps.wood)));
-  door.position.set(0, 0.55 * s, 0.7 * s);
+  stack.position.set(-0.55 * s, 2.05 * s, -0.15);
+  const door = lit(new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.05, 0.07), mapped(0x5a3518, maps.wood, { normal: maps.woodN })));
+  door.position.set(0, 0.82 * s, 0.88 * s);
   const crest = lionEmblem(0.18);
-  crest.position.set(0, 0.58 * s, 0.74 * s);
+  crest.position.set(0, 0.88 * s, 0.93 * s);
   const sign = anvil();
-  sign.position.set(0, 1.45 * s, 0.55 * s);
-  const hammers = lit(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.08), toyMaterial(0x888888, { metal: 0.7 })));
-  hammers.position.set(0, 1.72 * s, 0.5 * s);
+  sign.position.set(0, 2.15 * s, 0.7 * s);
+  const hammers = lit(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.08), toyMaterial(0x888888, { metal: 0.8, roughness: 0.25 })));
+  hammers.position.set(0, 2.45 * s, 0.62 * s);
   const b1 = torch();
-  b1.position.set(-0.8 * s, 0.16, 0.9 * s);
+  b1.position.set(-1.0 * s, 0.26, 1.05 * s);
   const b2 = torch();
-  b2.position.set(0.8 * s, 0.16, 0.9 * s);
-  const ingot = crate(1.15);
-  ingot.position.set(0.85 * s, 0.16, 1.05 * s);
+  b2.position.set(1.0 * s, 0.26, 1.05 * s);
+  const ingot = crate(1.2);
+  ingot.position.set(1.05 * s, 0.26, 1.2 * s);
   const puff = smokePuff();
-  puff.position.set(-0.45 * s, 2.15 * s, -0.15);
+  puff.position.set(-0.55 * s, 2.95 * s, -0.15);
   puff.userData.smoke = true;
   g.add(house, plates, roof, stack, door, crest, sign, hammers, b1, b2, ingot, puff);
   return g;
 }
 
-export function domeHouse(level: number, plaster = 0xe8c96a): THREE.Group {
+export function domeHouse(level: number, plaster = 0xb8a078): THREE.Group {
   const g = new THREE.Group();
-  const s = 1 + Math.min(level, 6) * 0.07;
-  g.add(deck(1.55 * s));
-  const house = timberHouse(1.45 * s, 0.95 * s, 1.2 * s, plaster);
-  house.position.y = 0.16;
-  const dome = lit(new THREE.Mesh(new THREE.SphereGeometry(0.62 * s, 18, 12, 0, Math.PI * 2, 0, Math.PI / 2), toyMaterial(0xf7ca18, { metal: 0.62, roughness: 0.28 })));
-  dome.position.y = 1.12 * s;
-  const spire = lit(new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.35, 8), toyMaterial(0xd4af37, { metal: 0.7 })));
-  spire.position.y = 1.55 * s;
-  const door = lit(new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.55, 0.06), mapped(0x5a3518, maps.wood)));
-  door.position.set(0, 0.48 * s, 0.62 * s);
+  const s = 1.15 + Math.min(level, 6) * 0.08;
+  g.add(deck(2.1 * s, 1.8 * s));
+  const house = timberHouse(1.85 * s, 1.45 * s, 1.55 * s, plaster);
+  house.position.y = 0.26;
+  const dome = lit(new THREE.Mesh(new THREE.SphereGeometry(0.78 * s, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2), toyMaterial(0xc9a227, { metal: 0.78, roughness: 0.22 })));
+  dome.position.y = 1.72 * s;
+  const spire = lit(new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.4, 8), toyMaterial(0xb8860b, { metal: 0.8, roughness: 0.2 })));
+  spire.position.y = 2.25 * s;
+  const door = lit(new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.9, 0.07), mapped(0x5a3518, maps.wood, { normal: maps.woodN })));
+  door.position.set(0, 0.75 * s, 0.8 * s);
   g.add(house, dome, spire, door, windowGlow());
   g.children[g.children.length - 1].position.set(0.4 * s, 0.6 * s, 0.62 * s);
   return g;
@@ -269,26 +269,26 @@ export function domeHouse(level: number, plaster = 0xe8c96a): THREE.Group {
 
 export function scrollMinaret(level: number): THREE.Group {
   const g = new THREE.Group();
-  const s = 1 + Math.min(level, 6) * 0.08;
-  g.add(deck(1.2 * s));
-  const shaft = lit(new THREE.Mesh(new THREE.CylinderGeometry(0.42 * s, 0.5 * s, 2.1 * s, 12), mapped(0xd6c4a3, maps.plaster)));
-  shaft.position.y = 1.2 * s;
-  const balcony = lit(new THREE.Mesh(new THREE.CylinderGeometry(0.62 * s, 0.62 * s, 0.1, 12), mapped(0x8b5a2b, maps.wood)));
-  balcony.position.y = 2.1 * s;
-  const dome = lit(new THREE.Mesh(new THREE.SphereGeometry(0.48 * s, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2), toyMaterial(0x2e86c1, { metal: 0.45, emissive: 0x1a5276, emit: 0.2 })));
-  dome.position.y = 2.35 * s;
-  const finial = lit(new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), toyMaterial(0xf7ca18, { metal: 0.7 })));
-  finial.position.y = 2.85 * s;
+  const s = 1.1 + Math.min(level, 6) * 0.08;
+  g.add(deck(1.6 * s, 1.6 * s));
+  const shaft = lit(new THREE.Mesh(new THREE.CylinderGeometry(0.48 * s, 0.58 * s, 3.2 * s, 16), mapped(0xb8a888, maps.plaster, { normal: maps.plasterN })));
+  shaft.position.y = 1.75 * s;
+  const balcony = lit(new THREE.Mesh(new THREE.CylinderGeometry(0.72 * s, 0.72 * s, 0.1, 14), mapped(0x5a3518, maps.wood, { normal: maps.woodN })));
+  balcony.position.y = 3.15 * s;
+  const dome = lit(new THREE.Mesh(new THREE.SphereGeometry(0.52 * s, 18, 14, 0, Math.PI * 2, 0, Math.PI / 2), toyMaterial(0x3d5a73, { metal: 0.35, roughness: 0.4 })));
+  dome.position.y = 3.4 * s;
+  const finial = lit(new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), toyMaterial(0xb8860b, { metal: 0.8 })));
+  finial.position.y = 3.95 * s;
   g.add(shaft, balcony, dome, finial);
   return g;
 }
 
 export function crystalTemple(level: number): THREE.Group {
   const g = new THREE.Group();
-  const s = 1 + Math.min(level, 6) * 0.08;
-  g.add(deck(1.8 * s));
-  const house = timberHouse(1.5 * s, 1.1 * s, 1.3 * s, 0x3d2463);
-  house.position.y = 0.16;
+  const s = 1.15 + Math.min(level, 6) * 0.08;
+  g.add(deck(2.3 * s, 2 * s));
+  const house = timberHouse(1.9 * s, 1.6 * s, 1.65 * s, 0x3d2463);
+  house.position.y = 0.26;
   for (const [x, z, h] of [
     [0, 0, 1.4],
     [-0.45, 0.2, 1.05],
@@ -332,7 +332,7 @@ export function wallGuard(kind: "turban" | "hood" | "helm"): THREE.Group {
   };
   const tone = colors[kind];
   const person = stylizedPerson(tone.primary, tone.accent, kind);
-  person.scale.setScalar(0.55);
+  person.scale.setScalar(1);
   const spear = lit(new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.1, 6), toyMaterial(0xbfc3c7, { metal: 0.6 })));
   spear.position.set(0.18, 0.7, 0.05);
   person.add(spear);
