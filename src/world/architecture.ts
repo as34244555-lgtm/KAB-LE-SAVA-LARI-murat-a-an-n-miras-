@@ -97,6 +97,21 @@ function tiledRoof(w: number, d: number, rise: number): THREE.Group {
   return g;
 }
 
+export function watchTower(): THREE.Group {
+  const g = new THREE.Group();
+  const shaft = cyl(0.7, 0.82, 4.6, 16, pbr("stone", 0xffffff, { repeat: 2 }));
+  const walk = cyl(1.05, 1.05, 0.18, 16, pbr("wood"));
+  walk.position.y = 4.55;
+  const roof = lit(new THREE.Mesh(new THREE.ConeGeometry(1.2, 1.35, 12), pbr("tile", 0xffffff, { repeat: 2 })));
+  roof.position.y = 5.4;
+  const door = box(0.38, 0.9, 0.1, pbr("wood"));
+  door.position.set(0, 0.55, 0.78);
+  const slit = box(0.14, 0.38, 0.12, pbr("beam", 0x1a120c));
+  slit.position.set(0, 2.6, 0.78);
+  g.add(shaft, walk, roof, door, slit);
+  return g;
+}
+
 export function oakBarrel(scale = 1): THREE.Group {
   const g = new THREE.Group();
   const body = cyl(0.22 * scale, 0.24 * scale, 0.46 * scale, 24, pbr("barrel", 0xffffff, { repeat: 1 }));
@@ -286,46 +301,84 @@ function merlons(length: number, height: number): THREE.Group {
   return g;
 }
 
+function keepWindows(parent: THREE.Group, w: number, _h: number, d: number) {
+  const dark = pbr("beam", 0x1a120c, { repeat: 1 });
+  const frame = pbr("beam", 0xffffff, { repeat: 1 });
+  const spots: Array<[number, number, number]> = [
+    [-1.35, 2.4, d / 2 + 0.02],
+    [0, 2.4, d / 2 + 0.02],
+    [1.35, 2.4, d / 2 + 0.02],
+    [-1.35, 4.6, d / 2 + 0.02],
+    [1.35, 4.6, d / 2 + 0.02],
+    [0, 5.8, d / 2 + 0.02],
+    [w / 2 + 0.02, 3.2, 0.8],
+    [w / 2 + 0.02, 5.1, -0.7],
+  ];
+  for (const [x, y, z] of spots) {
+    const hole = box(0.42, 0.62, 0.18, dark, y);
+    hole.position.set(x, y, z);
+    if (Math.abs(x) > w / 2) hole.rotation.y = Math.PI / 2;
+    const lip = box(0.5, 0.72, 0.08, frame, y);
+    lip.position.set(x, y, z + (Math.abs(x) > w / 2 ? 0 : 0.06));
+    if (Math.abs(x) > w / 2) lip.rotation.y = Math.PI / 2;
+    parent.add(hole, lip);
+  }
+}
+
 export function stoneCitadel(): THREE.Group {
   const g = new THREE.Group();
-  const hill = lit(new THREE.Mesh(new THREE.CylinderGeometry(11, 16, 2.4, 36), pbr("sand", 0xc4b08a, { repeat: 8 })));
-  hill.position.y = -0.7;
-  const keep = box(5.4, 7.2, 4.6, pbr("stone", 0xffffff, { repeat: 3.2 }), 3.6);
-  const keepRoof = tiledRoof(5.8, 5, 1.6);
-  keepRoof.position.y = 7.2;
-  const keepTop = box(5.6, 0.35, 4.8, pbr("stone"), 7.35);
-  g.add(hill, keep, keepRoof, keepTop, merlons(5.6, 7.35));
-  const towers: Array<[number, number]> = [
-    [-4.2, -3.4],
-    [4.2, -3.4],
-    [-4.2, 3.2],
-    [4.2, 3.2],
+  const hill = lit(new THREE.Mesh(new THREE.CylinderGeometry(12, 17, 2.6, 40), pbr("sand", 0xc4b08a, { repeat: 8 })));
+  hill.position.y = -0.75;
+  const keep = box(5.6, 7.6, 4.8, pbr("stone", 0xffffff, { repeat: 3.4 }), 3.8);
+  const keepRoof = tiledRoof(6.1, 5.2, 1.75);
+  keepRoof.position.y = 7.6;
+  const keepTop = box(5.8, 0.38, 5, pbr("stone"), 7.75);
+  const buttressL = box(0.55, 6.4, 0.7, pbr("stone", 0xffffff, { repeat: 1.6 }), 3.2);
+  buttressL.position.set(-2.9, 3.2, 2.3);
+  const buttressR = buttressL.clone();
+  buttressR.position.x = 2.9;
+  const balcony = box(2.4, 0.18, 1.1, pbr("stone"), 4.55);
+  balcony.position.z = 2.7;
+  g.add(hill, keep, keepRoof, keepTop, merlons(5.8, 7.75), buttressL, buttressR, balcony);
+  keepWindows(g, 5.6, 7.6, 4.8);
+  const towers: Array<[number, number, number]> = [
+    [-4.6, -3.6, 9.2],
+    [4.6, -3.6, 8.6],
+    [-4.6, 3.5, 10.2],
+    [4.6, 3.5, 9.6],
+    [0.2, -4.4, 6.4],
   ];
-  for (const [x, z] of towers) {
-    const shaft = cyl(1.15, 1.25, 8.4, 16, pbr("stone", 0xffffff, { repeat: 2.4 }));
-    shaft.position.set(x, 4.2, z);
-    const cap = cyl(1.28, 1.28, 0.28, 16, pbr("stone"));
-    cap.position.set(x, 8.45, z);
-    const roof = lit(new THREE.Mesh(new THREE.ConeGeometry(1.45, 1.7, 12), pbr("tile", 0xffffff, { repeat: 2 })));
-    roof.position.set(x, 9.45, z);
-    g.add(shaft, cap, roof);
+  for (const [x, z, h] of towers) {
+    const shaft = cyl(1.2, 1.32, h, 18, pbr("stone", 0xffffff, { repeat: 2.6 }));
+    shaft.position.set(x, h / 2, z);
+    const cap = cyl(1.35, 1.35, 0.3, 16, pbr("stone"));
+    cap.position.set(x, h + 0.05, z);
+    const roof = lit(new THREE.Mesh(new THREE.ConeGeometry(1.55, 1.85, 14), pbr("tile", 0xffffff, { repeat: 2 })));
+    roof.position.set(x, h + 1.1, z);
+    const slit = box(0.18, 0.55, 0.2, pbr("beam", 0x1a120c));
+    slit.position.set(x, h * 0.62, z + 1.2);
+    g.add(shaft, cap, roof, slit);
   }
-  const wallN = box(8.2, 3.6, 0.7, pbr("stone", 0xffffff, { repeat: 2.6 }), 1.8);
-  wallN.position.z = -3.4;
+  const wallN = box(8.8, 3.8, 0.85, pbr("stone", 0xffffff, { repeat: 2.8 }), 1.9);
+  wallN.position.z = -3.6;
   const wallS = wallN.clone();
-  wallS.position.z = 3.2;
-  const wallW = box(0.7, 3.6, 6.4, pbr("stone", 0xffffff, { repeat: 2.2 }), 1.8);
-  wallW.position.x = -4.2;
+  wallS.position.z = 3.5;
+  const wallW = box(0.85, 3.8, 7.1, pbr("stone", 0xffffff, { repeat: 2.4 }), 1.9);
+  wallW.position.x = -4.6;
   const wallE = wallW.clone();
-  wallE.position.x = 4.2;
-  const gate = box(2.1, 2.4, 0.85, pbr("beam", 0x3a2416), 1.2);
-  gate.position.set(0, 1.2, 3.35);
-  const arch = cyl(0.95, 0.95, 0.7, 16, pbr("stone"));
+  wallE.position.x = 4.6;
+  const gatehouse = box(3.1, 4.4, 2.2, pbr("stone", 0xffffff, { repeat: 2 }), 2.2);
+  gatehouse.position.set(0, 2.2, 4.6);
+  const gate = box(1.5, 2.3, 0.7, pbr("beam", 0x3a2416), 1.15);
+  gate.position.set(0, 1.15, 5.5);
+  const arch = cyl(0.85, 0.85, 0.7, 16, pbr("stone"));
   arch.rotation.x = Math.PI / 2;
-  arch.position.set(0, 2.35, 3.35);
-  g.add(wallN, wallS, wallW, wallE, gate, arch);
-  const banner = box(0.7, 1.6, 0.04, pbr("plaster", 0x8b1e24));
-  banner.position.set(0, 5.4, 2.35);
+  arch.position.set(0, 2.4, 5.55);
+  const gateRoof = tiledRoof(3.4, 2.5, 0.9);
+  gateRoof.position.set(0, 4.4, 4.6);
+  g.add(wallN, wallS, wallW, wallE, gatehouse, gate, arch, gateRoof);
+  const banner = box(0.7, 1.7, 0.05, pbr("plaster", 0x8b1e24));
+  banner.position.set(0, 5.6, 5.7);
   g.add(banner);
   return g;
 }

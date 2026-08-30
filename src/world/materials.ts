@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import type { Palette } from "../managers/NarrativeManager";
+import { pbr } from "./textures";
 
 export function toyMaterial(color: string | number, opts: { roughness?: number; metal?: number; emissive?: number; emit?: number } = {}) {
   return new THREE.MeshStandardMaterial({
@@ -52,10 +53,10 @@ export function makeBanner(color: number, emblem: number): THREE.Group {
 
 export function stylizedPerson(primary: number, accent: number, hat: "turban" | "hood" | "helm" | "none" = "none"): THREE.Group {
   const g = new THREE.Group();
-  const skin = toyMaterial(0xc68642, { roughness: 0.62, metal: 0 });
-  const cloth = toyMaterial(primary, { roughness: 0.78, metal: 0.02 });
-  const leather = toyMaterial(0x3d2a1c, { roughness: 0.8 });
-  const metal = toyMaterial(0x8a8e92, { metal: 0.82, roughness: 0.32 });
+  const skin = toyMaterial(0xc68642, { roughness: 0.58, metal: 0 });
+  const cloth = pbr("plaster", primary, { repeat: 1.4 });
+  const leather = pbr("beam", 0xffffff, { repeat: 1.2 });
+  const metal = pbr("stone", 0xc5c8cc, { metal: 0.82, repeat: 1 });
 
   const hip = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 10), cloth);
   hip.position.y = 0.92;

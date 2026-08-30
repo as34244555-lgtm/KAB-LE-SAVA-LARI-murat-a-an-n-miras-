@@ -66,9 +66,9 @@ export class SceneHost {
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
     this.ssao = new SSAOPass(this.scene, this.camera, window.innerWidth, window.innerHeight);
-    this.ssao.kernelRadius = 14;
-    this.ssao.minDistance = 0.002;
-    this.ssao.maxDistance = 0.14;
+    this.ssao.kernelRadius = 8;
+    this.ssao.minDistance = 0.003;
+    this.ssao.maxDistance = 0.08;
     this.composer.addPass(this.ssao);
     this.bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.16, 0.42, 0.78);
     this.composer.addPass(this.bloom);
@@ -93,15 +93,15 @@ export class SceneHost {
   private loadHdri(pmrem: THREE.PMREMGenerator): Promise<void> {
     return new Promise((resolve, reject) => {
       new RGBELoader().load(
-        "/hdri/courtyard.hdr",
+        "/hdri/sunrise.hdr",
         (hdr) => {
+          hdr.mapping = THREE.EquirectangularReflectionMapping;
           const env = pmrem.fromEquirectangular(hdr).texture;
           this.scene.environment = env;
-          this.scene.background = env;
-          this.scene.environmentIntensity = 1.05;
-          this.scene.backgroundBlurriness = 0.06;
-          this.scene.backgroundIntensity = 0.92;
-          hdr.dispose();
+          this.scene.background = hdr;
+          this.scene.environmentIntensity = 1.2;
+          this.scene.backgroundBlurriness = 0.02;
+          this.scene.backgroundIntensity = 1;
           this.hdriReady = true;
           resolve();
         },
@@ -117,8 +117,8 @@ export class SceneHost {
     this.bloom.strength = 0.1 + palette.bloom * 0.07;
     this.renderer.toneMappingExposure = 1.02 + palette.bloom * 0.05;
     if (this.hdriReady) {
-      this.scene.fog = new THREE.FogExp2(palette.fog, palette.fogDensity * 0.38);
-      this.scene.backgroundBlurriness = paintedSky ? 0.05 : 0.35;
+      this.scene.fog = new THREE.FogExp2(palette.fog, Math.min(0.012, palette.fogDensity * 0.18));
+      this.scene.backgroundBlurriness = paintedSky ? 0.02 : 0.28;
     }
   }
 
@@ -160,7 +160,7 @@ export class SceneHost {
       this.camera.lookAt(0, 1.1, 0);
       return;
     }
-    this.camera.position.set(8.1, 5.6, 11.2);
-    this.camera.lookAt(0.1, 1.35, -2.2);
+    this.camera.position.set(9.4, 6.2, 12.4);
+    this.camera.lookAt(-0.4, 1.6, -3.8);
   }
 }

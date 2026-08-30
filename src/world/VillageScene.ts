@@ -10,6 +10,7 @@ import {
   stoneForge,
   stoneWell,
   timberCottage,
+  watchTower,
 } from "./architecture";
 import { crate, stall, torch } from "./kit";
 import { pbr } from "./textures";
@@ -132,9 +133,13 @@ export class VillageScene {
 
   private buildHorizon() {
     const citadel = stoneCitadel();
-    citadel.position.set(-1.2, 0.15, -18.5);
-    citadel.scale.setScalar(1.15);
+    citadel.position.set(-3.4, 0.2, -16.2);
+    citadel.rotation.y = 0.52;
+    citadel.scale.setScalar(1.05);
     this.root.add(citadel);
+    const watch = watchTower();
+    watch.position.set(6.2, 0, -6.8);
+    this.root.add(watch);
     const curb = new THREE.Mesh(new THREE.BoxGeometry(20, 0.55, 0.7), pbr("stone", 0xffffff, { repeat: 3 }));
     curb.position.set(0, 0.22, 8.6);
     curb.castShadow = true;
