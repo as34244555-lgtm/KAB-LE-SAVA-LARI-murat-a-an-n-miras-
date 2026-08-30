@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import type { BuildingId, PlayerSave } from "../core/types";
 import {
-  blacksmith,
   cottage,
   crystalTemple,
   deck,
@@ -13,7 +12,8 @@ import {
   heroPlate,
 } from "./kit";
 import { mapped, maps } from "./textures";
-import { stylizedPerson, toyMaterial } from "./materials";
+import { toyMaterial } from "./materials";
+import { spawnUnit } from "./soldiers";
 
 const SLOTS: Record<BuildingId, THREE.Vector3> = {
   goldMine: new THREE.Vector3(-3.4, 0, -2.2),
@@ -82,9 +82,28 @@ export class VillageScene {
     });
   }
 
+  refreshUnits() {
+    this.folks.clear();
+    this.scatterPeople();
+  }
+
   private makeBuilding(id: BuildingId, level: number): THREE.Group {
-    if (id === "barracks") return cottage(level);
-    if (id === "forge") return blacksmith(level);
+    if (id === "barracks") {
+      const g = new THREE.Group();
+      g.add(deck(2.6, 1.4));
+      const plate = heroPlate("/art/cottage.png", 3.4, 3.6);
+      plate.position.set(0, 2.05, 0.2);
+      g.add(plate);
+      return g;
+    }
+    if (id === "forge") {
+      const g = new THREE.Group();
+      g.add(deck(2.6, 1.4));
+      const plate = heroPlate("/art/forge.png", 3.4, 3.6);
+      plate.position.set(0, 2.05, 0.2);
+      g.add(plate);
+      return g;
+    }
     if (id === "goldMine") return domeHouse(level, 0xe8c96a);
     if (id === "caravanserai") return inn(level);
     if (id === "scrollTower") return scrollMinaret(level);
@@ -146,7 +165,7 @@ export class VillageScene {
       ["none", 0x2471a3, 0xd4a574, 2.2, 0.9],
     ];
     casts.forEach(([hat, primary, accent, x, z]) => {
-      const person = stylizedPerson(primary, accent, hat);
+      const person = spawnUnit(primary, accent, hat);
       person.position.set(x, 0, z);
       person.scale.setScalar(1);
       this.folks.add(person);

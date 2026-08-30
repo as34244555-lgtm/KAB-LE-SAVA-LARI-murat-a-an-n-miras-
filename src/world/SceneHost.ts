@@ -12,6 +12,7 @@ import { applyPalette } from "./materials";
 import { maps } from "./textures";
 import { ThroneScene } from "./ThroneScene";
 import { VillageScene } from "./VillageScene";
+import { loadSoldierRig } from "./soldiers";
 
 export class SceneHost {
   readonly renderer: THREE.WebGLRenderer;
@@ -75,6 +76,7 @@ export class SceneHost {
     this.composer.addPass(new OutputPass());
 
     this.show("intro");
+    void loadSoldierRig().then(() => this.village.refreshUnits());
     window.addEventListener("resize", () => this.resize());
   }
 

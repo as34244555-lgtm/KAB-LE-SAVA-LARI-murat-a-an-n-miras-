@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import type { BattleParticipant, TribeId } from "../core/types";
 import { cornerTower, heraldicShield, stall, wallSegment } from "./kit";
-import { stylizedPerson, toyMaterial } from "./materials";
+import { toyMaterial } from "./materials";
+import { spawnUnit } from "./soldiers";
 import { mapped, maps } from "./textures";
 
 const HATS: Record<TribeId, "turban" | "hood" | "helm" | "none"> = {
@@ -53,7 +54,7 @@ export class BattleScene {
     player.forEach((unit, index) => {
       const n = Math.min(4, Math.max(1, unit.count));
       for (let i = 0; i < n; i += 1) {
-        const mesh = stylizedPerson(...COLORS[unit.tribe], HATS[unit.tribe]);
+        const mesh = spawnUnit(...COLORS[unit.tribe], HATS[unit.tribe]);
         mesh.position.set(-2.6 - (i % 2) * 0.75, 0, -1.2 + index * 1.15 + i * 0.12);
         mesh.userData.side = "player";
         this.fighters.add(mesh);
@@ -61,7 +62,7 @@ export class BattleScene {
     });
     const foes = Math.min(5, Math.max(2, enemy.count));
     for (let i = 0; i < foes; i += 1) {
-      const mesh = stylizedPerson(...COLORS[enemy.tribe], HATS[enemy.tribe]);
+      const mesh = spawnUnit(...COLORS[enemy.tribe], HATS[enemy.tribe]);
       mesh.position.set(2.5 + (i % 2) * 0.7, 0, -1.5 + i * 0.85);
       mesh.userData.side = "enemy";
       this.fighters.add(mesh);
