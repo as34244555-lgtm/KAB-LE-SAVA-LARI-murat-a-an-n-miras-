@@ -36,7 +36,6 @@ export class BattleScene {
   private fighters: Fighter[] = [];
   private sparks = new THREE.Group();
   private clock = 0;
-  private lastElapsed = 0;
   private announced = false;
 
   constructor() {
@@ -73,7 +72,6 @@ export class BattleScene {
     this.clock = 0;
     this.finished = false;
     this.announced = false;
-    this.lastElapsed = 0;
 
     const playerShown = player.reduce((sum, unit) => sum + Math.min(4, Math.max(1, unit.startCount ?? unit.count)), 0);
     const foeShown = Math.min(5, Math.max(2, enemy.count));
@@ -104,14 +102,12 @@ export class BattleScene {
     return true;
   }
 
-  update(elapsed: number, frameDt = 1 / 60) {
-    if (!this.lastElapsed) {
-      this.lastElapsed = elapsed;
+  update(_elapsed: number, frameDt = 1 / 60) {
+    const dt = Math.max(0.008, Math.min(0.05, frameDt || 1 / 60));
+    if (!this.fighters.length) {
+      if (this.clock > 0) this.finished = true;
       return;
     }
-    const dt = Math.max(0, Math.min(0.05, frameDt));
-    this.lastElapsed = elapsed;
-    if (!this.fighters.length) return;
     this.clock += dt;
     const t = this.clock;
 

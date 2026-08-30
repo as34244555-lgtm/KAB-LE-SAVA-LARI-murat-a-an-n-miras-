@@ -117,6 +117,7 @@ function paint() {
 
 let last = performance.now();
 let saveAcc = 0;
+let battleWatch = 0;
 function loop(now: number) {
   const dt = Math.min(100, now - last);
   last = now;
@@ -127,7 +128,13 @@ function loop(now: number) {
     void game.persist();
   }
   world.frame(dt / 1000);
-  if (screen === "battle" && world.battle.consumeFinished()) paint();
+  if (screen === "battle") {
+    battleWatch += dt;
+    if (battleWatch > 6200) world.battle.finished = true;
+    if (world.battle.consumeFinished()) paint();
+  } else {
+    battleWatch = 0;
+  }
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
