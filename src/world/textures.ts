@@ -124,3 +124,19 @@ export function pbr(
     env: opts.env,
   });
 }
+
+const pbrCache = new Map<string, THREE.MeshStandardMaterial>();
+
+/** Aynı malzeme anahtarını paylaş — her hex için yeni texture klonu üretmez. */
+export function cachedPbr(
+  kind: PbrKind,
+  color = 0xffffff,
+  opts: { repeat?: number; metal?: number; roughness?: number; env?: number } = {},
+): THREE.MeshStandardMaterial {
+  const key = `${kind}:${color}:${opts.repeat ?? ""}:${opts.metal ?? ""}:${opts.roughness ?? ""}`;
+  const hit = pbrCache.get(key);
+  if (hit) return hit;
+  const mat = pbr(kind, color, opts);
+  pbrCache.set(key, mat);
+  return mat;
+}

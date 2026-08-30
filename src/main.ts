@@ -37,7 +37,6 @@ ui.bind(async (name, payload) => {
   }
   if (name === "choose-tribe" && payload) {
     game.chooseTribe(payload as PlayableTribe);
-    world.syncMap(game.data);
     return go("map");
   }
   if (name === "menu") return go("menu");
@@ -115,12 +114,12 @@ function go(next: GamePhase) {
   world.show(next);
   const painted = next === "intro" || next === "menu" || next === "boot";
   world.apply(game.narrative.palette(game.levels.currentLevel), painted);
-  world.syncMap(game.data);
   paint();
 }
 
 function paint() {
   world.syncMap(game.data);
+  game.mapDirty = false;
   ui.render(game, screen);
 }
 
@@ -131,7 +130,7 @@ function loop(now: number) {
   last = now;
   game.tick(dt);
   saveAcc += dt;
-  if (saveAcc > 8000) {
+  if (saveAcc > 20000) {
     saveAcc = 0;
     void game.persist();
   }

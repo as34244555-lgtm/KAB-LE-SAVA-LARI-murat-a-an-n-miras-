@@ -3,6 +3,7 @@ import type { Game } from "../core/Game";
 import { TRIBES } from "../data/tribes";
 import { kitFor, slotKit } from "../data/tribeKits";
 import { hexById } from "../data/hexMap";
+import { OPENING_CRAWL } from "../data/dialogues";
 
 const DOCK: Array<{ id: DockPanel; label: string; icon: string }> = [
   { id: "yonetim", label: "Yönetim", icon: "🤝" },
@@ -58,11 +59,11 @@ export class UIRoot {
       <section class="cinematic">
         <div class="vignette"></div>
         <div class="crawl neu-card">
-          <p class="eyebrow">Harita tabanlı gerçek zamanlı strateji</p>
+          <p class="eyebrow">Hüzünlü ama kararlı</p>
           <h1>${GAME_TITLE}</h1>
-          <p>Üç kabile aynı adayı paylaşıyor. Sen birini seçer, çölü, ormanı veya buz hisarını yönetirsin.</p>
-          <p>Asker ve bina türleri kabilene göre değişir. Murat Ağa'nın hançeri hâlâ bu toprakların hikâyesidir — ama savaş haritada kazanılır.</p>
-          <button class="neu-btn gold" data-act="finish-intro">Kabileleri Gör</button>
+          ${OPENING_CRAWL.map((line) => `<p>${line.text}</p>`).join("")}
+          <p>Bir kabilenin sancağını al. Asker ve bina o toprağa göre değişir. Ama kalem aynı kalır: cinayeti çöz, mirası kurtar.</p>
+          <button class="neu-btn gold" data-act="finish-intro">Tahta Yaklaş</button>
         </div>
       </section>`;
   }
@@ -72,13 +73,13 @@ export class UIRoot {
       <section class="cinematic menu">
         <div class="vignette"></div>
         <div class="crawl neu-card">
-          <p class="eyebrow">Tek oyunculu · Mobil RTS</p>
+          <p class="eyebrow">Kanlı Taht</p>
           <h1>${GAME_TITLE}</h1>
           <div class="row">
-            <button class="neu-btn gold" data-act="new-game">Yeni Sefer</button>
+            <button class="neu-btn gold" data-act="new-game">Yeni Yemin</button>
             <button class="neu-btn" data-act="continue">Kayıttan Devam</button>
           </div>
-          <p class="fine">Sarıklılar (çöl) · Gök-Hanlı (orman) · Demir-Hisar (buz)</p>
+          <p class="fine">Sarıklılar • Gök-Hanlı • Demir-Hisar — ve sisin ardındaki dördüncü gölge.</p>
         </div>
       </section>`;
   }
@@ -92,8 +93,8 @@ export class UIRoot {
           <button class="tribe-card ${id}" data-act="choose-tribe" data-arg="${id}">
             <span class="eyebrow">${kit.biomeLabel}</span>
             <strong>${tribe.name}</strong>
-            <span>${kit.unitName}</span>
-            <em>${kit.unitTitle}</em>
+            <span>${tribe.epithet}</span>
+            <em>${tribe.accusation}</em>
           </button>`;
       })
       .join("");
@@ -101,9 +102,9 @@ export class UIRoot {
       <section class="pick-screen">
         <div class="vignette"></div>
         <div class="pick-copy">
-          <p class="eyebrow">Kabile seç</p>
-          <h1>Hangi toprağı yöneteceksin?</h1>
-          <p>Seçimin binaları, birlikleri ve haritadaki başlangıç biyomunu kilitler.</p>
+          <p class="eyebrow">Vârisin seçimi</p>
+          <h1>Hangi sancağı alacaksın?</h1>
+          <p>Murat Ağa'nın tahtı boş. Bir kabilenin toprağını tut, birbirini suçlayan üç sesten gerçeği ayır.</p>
         </div>
         <div class="tribe-grid">${cards}</div>
       </section>`;
@@ -127,7 +128,7 @@ export class UIRoot {
         <div class="leader">
           <span class="portrait"></span>
           <div>
-            <small>Kabile Lideri</small>
+            <small>Vâris</small>
             <strong>${name}</strong>
           </div>
           <span class="chip gold-chip">${fmt(game.economy.gold)}</span>
@@ -167,10 +168,11 @@ export class UIRoot {
       <div>
         <strong>${tile.label}</strong>
         <span>${kitName} · Sv ${tile.level} · Garnizon ${tile.garrison}</span>
+        ${enemy && tile.owner !== "neutral" ? `<p class="barb">${TRIBES[tile.owner].accusation}</p>` : ""}
       </div>
       <div class="row">
         ${mine && tile.slot ? `<button class="neu-btn slim gold" data-act="upgrade">Yükselt</button>` : ""}
-        ${!mine ? `<button class="neu-btn slim gold" data-act="attack" data-arg="${tile.id}">${enemy ? "Saldır" : "Bağla"}</button>` : ""}
+        ${!mine ? `<button class="neu-btn slim gold" data-act="attack" data-arg="${tile.id}">${enemy ? "Yüzleş" : "Bağla"}</button>` : ""}
         <button class="neu-btn slim ghost" data-act="deselect">Seçimi bırak</button>
       </div>`;
   }
@@ -186,11 +188,19 @@ export class UIRoot {
   private manage(game: Game) {
     const scroll = game.narrative.knownScrolls().at(-1);
     const side = game.unlockedTribes().at(-1);
+    const others = (["sariklilar", "gokhanli", "demirhisar"] as const).filter((id) => id !== game.data.chosenTribe);
+    const voices = others
+      .map((id) => {
+        const line = game.talk(id)[0];
+        return `<article class="neu-card talk"><h3>${TRIBES[id].name}</h3><p class="eyebrow">${TRIBES[id].voice}</p><p>“${line?.text ?? TRIBES[id].accusation}”</p></article>`;
+      })
+      .join("");
     return `
-      <div class="sheet-head"><h2>Yönetim</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
-      <p>Seviye ${game.levels.currentLevel} · ${game.kit.biomeLabel}</p>
-      ${scroll ? `<article class="neu-card"><h3>${scroll.title}</h3><p>${scroll.body}</p></article>` : ""}
-      ${side ? `<article class="neu-card"><h3>${side.name}</h3><p>${side.clue}</p></article>` : "<p>Yan kabileler her 10 seviyede haritaya düşer.</p>"}
+      <div class="sheet-head"><h2>Vârisin Divanı</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
+      <p>Seviye ${game.levels.currentLevel} · ${game.kit.biomeLabel}. Üç kabile birbirini suçluyor; sen mühürleri okuyorsun.</p>
+      ${scroll ? `<article class="neu-card"><div class="eyebrow">Parşömen ${scroll.level}</div><h3>${scroll.title}</h3><p>${scroll.body}</p></article>` : ""}
+      ${voices}
+      ${side ? `<article class="neu-card"><h3>${side.name}</h3><p class="memory">${side.memory}</p><p>${side.clue}</p></article>` : "<p>Her 10 seviyede bir yan kabile Murat Ağa'nın eski bir anısını bırakır.</p>"}
       <div class="row">
         <button class="neu-btn slim" data-act="save">Mühürle</button>
         <button class="neu-btn slim ghost" data-act="menu">Menü</button>
@@ -240,14 +250,21 @@ export class UIRoot {
 
   private research(game: Game) {
     const locked = game.narrative.lockedCount();
+    const pages = game.narrative
+      .knownScrolls()
+      .slice(-5)
+      .reverse()
+      .map((scroll) => `<article class="neu-card scroll"><div class="eyebrow">Parşömen ${scroll.level} · ${scroll.tone}</div><h3>${scroll.title}</h3><p>${scroll.body}</p></article>`)
+      .join("");
     return `
-      <div class="sheet-head"><h2>Araştırma</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
-      <p>Parşömenler fetihle açılır. Kalan mühür: ${locked}.</p>
+      <div class="sheet-head"><h2>Gizli Günlük</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
+      <p>1–39 yanlış iz, 40. kırılma, 100. gerçek. Kalan mühür: ${locked}.</p>
+      ${pages}
+      <p class="fine">${game.narrative.shadowTempleRevealed ? "Gölge Tapınağı açıldı." : "Gölge Tapınağı 40. mühürde."} ${game.narrative.finaleRevealed ? "Gölge Elçisi ortaya çıktı." : "Elçi 100. mühürde bekliyor."}</p>
       <div class="row">
         <button class="neu-btn slim" data-act="ad" data-arg="fast_production">Reklam: Üretim</button>
         <button class="neu-btn slim" data-act="ad" data-arg="diamond">Reklam: Elmas</button>
-      </div>
-      <p class="fine">Murat Ağa'nın hançeri hâlâ bu adanın sırrıdır. 40. seviyede Gölge Tapınağı, 100. seviyede Elçi.</p>`;
+      </div>`;
   }
 }
 

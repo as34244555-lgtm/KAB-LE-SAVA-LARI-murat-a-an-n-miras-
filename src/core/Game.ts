@@ -8,7 +8,9 @@ import { QuestManager } from "../managers/QuestManager";
 import { AdsManager, type RewardKind } from "../managers/AdsManager";
 import { CaravanSystem } from "../economy/CaravanSystem";
 import { Soundtrack } from "../audio/Soundtrack";
-import { generateWorld, hexById, mapBanner } from "../data/hexMap";
+import { generateWorld, hexById } from "../data/hexMap";
+import { scrollForLevel } from "../data/scrolls";
+import { sideTribeForLevel } from "../data/sideTribes";
 import { kitFor, TRAIN_COST, UPGRADE_COST, canPay, pay, slotKit } from "../data/tribeKits";
 import { TRIBES } from "../data/tribes";
 import { TRIBE_DIALOGUES } from "../data/dialogues";
@@ -37,6 +39,8 @@ export class Game {
   openPanel: DockPanel | null = null;
   lastBattle: BattleResult | null = null;
   lastEnemy: ReturnType<typeof enemyArmy> | null = null;
+  mapDirty = true;
+  lastStoryBeat = "";
   private prodAcc = 0;
 
   constructor(initial?: PlayerSave) {
@@ -83,7 +87,8 @@ export class Game {
     this.data = emptySave(name);
     this.bootManagers();
     this.openPanel = null;
-    this.toast = `${name}, üç kabileden birini seç ve haritayı yönet.`;
+    this.mapDirty = true;
+    this.toast = `${name}, vârisin kalemini taşıyorsun. Bir kabilenin sancağını al.`;
   }
 
   chooseTribe(tribe: PlayableTribe): void {
@@ -92,7 +97,8 @@ export class Game {
     this.data.army = 8;
     this.data.unitLevel = 1;
     this.data.selectedHex = this.data.tiles.find((tile) => tile.owner === tribe && tile.slot === "hall")?.id ?? null;
-    this.toast = `${TRIBES[tribe].name} topraklarına yerleştin. Komşu altıgenleri inşa et veya fethet.`;
+    this.mapDirty = true;
+    this.toast = `Vâris olarak ${TRIBES[tribe].name} sancağını aldın. Murat Ağa'nın hançerini bu toprakta ara.`;
     this.flush();
     bus.emit("save", this.data);
   }
@@ -111,6 +117,7 @@ export class Game {
     if (!loaded) return false;
     this.data = loaded;
     this.bootManagers();
+    this.mapDirty = true;
     return true;
   }
 
@@ -132,7 +139,16 @@ export class Game {
   }
 
   mapBanner(): string {
-    return mapBanner(this.data.chosenTribe, this.levels.currentLevel);
+    const level = this.levels.currentLevel;
+    if (this.narrative.finaleRevealed || level >= 100) return "GÖLGE ELÇİSİ ORTAYA ÇIKTI";
+    if (this.narrative.shadowTempleRevealed || level >= 40) return "GÖLGE TAPINAĞI SİSİN ARDINDAN GÖRÜNDÜ";
+    if (level > 1 && level % 10 === 0) {
+      const side = sideTribeForLevel(level);
+      if (side) return `${side.name.toUpperCase()} HARİTAYA DÜŞTÜ`;
+    }
+    if (level <= 6) return "KANLI TAHT — ÜÇ KABİLE BİRBİRİNİ SUÇLUYOR";
+    const scroll = scrollForLevel(level);
+    return scroll ? scroll.title.toUpperCase() : "MÜHÜRLER HENÜZ KONUŞMADI";
   }
 
   isMine(owner: string): boolean {
@@ -153,6 +169,7 @@ export class Game {
     tile.slot = slot;
     tile.level = 1;
     tile.label = def.name;
+    this.mapDirty = true;
     this.flush();
     return `${def.name} kuruldu.`;
   }
@@ -168,6 +185,7 @@ export class Game {
     this.economy.bag = pay(this.economy.bag, UPGRADE_COST);
     this.economy.gold = this.economy.bag.gold;
     tile.level += 1;
+    this.mapDirty = true;
     this.flush();
     return `${slotKit(this.data.chosenTribe, tile.slot).name} seviye ${tile.level}.`;
   }
@@ -186,6 +204,7 @@ export class Game {
     if (!cost) return "Gelişim oyuncu seviyesini aşamaz.";
     if (!this.economy.spend("gold", cost.gold)) return "Altın yetmiyor.";
     this.data.buildingLevels[id] = current + 1;
+    this.mapDirty = true;
     this.flush();
     return `${id} mühürlendi.`;
   }
@@ -237,16 +256,18 @@ export class Game {
       tile.owner = this.data.chosenTribe;
       tile.garrison = 3;
       this.gainProgress(8);
+      this.mapDirty = true;
       this.flush();
-      return `${tile.label} bağlandı. Kayıp: ${loss}`;
+      return this.withStory(`${tile.label} bağlandı. Kayıp: ${loss}`);
     }
 
     const result = this.fight(tile.owner);
+    this.mapDirty = true;
     if (result.winner === "player") {
       tile.owner = this.data.chosenTribe;
       tile.garrison = Math.max(2, result.playerRemaining);
       this.flush();
-      return `${tile.label} ele geçirildi.`;
+      return this.withStory(`${tile.label} ele geçirildi.`);
     }
     this.flush();
     return result.winner === "enemy" ? "Pusuya düştük." : "Saha berabere kaldı.";
@@ -282,7 +303,21 @@ export class Game {
       if (up.shadowTempleUnlocked) this.narrative.shadowTempleRevealed = true;
       if (up.finaleUnlocked) this.narrative.finaleRevealed = true;
     }
-    if (ups.length) bus.emit("levelup", this.levels.currentLevel);
+    if (ups.length) {
+      const last = ups[ups.length - 1];
+      if (last.finaleUnlocked) this.lastStoryBeat = "Gölge Elçisi ortaya çıktı.";
+      else if (last.shadowTempleUnlocked) this.lastStoryBeat = "Gölge Tapınağı sisin ardından göründü.";
+      else if (last.unlockedSideTribe) this.lastStoryBeat = `${last.unlockedSideTribe.name} haritaya düştü.`;
+      else if (last.scroll) this.lastStoryBeat = `Parşömen ${last.newLevel}: ${last.scroll.title}`;
+      bus.emit("levelup", this.levels.currentLevel);
+    }
+  }
+
+  private withStory(base: string): string {
+    if (!this.lastStoryBeat) return base;
+    const beat = this.lastStoryBeat;
+    this.lastStoryBeat = "";
+    return `${base} ${beat}`;
   }
 
   tickProduction(): void {

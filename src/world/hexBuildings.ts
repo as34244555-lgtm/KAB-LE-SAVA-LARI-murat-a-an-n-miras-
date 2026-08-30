@@ -1,14 +1,21 @@
 import * as THREE from "three";
 import type { BuildingSlot, HexTile, PlayableTribe } from "../core/types";
 
+const mats = new Map<string, THREE.MeshStandardMaterial>();
+
 function mat(hex: number, rough = 0.7, metal = 0.04): THREE.MeshStandardMaterial {
-  return new THREE.MeshStandardMaterial({ color: hex, roughness: rough, metalness: metal });
+  const key = `${hex}:${rough}:${metal}`;
+  const hit = mats.get(key);
+  if (hit) return hit;
+  const made = new THREE.MeshStandardMaterial({ color: hex, roughness: rough, metalness: metal });
+  mats.set(key, made);
+  return made;
 }
 
 function mesh(geom: THREE.BufferGeometry, material: THREE.Material, x: number, y: number, z: number): THREE.Mesh {
   const m = new THREE.Mesh(geom, material);
   m.position.set(x, y, z);
-  m.castShadow = true;
+  m.castShadow = false;
   m.receiveShadow = true;
   return m;
 }

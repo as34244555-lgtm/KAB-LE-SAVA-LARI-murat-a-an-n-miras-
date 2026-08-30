@@ -33,4 +33,16 @@ describe("Anlatı motoru", () => {
     expect(game.narrative.finaleRevealed).toBe(true);
     expect(game.narrative.knownScrolls().at(-1)?.title).toBe("Gölge Elçisi");
   });
+
+  it("vâris kabile seçince hançer izini taşır ve erken banner Kanlı Taht'tır", () => {
+    const game = new Game();
+    game.chooseTribe("gokhanli");
+    expect(game.toast).toContain("Vâris");
+    expect(game.toast).toContain("hançer");
+    expect(game.mapBanner()).toContain("KANLI TAHT");
+    game.debugSetLevel(40);
+    expect(game.mapBanner()).toContain("GÖLGE TAPINAĞI");
+    game.debugSetLevel(100);
+    expect(game.mapBanner()).toContain("GÖLGE ELÇİSİ");
+  });
 });

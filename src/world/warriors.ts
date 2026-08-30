@@ -1,18 +1,21 @@
 import * as THREE from "three";
 
+const skins = new Map<string, THREE.MeshStandardMaterial>();
+
 function skin(hex: number, rough = 0.55, metal = 0.05): THREE.MeshStandardMaterial {
-  return new THREE.MeshStandardMaterial({
-    color: hex,
-    roughness: rough,
-    metalness: metal,
-  });
+  const key = `${hex}:${rough}:${metal}`;
+  const hit = skins.get(key);
+  if (hit) return hit;
+  const mat = new THREE.MeshStandardMaterial({ color: hex, roughness: rough, metalness: metal });
+  skins.set(key, mat);
+  return mat;
 }
 
 function add(parent: THREE.Group, geom: THREE.BufferGeometry, mat: THREE.Material, x: number, y: number, z: number): THREE.Mesh {
   const m = new THREE.Mesh(geom, mat);
   m.position.set(x, y, z);
-  m.castShadow = true;
-  m.receiveShadow = true;
+  m.castShadow = false;
+  m.receiveShadow = false;
   parent.add(m);
   return m;
 }
