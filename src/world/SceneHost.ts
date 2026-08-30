@@ -29,8 +29,10 @@ export class SceneHost {
     this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 80);
     this.sun.position.set(6, 10, 4);
     this.sun.castShadow = true;
+    this.sun.intensity = 1.55;
     this.sun.shadow.mapSize.set(1024, 1024);
     this.rim.position.set(-8, 4, -6);
+    this.ambient.intensity = 0.95;
     this.scene.add(this.ambient, this.sun, this.rim, this.throne.root, this.village.root, this.battle.root);
     this.show("intro");
     window.addEventListener("resize", () => this.resize());
@@ -74,7 +76,7 @@ export class SceneHost {
       this.camera.lookAt(0, 0.6, 0);
       return;
     }
-    this.camera.position.set(0.2, 9.2, 11.4);
-    this.camera.lookAt(0, 0.4, 0.6);
+    this.camera.position.set(-1.2, 7.4, 10.2);
+    this.camera.lookAt(0, 0.8, 0.2);
   }
 }

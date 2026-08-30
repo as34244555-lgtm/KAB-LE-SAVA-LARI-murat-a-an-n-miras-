@@ -26,7 +26,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     baseGoldCost: 160,
     baseDiamondUpgrade: 2,
     goldPerTick: 0,
-    unlockLevel: 2,
+    unlockLevel: 1,
   },
   {
     id: "caravanserai",
@@ -35,7 +35,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     baseGoldCost: 200,
     baseDiamondUpgrade: 3,
     goldPerTick: 1,
-    unlockLevel: 3,
+    unlockLevel: 1,
   },
   {
     id: "scrollTower",
@@ -44,7 +44,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     baseGoldCost: 240,
     baseDiamondUpgrade: 3,
     goldPerTick: 0,
-    unlockLevel: 4,
+    unlockLevel: 1,
   },
   {
     id: "shadowTemple",

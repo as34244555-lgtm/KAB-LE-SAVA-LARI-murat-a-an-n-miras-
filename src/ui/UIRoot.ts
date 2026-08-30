@@ -140,7 +140,7 @@ export class UIRoot {
           <p>${building.lore}</p>
           <div class="meta">Seviye ${level} · Tavan ${game.levels.currentLevel}</div>
           <button class="neu-btn gold" data-act="build" data-arg="${building.id as BuildingId}" ${locked || !cost ? "disabled" : ""}>
-            ${locked ? "Sis kilitli" : cost ? (level === 0 ? `Kur · ${cost.gold}A` : `Yükselt · ${cost.gold}A ${cost.diamond}E`) : "Limit"}
+            ${locked ? "Sis kilitli" : cost ? (level === 0 ? `Kur · ${cost.gold}A` : `Yükselt · ${cost.gold}A ${cost.diamond}E`) : "Seviye tavanı"}
           </button>
         </article>`;
     }).join("");
@@ -175,18 +175,21 @@ export class UIRoot {
       .join("");
 
     return `
-      <section class="grid">
-        <article class="neu-card span">
-          <h2>Köy — Boş tahtın gölgesi</h2>
-          <p>Hiçbir yapı veya asker, senin seviyenin üzerine çıkamaz. Büyüme, gerçeğin temposuna bağlı.</p>
-          <div class="row">
-            <button class="neu-btn gold" data-act="caravan">Kervan Gönder</button>
-            <span class="fine">${game.caravan.busy ? `Yolda · ${Math.ceil((game.caravan.current?.remainingMs ?? 0) / 1000)}s` : "Kervansaray hazır."}</span>
-          </div>
-        </article>
-        ${cards}
-        ${army}
-        ${quests || "<article class='neu-card'>Açık yemin kalmadı — sisin bir sonraki kabilesini bekle.</article>"}
+      <section class="playfield">
+        <div class="world-gap"></div>
+        <div class="drawer">
+          <article class="neu-card span">
+            <h2>Köy — Boş tahtın gölgesi</h2>
+            <p>Hiçbir yapı veya asker, senin seviyenin üzerine çıkamaz. Büyüme, gerçeğin temposuna bağlı.</p>
+            <div class="row">
+              <button class="neu-btn gold" data-act="caravan">Kervan Gönder</button>
+              <span class="fine">${game.caravan.busy ? `Yolda · ${Math.ceil((game.caravan.current?.remainingMs ?? 0) / 1000)}s` : "Kervansaray hazır."}</span>
+            </div>
+          </article>
+          ${cards}
+          ${army}
+          ${quests || "<article class='neu-card'>Açık yemin kalmadı — sisin bir sonraki kabilesini bekle.</article>"}
+        </div>
       </section>`;
   }
 
@@ -203,12 +206,15 @@ export class UIRoot {
       )
       .join("");
     return `
-      <section class="grid journal">
-        <article class="neu-card span">
-          <h2>Gizli Günlük</h2>
-          <p>Her seviye bir parça. 1–39 yanlış iz, 40. kırılma, 100. gerçek. Kalan mühür: ${game.narrative.lockedCount()}.</p>
-        </article>
-        ${items}
+      <section class="playfield">
+        <div class="world-gap"></div>
+        <div class="drawer journal">
+          <article class="neu-card span">
+            <h2>Gizli Günlük</h2>
+            <p>Her seviye bir parça. 1–39 yanlış iz, 40. kırılma, 100. gerçek. Kalan mühür: ${game.narrative.lockedCount()}.</p>
+          </article>
+          ${items}
+        </div>
       </section>`;
   }
 
@@ -265,16 +271,19 @@ export class UIRoot {
       .map((id) => `<button class="neu-btn" data-act="fight" data-arg="${id}">${TRIBES[id].name} ile yüzleş</button>`)
       .join("");
     return `
-      <section class="grid">
-        <article class="neu-card span">
-          <h2>Savaş Dengesi</h2>
-          <p>Sarıklılar (bomba) &gt; Demir-Hisar (zırh) &gt; Gök-Hanlı (kritik) &gt; Sarıklılar. Rakip gücü seviyenle matematiksel artar.</p>
-          <div class="row">${picks}</div>
-        </article>
-        <article class="neu-card span log">
-          <h3>${game.lastBattle ? (game.lastBattle.winner === "player" ? "Zafer" : game.lastBattle.winner === "enemy" ? "Yenilgi" : "Berabere") : "Saha sessiz"}</h3>
-          <ul>${log}</ul>
-        </article>
+      <section class="playfield">
+        <div class="world-gap"></div>
+        <div class="drawer">
+          <article class="neu-card span">
+            <h2>Savaş Dengesi</h2>
+            <p>Sarıklılar (bomba) &gt; Demir-Hisar (zırh) &gt; Gök-Hanlı (kritik) &gt; Sarıklılar. Rakip gücü seviyeyle artar.</p>
+            <div class="row">${picks}</div>
+          </article>
+          <article class="neu-card span log">
+            <h3>${game.lastBattle ? (game.lastBattle.winner === "player" ? "Zafer" : game.lastBattle.winner === "enemy" ? "Yenilgi" : "Berabere") : "Saha sessiz"}</h3>
+            <ul>${log}</ul>
+          </article>
+        </div>
       </section>`;
   }
 }

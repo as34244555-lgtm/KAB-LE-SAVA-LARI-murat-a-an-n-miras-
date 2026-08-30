@@ -46,19 +46,31 @@ export class VillageScene {
   }
 
   private paintGround() {
-    const soil = new THREE.Mesh(new THREE.CylinderGeometry(9.5, 9.5, 0.4, 36), toyMaterial(0x6d8b4e, { roughness: 0.75 }));
+    const soil = new THREE.Mesh(new THREE.CylinderGeometry(9.5, 9.5, 0.4, 36), toyMaterial(0x7da35a, { roughness: 0.75 }));
     soil.position.y = -0.2;
     soil.receiveShadow = true;
-    const path = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.08, 10), toyMaterial(0xc4a574, { roughness: 0.65 }));
+    const path = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.08, 11), toyMaterial(0xd8b07a, { roughness: 0.65 }));
     path.position.y = 0.02;
-    const wall = new THREE.Mesh(new THREE.TorusGeometry(8.4, 0.35, 8, 40), toyMaterial(0x8d8374, { roughness: 0.7 }));
+    const wall = new THREE.Mesh(new THREE.TorusGeometry(8.4, 0.42, 8, 40), toyMaterial(0xb7a48a, { roughness: 0.7 }));
     wall.rotation.x = Math.PI / 2;
-    wall.position.y = 0.35;
-    const gate = new THREE.Mesh(new THREE.BoxGeometry(2.8, 2.4, 0.5), toyMaterial(0x5d4037));
-    gate.position.set(0, 1.2, 8.2);
-    const crest = new THREE.Mesh(new THREE.CircleGeometry(0.45, 16), toyMaterial(0xd4af37, { metal: 0.65 }));
-    crest.position.set(0, 2.3, 8.5);
+    wall.position.y = 0.45;
+    const gate = new THREE.Mesh(new THREE.BoxGeometry(3.1, 2.8, 0.55), toyMaterial(0x6d4c3d));
+    gate.position.set(0, 1.4, 8.15);
+    const crest = new THREE.Mesh(new THREE.CircleGeometry(0.5, 16), toyMaterial(0xf1c40f, { metal: 0.65 }));
+    crest.position.set(0, 2.55, 8.48);
     this.root.add(soil, path, wall, gate, crest);
+    for (const [x, z] of [
+      [-6.2, -3.4],
+      [6.4, -2.8],
+      [-5.6, 4.2],
+      [5.8, 3.6],
+    ]) {
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.8, 8), toyMaterial(0x6d4c3d));
+      trunk.position.set(x, 0.4, z);
+      const crown = new THREE.Mesh(new THREE.SphereGeometry(0.7, 12, 10), toyMaterial(0x3d8b4a, { roughness: 0.8 }));
+      crown.position.set(x, 1.15, z);
+      this.root.add(trunk, crown);
+    }
   }
 
   private makeBuilding(id: BuildingId, level: number, pos: THREE.Vector3): THREE.Group {
@@ -73,14 +85,20 @@ export class VillageScene {
       scrollTower: 0x2e86c1,
       shadowTemple: 0x4a148c,
     };
-    const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, height, 1.5), toyMaterial(palette[id], { metal: id === "forge" ? 0.45 : 0.12 }));
+    const body = new THREE.Mesh(new THREE.BoxGeometry(1.7, height, 1.7), toyMaterial(palette[id], { metal: id === "forge" ? 0.45 : 0.12 }));
     body.position.y = height / 2;
     body.castShadow = true;
     body.receiveShadow = true;
-    g.add(body);
+    const roof = new THREE.Mesh(
+      new THREE.ConeGeometry(1.35, 0.7, 5),
+      toyMaterial(id === "shadowTemple" ? 0x4a148c : 0xc0392b, { roughness: 0.45 }),
+    );
+    roof.position.y = height + 0.28;
+    roof.rotation.y = Math.PI / 5;
+    g.add(body, roof);
     if (id === "scrollTower" || id === "goldMine") {
       const dome = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 12), toyMaterial(0xf7ca18, { metal: 0.55 }));
-      dome.position.y = height + 0.15;
+      dome.position.y = height + 0.55;
       g.add(dome);
     }
     if (id === "shadowTemple") {

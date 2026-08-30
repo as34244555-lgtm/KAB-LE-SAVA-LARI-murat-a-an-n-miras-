@@ -83,12 +83,12 @@ export class NarrativeManager {
       };
     }
     return {
-      sky: "#6a3a2c",
-      fog: 0x8a5a40,
-      fogDensity: 0.016,
-      ambient: 0x7a5040,
-      torch: 0xffcc66,
-      bloom: 0.7,
+      sky: "#f0a35a",
+      fog: 0xe09a60,
+      fogDensity: 0.012,
+      ambient: 0xffd4a0,
+      torch: 0xffe0a0,
+      bloom: 0.85,
       music: "overture",
     };
   }

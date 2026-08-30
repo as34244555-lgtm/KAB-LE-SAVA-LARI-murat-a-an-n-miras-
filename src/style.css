@@ -146,12 +146,31 @@ html, body {
   flex: 1;
   overflow: auto;
   padding: 10px 14px 72px;
+  background: linear-gradient(180deg, transparent 0%, transparent 28%, rgba(26, 16, 12, 0.18) 100%);
 }
 
-.grid {
+.playfield {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 210px);
+}
+
+.world-gap {
+  flex: 1 1 220px;
+  min-height: 180px;
+  pointer-events: none;
+}
+
+.drawer, .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 12px;
+}
+
+.drawer {
+  max-height: 38vh;
+  overflow: auto;
+  padding-bottom: 8px;
 }
 
 .span { grid-column: 1 / -1; }
