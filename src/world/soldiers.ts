@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { stylizedPerson } from "./materials";
 
 let proto: THREE.Group | null = null;
@@ -32,7 +33,7 @@ export function loadSoldierRig(): Promise<THREE.Group> {
 
 export function spawnUnit(primary: number, accent: number, hat: "turban" | "hood" | "helm" | "none"): THREE.Group {
   if (!proto) return stylizedPerson(primary, accent, hat);
-  const clone = proto.clone(true);
+  const clone = cloneSkinned(proto) as THREE.Group;
   clone.traverse((obj) => {
     if (obj instanceof THREE.Mesh && obj.material instanceof THREE.MeshStandardMaterial) {
       const mat = obj.material.clone();
