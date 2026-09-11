@@ -20,6 +20,8 @@ const SLOTS: BuildingSlot[] = ["resource", "camp", "tower", "market", "forge"];
 export class UIRoot {
   private layer: HTMLElement;
   private onAction: ((name: string, payload?: string) => void) | null = null;
+  private heldToast = "";
+  private heldUntil = 0;
 
   constructor(host: HTMLElement) {
     this.layer = document.createElement("div");
@@ -39,8 +41,12 @@ export class UIRoot {
   }
 
   render(game: Game, screen: GamePhase, notice = "", watching = false) {
-    const toast = notice || game.toast;
-    game.toast = "";
+    if (game.toast) {
+      this.heldToast = game.toast;
+      this.heldUntil = Date.now() + 4500;
+      game.toast = "";
+    }
+    const toast = notice || (Date.now() < this.heldUntil ? this.heldToast : "");
     if (screen === "intro" || screen === "boot") {
       this.layer.innerHTML = this.intro();
       return;
@@ -219,7 +225,7 @@ export class UIRoot {
       .join("");
     return `
       <div class="sheet-head"><h2>Vârisin Divanı</h2><button class="neu-btn slim ghost" data-act="close-sheet">Paneli kapat</button></div>
-      <p>Seviye ${game.levels.currentLevel} · ${game.kit.biomeLabel}. Üç kabile birbirini suçluyor; sen mühürleri okuyorsun.</p>
+      <p>Seviye ${game.levels.currentLevel} · XP ${game.levels.currentXp} (${Math.round(game.levels.progress * 100)}%). ${game.kit.biomeLabel}. Üç kabile birbirini suçluyor; sen mühürleri okuyorsun.</p>
       ${scroll ? `<article class="neu-card"><div class="eyebrow">Parşömen ${scroll.level}</div><h3>${scroll.title}</h3><p>${scroll.body}</p></article>` : ""}
       ${voices}
       ${side ? `<article class="neu-card"><h3>${side.name}</h3><p class="memory">${side.memory}</p><p>${side.clue}</p></article>` : "<p>Her 10 seviyede bir yan kabile Murat Ağa'nın eski bir anısını bırakır.</p>"}

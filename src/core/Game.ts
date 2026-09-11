@@ -654,7 +654,9 @@ export class Game {
       this.data.diplomacy[tribe] = this.data.diplomacy[tribe] === "talks" ? "trade" : this.data.diplomacy[tribe];
       this.data.diplomacy[from] = "war";
       this.mapDirty = true;
-      this.toast = `${TRIBES[tribe].name} ile ${TRIBES[from].name} sınırda çarpıştı.`;
+      if (!this.toast.includes("akın")) {
+        this.toast = `${TRIBES[tribe].name} ile ${TRIBES[from].name} sınırda çarpıştı.`;
+      }
       return;
     }
 

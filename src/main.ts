@@ -122,6 +122,7 @@ function loop(now: number) {
   const dt = Math.min(100, now - last);
   last = now;
   game.tick(dt);
+  if (game.mapDirty || game.toast) paint();
   saveAcc += dt;
   if (saveAcc > 20000) {
     saveAcc = 0;
