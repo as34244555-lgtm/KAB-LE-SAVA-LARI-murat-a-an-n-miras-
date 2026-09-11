@@ -19,6 +19,9 @@ describe("Sonsuz karışık harita", () => {
     expect(tiles.some((tile) => tile.owner === "sariklilar" && tile.slot === "hall")).toBe(true);
     expect(tiles.some((tile) => tile.owner === "gokhanli" && tile.slot === "hall")).toBe(true);
     expect(tiles.some((tile) => tile.owner === "demirhisar" && tile.slot === "hall")).toBe(true);
+    for (const tribe of ["sariklilar", "gokhanli", "demirhisar"] as const) {
+      expect(tiles.filter((tile) => tile.owner === tribe && tile.slot === "hall").length).toBeGreaterThanOrEqual(2);
+    }
     const biomes = new Set(tiles.map((tile) => tile.biome));
     expect(biomes.size).toBe(3);
   });

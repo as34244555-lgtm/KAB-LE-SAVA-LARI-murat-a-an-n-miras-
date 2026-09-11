@@ -11,7 +11,7 @@ import { sideTribeForLevel } from "../data/sideTribes";
 
 export function xpToNextLevel(level: number): number {
   if (level >= MAX_PLAYER_LEVEL) return Number.POSITIVE_INFINITY;
-  return Math.round(36 + level * 22 + Math.pow(level, 1.12) * 3);
+  return Math.round(24 + level * 15 + Math.pow(level, 1.08) * 2);
 }
 
 export class LevelManager {

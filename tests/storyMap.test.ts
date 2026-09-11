@@ -62,6 +62,27 @@ describe("Hikâye hex ve kadro", () => {
     expect(after).toBeGreaterThanOrEqual(before);
   });
 
+  it("rakip kabile karakolundan oyuncuya akın düzenler", () => {
+    const game = new Game(emptySave());
+    game.chooseTribe("gokhanli");
+    const border = game.data.tiles
+      .filter((tile) => tile.owner === "sariklilar")
+      .flatMap((tile) => neighbors(tile.q, tile.r))
+      .map((n) => game.data.tiles.find((tile) => tile.q === n.q && tile.r === n.r))
+      .find((next) => next && next.owner !== "sariklilar" && !next.landmark);
+    expect(border).toBeTruthy();
+    const target = border!;
+    target.owner = "gokhanli";
+    target.slot = undefined;
+    target.garrison = 2;
+    target.landmark = undefined;
+    const before = game.data.tiles.filter((tile) => tile.owner === "gokhanli").length;
+    expect(game.raidPlayer("sariklilar", () => 0)).toBe(true);
+    expect(game.toast).toContain("akın");
+    expect(game.data.diplomacy.sariklilar).toBe("war");
+    expect(game.data.tiles.filter((tile) => tile.owner === "gokhanli").length).toBeLessThan(before);
+  });
+
   it("kabilede ikinci birim ölçeklenir", () => {
     const levels = new LevelManager(4, 0);
     const deve = UNITS.find((unit) => unit.id === "deve")!;

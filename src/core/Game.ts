@@ -19,7 +19,7 @@ import { QuestManager } from "../managers/QuestManager";
 import { AdsManager, type RewardKind } from "../managers/AdsManager";
 import { CaravanSystem } from "../economy/CaravanSystem";
 import { Soundtrack } from "../audio/Soundtrack";
-import { EXPLORE_RADIUS, climateHint, ensureTiles, generateWorld, hexById, stampLandmarks, startingBanner } from "../data/hexMap";
+import { EXPLORE_RADIUS, capitalOf, climateHint, ensureTiles, generateWorld, hexById, stampLandmarks, startingBanner } from "../data/hexMap";
 import { scrollForLevel } from "../data/scrolls";
 import { sideTribeForLevel } from "../data/sideTribes";
 import { kitFor, TRAIN_COST, UPGRADE_COST, canPay, pay, slotKit } from "../data/tribeKits";
@@ -37,7 +37,7 @@ import {
   takeFromRoster,
   unitsFor,
 } from "../data/roster";
-import { neighbors, parseKey } from "../world/hexMath";
+import { hexKey, neighbors, parseKey } from "../world/hexMath";
 import { enemyArmy, enemyFromGarrison, resolveBattle, scaleById, scaleUnit } from "../units/CombatResolver";
 import type { PlayerSave } from "./types";
 import { bus } from "./EventBus";
@@ -133,7 +133,8 @@ export class Game {
     this.data.diplomacy = defaultDiplomacy();
     this.data.visitedLandmarks = [];
     this.data.lastDailyAt = Math.floor(Date.now() / 86_400_000);
-    this.data.selectedHex = this.data.tiles.find((tile) => tile.owner === tribe && tile.slot === "hall")?.id ?? null;
+    const capital = capitalOf(tribe);
+    this.data.selectedHex = hexKey(capital.q, capital.r);
     this.mapDirty = true;
     this.toast = `Vâris olarak ${TRIBES[tribe].name} sancağını aldın. Murat Ağa'nın hançerini bu toprakta ara.`;
     this.flush();
@@ -160,8 +161,8 @@ export class Game {
 
   hydrate(): void {
     this.bootManagers();
-    const hall = this.data.tiles.find((tile) => tile.slot === "hall" && this.isMine(tile.owner));
-    if (hall) this.ensureAround(hall.q, hall.r);
+    const capital = this.data.chosenTribe ? capitalOf(this.data.chosenTribe) : null;
+    if (capital) this.ensureAround(capital.q, capital.r);
     else this.ensureAround(0, 0);
   }
 
@@ -353,7 +354,7 @@ export class Game {
       tile.owner = this.data.chosenTribe;
       tile.garrison = 3;
       tile.stars = 3;
-      this.gainProgress(8);
+      this.gainProgress(14);
       this.mapDirty = true;
       this.flush();
       return this.withStory(`${tile.label} bağlandı. ${climateHint(tile.biome)} Kayıp: ${loss}`);
@@ -426,7 +427,7 @@ export class Game {
       this.economy.grant("gold", result.goldLoot);
       this.gainProgress(result.xpReward);
     } else {
-      this.gainProgress(6);
+      this.gainProgress(12);
     }
     this.flush();
     return result;
@@ -587,13 +588,49 @@ export class Game {
     this.flush();
   }
 
+  raidPlayer(tribe: PlayableTribe, rng: () => number = Math.random): boolean {
+    const owned = this.data.tiles.filter((tile) => tile.owner === tribe);
+    if (!owned.length || !this.data.chosenTribe) return false;
+    const mood = this.data.diplomacy[tribe] ?? "talks";
+    const edges = this.borderOf(owned);
+    const adjacent = edges.filter((tile) => this.isMine(tile.owner) && !this.isPlayerCapital(tile));
+    let target = adjacent.length ? adjacent[Math.floor(rng() * adjacent.length)] : undefined;
+    if (!target) {
+      const distantChance = mood === "war" ? 0.22 : mood === "trade" ? 0.08 : 0.14;
+      if (rng() >= distantChance) return false;
+      const distant = this.data.tiles.filter(
+        (tile) => this.isMine(tile.owner) && !this.isPlayerCapital(tile) && tile.slot !== "hall" && !tile.landmark,
+      );
+      if (!distant.length) return false;
+      target = distant[Math.floor(rng() * distant.length)];
+    }
+
+    this.data.diplomacy[tribe] = "war";
+    if (target.garrison <= 3 || rng() < 0.4) {
+      target.owner = tribe;
+      target.garrison = 3;
+      target.label = `${TRIBES[tribe].name} ${target.biome === "desert" ? "çölü" : target.biome === "ice" ? "buzı" : "ormanı"}`;
+      this.shrinkArmy(1);
+    } else {
+      target.garrison = Math.max(1, target.garrison - 2);
+    }
+    this.toast = `${TRIBES[tribe].name} karakolundan akın geldi.`;
+    this.mapDirty = true;
+    return true;
+  }
+
+  private isPlayerCapital(tile: HexTile): boolean {
+    if (!this.data.chosenTribe) return false;
+    const capital = capitalOf(this.data.chosenTribe);
+    return tile.q === capital.q && tile.r === capital.r;
+  }
+
   private stepTribeAi(tribe: PlayableTribe, rng: () => number): void {
     const owned = this.data.tiles.filter((tile) => tile.owner === tribe);
     if (!owned.length) return;
     const mood = this.data.diplomacy[tribe] ?? "talks";
     const edges = this.borderOf(owned);
     const empty = edges.filter((tile) => tile.owner === "neutral" && !tile.landmark);
-    const playerTiles = edges.filter((tile) => this.isMine(tile.owner) && tile.slot !== "hall");
     const rival = edges.filter((tile) => tile.owner !== "neutral" && !this.isMine(tile.owner) && tile.owner !== tribe && !tile.landmark && tile.slot !== "hall");
 
     if (empty.length && rng() < 0.55) {
@@ -606,22 +643,8 @@ export class Game {
       return;
     }
 
-    const raidChance = mood === "war" ? 0.38 : mood === "trade" ? 0.06 : 0.12;
-    if (playerTiles.length && rng() < raidChance) {
-      const tile = playerTiles[Math.floor(rng() * playerTiles.length)];
-      this.data.diplomacy[tribe] = "war";
-      if (tile.garrison <= 3 || rng() < 0.35) {
-        tile.owner = tribe;
-        tile.garrison = 3;
-        this.shrinkArmy(1);
-        this.toast = `${TRIBES[tribe].name} toprağına yürüdü.`;
-      } else {
-        tile.garrison = Math.max(1, tile.garrison - 2);
-        this.toast = `${TRIBES[tribe].name} sınırını yokladı.`;
-      }
-      this.mapDirty = true;
-      return;
-    }
+    const raidChance = mood === "war" ? 0.45 : mood === "trade" ? 0.1 : 0.2;
+    if (rng() < raidChance && this.raidPlayer(tribe, rng)) return;
 
     if (rival.length && rng() < 0.18) {
       const tile = rival[Math.floor(rng() * rival.length)];

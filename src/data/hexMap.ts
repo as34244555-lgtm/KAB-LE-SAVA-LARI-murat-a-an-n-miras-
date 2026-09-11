@@ -3,11 +3,48 @@ import { TRIBES } from "./tribes";
 import { LANDMARKS, landmarkAt, landmarkGarrison } from "./landmarks";
 import { forEachHex, hash01, hexDistance, hexKey, valueNoise } from "../world/hexMath";
 
-export const HALLS: Record<PlayableTribe, { q: number; r: number }> = {
-  sariklilar: { q: -7, r: 4 },
-  gokhanli: { q: 0, r: 0 },
-  demirhisar: { q: 7, r: -3 },
+export type HallCoord = { q: number; r: number };
+
+/** İlk koordinat başkent, diğerleri karakol. */
+export const HALLS: Record<PlayableTribe, HallCoord[]> = {
+  sariklilar: [
+    { q: -7, r: 4 },
+    { q: -14, r: 1 },
+    { q: -6, r: -3 },
+  ],
+  gokhanli: [
+    { q: 0, r: 0 },
+    { q: 1, r: -10 },
+    { q: -8, r: -8 },
+  ],
+  demirhisar: [
+    { q: 7, r: -3 },
+    { q: 13, r: 0 },
+    { q: 4, r: -9 },
+  ],
 };
+
+export function capitalOf(tribe: PlayableTribe): HallCoord {
+  return HALLS[tribe][0];
+}
+
+export function hallsOf(tribe: PlayableTribe): HallCoord[] {
+  return HALLS[tribe];
+}
+
+export function allHalls(): Array<HallCoord & { tribe: PlayableTribe }> {
+  return (Object.keys(HALLS) as PlayableTribe[]).flatMap((tribe) =>
+    HALLS[tribe].map((hall) => ({ ...hall, tribe })),
+  );
+}
+
+export function hallAt(q: number, r: number): { tribe: PlayableTribe; capital: boolean } | undefined {
+  for (const tribe of Object.keys(HALLS) as PlayableTribe[]) {
+    const index = HALLS[tribe].findIndex((hall) => hall.q === q && hall.r === r);
+    if (index >= 0) return { tribe, capital: index === 0 };
+  }
+  return undefined;
+}
 
 export const EXPLORE_RADIUS = 14;
 export const DETAIL_RADIUS = 8;
@@ -27,18 +64,18 @@ export function biomeAt(q: number, r: number): Biome {
   else if (anomaly < 0.14) biome = "ice";
   else if (anomaly < 0.21) biome = "forest";
 
-  for (const [tribe, hall] of Object.entries(HALLS) as [PlayableTribe, { q: number; r: number }][]) {
+  for (const hall of allHalls()) {
     const d = hexDistance(q, r, hall.q, hall.r);
     if (d <= 2 && hash01(q, r, 3) > 0.28) {
-      biome = tribe === "sariklilar" ? "desert" : tribe === "demirhisar" ? "ice" : "forest";
+      biome = hall.tribe === "sariklilar" ? "desert" : hall.tribe === "demirhisar" ? "ice" : "forest";
     }
   }
   return biome;
 }
 
 function ownerAt(q: number, r: number): OwnerId {
-  for (const [tribe, hall] of Object.entries(HALLS) as [PlayableTribe, { q: number; r: number }][]) {
-    if (hexDistance(q, r, hall.q, hall.r) <= 1) return tribe;
+  for (const hall of allHalls()) {
+    if (hexDistance(q, r, hall.q, hall.r) <= 1) return hall.tribe;
   }
   const far = hash01(q, r, 19);
   if (far < 0.035 && hexDistance(q, r, 0, 0) > 5) {
@@ -51,8 +88,7 @@ function ownerAt(q: number, r: number): OwnerId {
 
 function isHall(q: number, r: number, owner: OwnerId): boolean {
   if (owner === "neutral") return false;
-  const hall = HALLS[owner];
-  return hall.q === q && hall.r === r;
+  return HALLS[owner].some((hall) => hall.q === q && hall.r === r);
 }
 
 export function applyLandmark(tile: HexTile): void {
@@ -79,6 +115,7 @@ export function makeTile(q: number, r: number): HexTile {
   const biome = biomeAt(q, r);
   const owner = mark ? "neutral" : ownerAt(q, r);
   const hall = isHall(q, r, owner);
+  const role = hall ? hallAt(q, r) : undefined;
   const wild = Math.floor(hexDistance(q, r, 0, 0) / 4);
   const tile: HexTile = {
     id: hexKey(q, r),
@@ -88,8 +125,10 @@ export function makeTile(q: number, r: number): HexTile {
     owner,
     slot: hall ? "hall" : undefined,
     level: hall ? 1 : 0,
-    garrison: owner === "neutral" ? 2 + wild : hall ? 8 : 4 + wild,
-    label: hall ? `${TRIBES[owner as PlayableTribe].name} merkezi` : tileLabel(biome, owner),
+    garrison: owner === "neutral" ? 2 + wild : hall ? (role?.capital ? 8 : 6) : 4 + wild,
+    label: hall
+      ? `${TRIBES[owner as PlayableTribe].name} ${role?.capital ? "merkezi" : "karakolu"}`
+      : tileLabel(biome, owner),
   };
   if (mark) applyLandmark(tile);
   return tile;
@@ -110,10 +149,11 @@ export function ensureTiles(tiles: HexTile[], q: number, r: number, radius: numb
 
 export function generateWorld(player: PlayableTribe): HexTile[] {
   const tiles: HexTile[] = [];
-  ensureTiles(tiles, HALLS[player].q, HALLS[player].r, START_VIEW);
-  (Object.keys(HALLS) as PlayableTribe[]).forEach((tribe) => {
-    ensureTiles(tiles, HALLS[tribe].q, HALLS[tribe].r, HALL_CLUSTER);
-  });
+  const home = capitalOf(player);
+  ensureTiles(tiles, home.q, home.r, START_VIEW);
+  for (const hall of allHalls()) {
+    ensureTiles(tiles, hall.q, hall.r, HALL_CLUSTER);
+  }
   stampLandmarks(tiles);
   return tiles;
 }

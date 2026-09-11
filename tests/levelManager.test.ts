@@ -30,4 +30,10 @@ describe("LevelManager", () => {
     expect(levels.currentLevel).toBe(100);
     expect(levels.currentXp).toBe(0);
   });
+
+  it("erken seviyeler biraz daha çabuk çıkar", () => {
+    expect(xpToNextLevel(1)).toBeLessThan(50);
+    expect(xpToNextLevel(5)).toBeLessThan(120);
+    expect(xpToNextLevel(1)).toBeGreaterThan(30);
+  });
 });

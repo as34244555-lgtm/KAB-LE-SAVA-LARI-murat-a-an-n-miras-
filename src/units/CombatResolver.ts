@@ -124,7 +124,7 @@ export function resolveBattle(
     enemy.hp <= 0 && playerHp > 0 ? "player" : playerHp <= 0 && enemy.hp > 0 ? "enemy" : "draw";
 
   const goldLoot = winner === "player" ? 40 + enemy.level * 8 : 8;
-  const xpReward = winner === "player" ? 28 + enemy.level * 6 : 10;
+  const xpReward = winner === "player" ? 38 + enemy.level * 8 : 14;
 
   log.push(
     winner === "player"
