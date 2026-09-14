@@ -39,3 +39,10 @@ npm run dev
 ```
 
 Tarayıcıda `http://localhost:5173`. Production: `npm run build && npm run preview`.
+
+## Telefonda oyna
+
+Yeni yemin aldıktan sonra kayıt tarayıcıda kalır (Chrome / Safari). Ana ekrana eklenebilir.
+
+- **GitHub Pages** (Settings → Pages → `gh-pages` dalını açınca): https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/
+- **Yedek CDN:** https://raw.githack.com/as34244555-lgtm/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/gh-pages/index.html
