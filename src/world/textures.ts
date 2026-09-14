@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { publicUrl } from "./publicUrl";
 
 const loader = new THREE.TextureLoader();
 
@@ -14,9 +15,9 @@ function loadMap(url: string, srgb: boolean, repeat: number): THREE.Texture {
 
 function pack(folder: string, repeat: number) {
   return {
-    map: loadMap(`/pbr/${folder}/diff.jpg`, true, repeat),
-    normal: loadMap(`/pbr/${folder}/nor.jpg`, false, repeat),
-    rough: loadMap(`/pbr/${folder}/rough.jpg`, false, repeat),
+    map: loadMap(publicUrl(`/pbr/${folder}/diff.jpg`), true, repeat),
+    normal: loadMap(publicUrl(`/pbr/${folder}/nor.jpg`), false, repeat),
+    rough: loadMap(publicUrl(`/pbr/${folder}/rough.jpg`), false, repeat),
     repeat,
   };
 }

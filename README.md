@@ -42,7 +42,7 @@ Tarayıcıda `http://localhost:5173`. Production: `npm run build && npm run prev
 
 ## Telefonda oyna
 
-Yeni yemin aldıktan sonra kayıt tarayıcıda kalır (Chrome / Safari). Ana ekrana eklenebilir.
+Safari veya Chrome’da aç; “Ana Ekrana Ekle” dersen uygulama gibi durur. Kayıt o tarayıcıda saklanır.
 
-- **GitHub Pages** (Settings → Pages → `gh-pages` dalını açınca): https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/
-- **Yedek CDN:** https://raw.githack.com/as34244555-lgtm/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/gh-pages/index.html
+- **Kalıcı yedek (gh-pages CDN):** https://raw.githack.com/as34244555-lgtm/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/gh-pages/index.html
+- **GitHub Pages** (repo Settings → Pages → Source: `gh-pages` dalı): https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/

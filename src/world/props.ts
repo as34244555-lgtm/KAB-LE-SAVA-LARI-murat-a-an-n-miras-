@@ -1,13 +1,14 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { publicUrl } from "./publicUrl";
 
 const PATHS = {
-  cannon: "/models/cannon/cannon.gltf",
-  lantern: "/models/lantern/lantern.gltf",
-  crate: "/models/crate/crate.gltf",
-  boulder: "/models/boulder/boulder.gltf",
-  stove: "/models/stove/stove.gltf",
-  table: "/models/table/table.gltf",
+  cannon: publicUrl("/models/cannon/cannon.gltf"),
+  lantern: publicUrl("/models/lantern/lantern.gltf"),
+  crate: publicUrl("/models/crate/crate.gltf"),
+  boulder: publicUrl("/models/boulder/boulder.gltf"),
+  stove: publicUrl("/models/stove/stove.gltf"),
+  table: publicUrl("/models/table/table.gltf"),
 } as const;
 
 export type PropId = keyof typeof PATHS;
