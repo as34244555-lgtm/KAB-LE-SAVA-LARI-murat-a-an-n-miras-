@@ -44,5 +44,5 @@ Tarayıcıda `http://localhost:5173`. Production: `npm run build && npm run prev
 
 Safari veya Chrome’da aç; “Ana Ekrana Ekle” dersen uygulama gibi durur. Kayıt o tarayıcıda saklanır.
 
-- **Kalıcı yedek (gh-pages CDN):** https://raw.githack.com/as34244555-lgtm/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/gh-pages/index.html
+- **Canlı site:** https://visceral-neon-4wf3ash.shipstatic.com/
 - **GitHub Pages** (repo Settings → Pages → Source: `gh-pages` dalı): https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/
