@@ -1,7 +1,7 @@
 {
   "name": "Kabile Savaşları: Murat Ağa'nın Mirası",
   "short_name": "Kabile Savaşları",
-  "description": "Murat Ağa'nın mirasını kurtar; tek oyunculu hex strateji.",
+  "description": "Kabile Savaşları: Murat Ağa'nın Mirası — ücretsiz hex strateji. Cinayeti çöz, sancağı koru.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

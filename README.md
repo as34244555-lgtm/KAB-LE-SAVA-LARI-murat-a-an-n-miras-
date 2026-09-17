@@ -44,5 +44,9 @@ Tarayıcıda `http://localhost:5173`. Production: `npm run build && npm run prev
 
 Safari veya Chrome’da aç; “Ana Ekrana Ekle” dersen uygulama gibi durur. Kayıt o tarayıcıda saklanır.
 
-- **Canlı site:** https://kabile-savaslari-murat-aganin-mirasi.paint-lizard.workers.dev/
+- **Hedef adres:** https://kabile-savaslari-murat-aganin-mirasi.com/
+- **Şimdilik canlı:** https://kabile-savaslari-murat-aganin-mirasi.paint-lizard.workers.dev/
+
+`.com` adresi bir alan adı satın alınca bağlanır (yıllık ücret, Cloudflare veya Porkbun). Satın alınca DNS’te `@` ve `www` bu siteye yönlendirilir. Google’da “kabile savaşları” çıkması için Search Console’dan siteyi ekleyip sitemap gönderin: `https://kabile-savaslari-murat-aganin-mirasi.com/sitemap.xml`
+
 - **GitHub Pages** (repo Settings → Pages → Source: `gh-pages` dalı): https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kabile-savaslari-murat-aganin-mirasi.com/sitemap.xml
