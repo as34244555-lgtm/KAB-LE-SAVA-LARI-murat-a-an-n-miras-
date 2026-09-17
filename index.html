@@ -14,8 +14,10 @@
     />
     <meta name="keywords" content="kabile savaşları, kabile savaslari, murat ağa, murat aga mirası, strateji oyunu, hex savaş, ücretsiz oyun, tarayıcı oyunu" />
     <meta name="author" content="Kabile Savaşları" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <link rel="canonical" href="https://kabile-savaslari-murat-aganin-mirasi.com/" />
+    <link rel="alternate" hreflang="tr" href="https://kabile-savaslari-murat-aganin-mirasi.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://kabile-savaslari-murat-aganin-mirasi.com/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="Kabile Savaşları: Murat Ağa'nın Mirası" />
@@ -35,19 +37,31 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "VideoGame",
-        "name": "Kabile Savaşları: Murat Ağa'nın Mirası",
-        "alternateName": ["Kabile Savaşları", "Kabile Savaslari", "Murat Ağa'nın Mirası"],
-        "url": "https://kabile-savaslari-murat-aganin-mirasi.com/",
-        "image": "https://kabile-savaslari-murat-aganin-mirasi.com/art/throne.png",
-        "description": "Ücretsiz tek oyunculu kabile savaşları strateji oyunu. Sarıklılar, Gök-Hanlı veya Demir-Hisar sancağını al; Murat Ağa suikastını çöz.",
-        "inLanguage": "tr",
-        "genre": ["Strateji", "Hex", "RTS"],
-        "playMode": "SinglePlayer",
-        "applicationCategory": "GameApplication",
-        "operatingSystem": "Any",
-        "browserRequirements": "HTML5, WebGL",
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TRY" }
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "Kabile Savaşları",
+            "alternateName": ["Kabile Savaşları: Murat Ağa'nın Mirası", "Kabile Savaslari"],
+            "url": "https://kabile-savaslari-murat-aganin-mirasi.com/",
+            "inLanguage": "tr",
+            "description": "Kabile Savaşları ücretsiz tarayıcı strateji oyunu. Murat Ağa'nın mirasını kurtar."
+          },
+          {
+            "@type": "VideoGame",
+            "name": "Kabile Savaşları: Murat Ağa'nın Mirası",
+            "alternateName": ["Kabile Savaşları", "Kabile Savaslari", "Murat Ağa'nın Mirası"],
+            "url": "https://kabile-savaslari-murat-aganin-mirasi.com/",
+            "image": "https://kabile-savaslari-murat-aganin-mirasi.com/art/throne.png",
+            "description": "Ücretsiz tek oyunculu kabile savaşları strateji oyunu. Sarıklılar, Gök-Hanlı veya Demir-Hisar sancağını al; Murat Ağa suikastını çöz.",
+            "inLanguage": "tr",
+            "genre": ["Strateji", "Hex", "RTS"],
+            "playMode": "SinglePlayer",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "HTML5, WebGL",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TRY" }
+          }
+        ]
       }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -65,6 +79,16 @@
         sancağını seç; hex haritada toprak kap, savaş ve cinayetin izini sür.
       </p>
     </header>
+    <noscript>
+      <main>
+        <h1>Kabile Savaşları: Murat Ağa'nın Mirası</h1>
+        <p>
+          Kabile Savaşları, Murat Ağa’nın mor kabzalı hançerle öldürülmesinin ardından geçen ücretsiz bir strateji oyunudur.
+          Bir sancak seç, hex haritada savaş, parşömenlerle cinayeti çöz.
+        </p>
+        <p><a href="./kabile-savaslari.html">Kabile Savaşları hakkında</a></p>
+      </main>
+    </noscript>
     <div id="app">
       <canvas id="stage"></canvas>
     </div>
