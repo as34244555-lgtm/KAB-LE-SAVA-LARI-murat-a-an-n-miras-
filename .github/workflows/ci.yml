@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [main, cursor/game-foundation-82a5]
+    branches: [main, "cursor/**"]
   pull_request:
   workflow_dispatch:
 jobs:

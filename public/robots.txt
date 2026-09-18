@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kabile-savaslari-murat-aganin-mirasi.com/sitemap.xml
+Sitemap: https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/sitemap.xml

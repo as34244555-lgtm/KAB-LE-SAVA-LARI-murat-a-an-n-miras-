@@ -44,15 +44,12 @@ Tarayıcıda `http://localhost:5173`. Production: `npm run build && npm run prev
 
 Safari veya Chrome’da aç; “Ana Ekrana Ekle” dersen uygulama gibi durur. Kayıt o tarayıcıda saklanır.
 
-- **Hedef adres:** https://kabile-savaslari-murat-aganin-mirasi.com/
-- **Şimdilik canlı:** https://kabile-savaslari-murat-aganin-mirasi.adaptive-crystal.workers.dev/
+- **Oyna (ücretsiz, kalıcı):** https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/
+- **Arama sayfası:** https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/kabile-savaslari.html
 
-`.com` kartsız açılmaz (yıllık ücret, yaklaşık 10 USD). Google “kabile savaşları” yazınca bu siteyi göstersin istiyorsan sırayla:
+Ücretli alan adı yok. Google’da “kabile savaşları murat ağanın mirası” yazınca bu sayfaların çıkması için tek seferlik iki adım gerekir:
 
-1. [Cloudflare](https://dash.cloudflare.com/?to=/:account/domains/register) hesabı aç; `kabile-savaslari-murat-aganin-mirasi.com` satın al.
-2. Worker’ı sahiplen (sohbetteki claim linki 60 dakika geçerli). Workers → Custom domains → bu `.com`’u ekle. SSL otomatik gelir.
-3. [Google Search Console](https://search.google.com/search-console) → **Alan adı** özelliği ekle → Cloudflare DNS’e TXT kaydı koy.
-4. Sitemap gönder: `https://kabile-savaslari-murat-aganin-mirasi.com/sitemap.xml`
-5. Tarama birkaç gün–hafta sürebilir. Aynı isimde eski bir oyun (`kabilesavaslari.com`) olduğu için ilk sırayı Google hemen vermez; “kabile savaşları murat ağa” daha çabuk çıkar.
+1. Repo **Settings → Pages → Source: `gh-pages` dalı** seçilir (bu dal CI ile otomatik güncellenir). Açılınca yukarıdaki adres canlı olur.
+2. [Google Search Console](https://search.google.com/search-console)’da URL ön eki eklenip sitemap gönderilir: `https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/sitemap.xml`
 
-- **GitHub Pages** (repo Settings → Pages → Source: `gh-pages` dalı): https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/
+Tarama birkaç gün–hafta sürebilir; bu tam ifade benzersiz olduğu için “kabile savaşları murat ağanın mirası” araması genel “kabile savaşları” aramasından çok daha çabuk sonuç verir.
