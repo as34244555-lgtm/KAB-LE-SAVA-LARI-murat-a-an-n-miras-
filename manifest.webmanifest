@@ -1,0 +1,19 @@
+{
+  "name": "Kabile Savaşları: Murat Ağa'nın Mirası",
+  "short_name": "Kabile Savaşları",
+  "description": "Kabile Savaşları: Murat Ağa'nın Mirası — ücretsiz hex strateji. Cinayeti çöz, sancağı koru.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a1010",
+  "theme_color": "#1a1010",
+  "icons": [
+    {
+      "src": "./art/throne.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
