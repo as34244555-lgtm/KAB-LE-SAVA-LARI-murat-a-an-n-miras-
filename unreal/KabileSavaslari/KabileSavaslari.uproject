@@ -13,9 +13,18 @@
         "CoreUObject",
         "UMG"
       ]
+    },
+    {
+      "Name": "KabileSavaslariEditor",
+      "Type": "Editor",
+      "LoadingPhase": "PostEngineInit"
     }
   ],
   "Plugins": [
+    {
+      "Name": "ProceduralMeshComponent",
+      "Enabled": true
+    },
     {
       "Name": "GLTFImporter",
       "Enabled": true
