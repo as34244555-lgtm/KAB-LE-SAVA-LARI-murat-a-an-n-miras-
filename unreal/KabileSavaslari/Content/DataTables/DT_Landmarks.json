@@ -1,0 +1,100 @@
+[
+  {
+    "q": -4,
+    "r": -6,
+    "kind": "side",
+    "sideId": "korsanlar",
+    "title": "Tuz Korsanları",
+    "unlockLevel": 10,
+    "questId": "q-korsan-fener",
+    "garrison": 7
+  },
+  {
+    "q": 8,
+    "r": 5,
+    "kind": "side",
+    "sideId": "mogollar",
+    "title": "Bozkır Moğolları",
+    "unlockLevel": 20,
+    "questId": "q-tuz-hakki",
+    "garrison": 8
+  },
+  {
+    "q": -9,
+    "r": 7,
+    "kind": "side",
+    "sideId": "gocebeler",
+    "title": "Kum Göçebeleri",
+    "unlockLevel": 30,
+    "questId": "q-su-ismi",
+    "garrison": 9
+  },
+  {
+    "q": 0,
+    "r": 10,
+    "kind": "temple",
+    "sideId": "suikastcilar",
+    "title": "Gölge Tapınağı",
+    "unlockLevel": 40,
+    "questId": "q-gercegi-satinalma",
+    "garrison": 16
+  },
+  {
+    "q": 11,
+    "r": -8,
+    "kind": "side",
+    "sideId": "denizciler",
+    "title": "İnci Denizcileri",
+    "unlockLevel": 50,
+    "questId": "q-islak-taht",
+    "garrison": 11
+  },
+  {
+    "q": -12,
+    "r": -2,
+    "kind": "side",
+    "sideId": "colyildizlari",
+    "title": "Çöl Yıldızları",
+    "unlockLevel": 60,
+    "garrison": 12
+  },
+  {
+    "q": 6,
+    "r": -11,
+    "kind": "side",
+    "sideId": "dagkartallari",
+    "title": "Dağ Kartalları",
+    "unlockLevel": 70,
+    "questId": "q-dortuncu-muhur",
+    "garrison": 13
+  },
+  {
+    "q": -2,
+    "r": 14,
+    "kind": "side",
+    "sideId": "buzmuhafizlari",
+    "title": "Buz Muhafızları",
+    "unlockLevel": 80,
+    "garrison": 14
+  },
+  {
+    "q": 14,
+    "r": 3,
+    "kind": "side",
+    "sideId": "eskiyeminliler",
+    "title": "Eski Yeminliler",
+    "unlockLevel": 90,
+    "questId": "q-en-yakin",
+    "garrison": 15
+  },
+  {
+    "q": 3,
+    "r": 16,
+    "kind": "finale",
+    "sideId": "golge-elcisi",
+    "title": "Elçi Kalesi",
+    "unlockLevel": 100,
+    "questId": "q-miras",
+    "garrison": 24
+  }
+]
