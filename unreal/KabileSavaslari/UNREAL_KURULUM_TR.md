@@ -1,8 +1,29 @@
-# Kabile Savaşları: Murat Ağa'nın Mirası — Unreal Engine 5 Kurulum Rehberi
+# Kabile Savaşları: Murat Ağa'nın Mirası — Unreal Engine 5 oyunu
 
-Bu klasör, **Kabile Savaşları: Murat Ağa'nın Mirası** projesinin bilgisayarınızdaki **Unreal Engine 5 (5.3 / 5.4 / 5.5)** ile doğrudan açılabilir proje paketidir.
+Bu klasör oyunun kendisidir. Veri dosyası değil. Unreal Editor’da **Play**’e basınca oyun başlar: açılış, tek sancak seçimi, hex harita, inşa, eğitim ve savaş.
 
-## Paketin İçinde Neler Var?
+Grafik web sürümünden yüksektir: Lumen küresel aydınlatma, sanal gölgeler, gök atmosferi, hacimsel sis, çiçeklenme ve kabartmalı hex arazi. Renkli PBR malzeme editör açılınca otomatik oluşur.
+
+## Nasıl açılır
+
+1. Bilgisayarda **Unreal Engine 5.4** (5.3 veya 5.5 de olur) ve **Visual Studio 2022** (Game development with C++ iş yükü) kurulu olsun.
+2. `KabileSavaslari.uproject` dosyasına çift tıkla. Farklı sürüm kullanıyorsan dosyaya sağ tık → **Switch Unreal Engine version**.
+3. “Missing modules, rebuild?” sorusuna **Yes** de. İlk derleme birkaç dakika sürer.
+4. Editör açılınca üstteki **Play** (yeşil üçgen) düğmesine bas.
+5. **Tahta Yaklaş** → **Yeni Yemin** → bir kabile seç.
+6. **WASD** gez, **fare tekerleği** veya **Q / E** yakınlaş, altıgene **sol tık**. Alttaki düğmelerle ocak, kışla, kule kur, birlik eğit, komşu toprağa yürü.
+
+Bina ve asker seviyesi oyuncu seviyesini geçmez. Sarıklılar zırhı, Demir-Hisar gölgeyi, Gök-Hanlı ateşi ezer. Rakip kabile ara sıra akın düzenler.
+
+## Klasör
+
+- `Source/KabileSavaslari` — oynanış (harita, savaş, arayüz, kamera)
+- `Content/DataTables` — 100 parşömenin metni; seviye atlayınca başlık buradan okunur
+- `Content/Materials/M_TilePBR` — editör ilk açılışta üretilen arazi malzemesi
+
+Play’e basmak için CSV sürüklemek veya Python script çalıştırmak gerekmez. Harita, sancak ve savaş kodu sahneyi kendisi kurar. `Content/DataTables/DT_Scrolls.json` seviye başlıklarını oyun açılınca okur.
+
+## Referans: veriler ve eski içe aktarma notu
 
 1. **`KabileSavaslari.uproject`** — Unreal Engine 5 proje dosyası (`GLTFImporter`, `EnhancedInput`, `PythonScriptPlugin` açık).
 2. **`Source/KabileSavaslari/` (C++ Çekirdeği)**:

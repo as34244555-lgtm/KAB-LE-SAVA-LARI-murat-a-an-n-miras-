@@ -48,15 +48,11 @@ Safari veya Chrome’da aç; “Ana Ekrana Ekle” dersen uygulama gibi durur. K
 - **Arama sayfası:** https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/kabile-savaslari.html
 - **Unreal Engine 5 Paketi (.zip — tek tıkla indir):** https://as34244555-lgtm.github.io/KAB-LE-SAVA-LARI-murat-a-an-n-miras-/kabile-savaslari-unreal-engine-5.zip
 
-## Unreal Engine 5’e Aktarma
+## Unreal Engine 5 oyunu
 
-Projeyi cihazınızdaki **Unreal Engine 5 (5.3 / 5.4 / 5.5)** ile açmak için `unreal/KabileSavaslari/` klasörü ve otomatik dışa aktarıcı (`npm run export:unreal`) hazırlandı:
+`unreal/KabileSavaslari/` aynı oyunun Unreal Engine 5 halidir. `KabileSavaslari.uproject` açılıp **Play**’e basılınca açılış, tek sancak seçimi, hex harita, inşa, eğitim ve savaş başlar. Işık Lumen, sanal gölge, gök atmosferi ve hacimsel sis kullanır. Adımlar: [`unreal/KabileSavaslari/UNREAL_KURULUM_TR.md`](unreal/KabileSavaslari/UNREAL_KURULUM_TR.md).
 
-- **`unreal/KabileSavaslari/KabileSavaslari.uproject`** — Doğrudan çift tıklayıp açabileceğiniz Unreal Engine 5 projesi (`GLTFImporter`, `EnhancedInput`, `PythonScriptPlugin` açık).
-- **`unreal/KabileSavaslari/Source/KabileSavaslari/`** — C++ oyun çekirdeği (`KSTypes.h`, `KSRulesLibrary`, `KSGameInstance`, `KSHexGridActor`): gelişim limiti, taş-kâğıt-makas, hex matematiği, iklim ve savaş çözümleyici.
-- **`unreal/KabileSavaslari/Content/DataTables/`** — Unreal `DataTable` olarak sürükle-bırak ile içe aktarılan 10 tablo (`DT_Tribes`, `DT_Units`, `DT_Buildings`, `DT_Scrolls` [1..100], `DT_Quests`, `DT_SideTribes`, `DT_Landmarks`, `DT_Halls`, `DT_Dialogues`, `DT_HexWorldSeed`).
-- **`npm run export:unreal`** — Tüm verileri, 3B glTF modelleri, PBR kaplamaları ve HDRI dosyalarını `unreal/KabileSavaslari/Content/` içine kopyalar ve `public/kabile-savaslari-unreal-engine-5.zip` paketini üretir.
-- Detaylı adım adım kurulum: [`unreal/KabileSavaslari/UNREAL_KURULUM_TR.md`](unreal/KabileSavaslari/UNREAL_KURULUM_TR.md)
+Zip, bu oynanabilir projenin indirilebilir kopyasıdır. İçinde `.uproject` ve C++ kaynak vardır.
 
 Ücretli alan adı yok. Google’da “kabile savaşları murat ağanın mirası” yazınca bu sayfaların çıkması için tek seferlik iki adım gerekir:
 
