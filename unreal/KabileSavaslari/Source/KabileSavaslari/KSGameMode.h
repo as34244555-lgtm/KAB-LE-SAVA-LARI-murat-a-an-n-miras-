@@ -11,4 +11,7 @@ class KABILESAVASLARI_API AKSGameMode : public AGameModeBase
 
 public:
     AKSGameMode();
+
+protected:
+    virtual void BeginPlay() override;
 };

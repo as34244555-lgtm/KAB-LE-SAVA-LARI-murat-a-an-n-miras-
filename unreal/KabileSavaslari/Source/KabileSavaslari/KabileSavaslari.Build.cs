@@ -17,7 +17,8 @@ public class KabileSavaslari : ModuleRules
             "Slate",
             "SlateCore",
             "Json",
-            "JsonUtilities"
+            "JsonUtilities",
+            "ProceduralMeshComponent"
         });
     }
 }

@@ -9,5 +9,6 @@ public class KabileSavaslariEditorTarget : TargetRules
         DefaultBuildSettings = BuildSettingsVersion.V5;
         IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_4;
         ExtraModuleNames.Add("KabileSavaslari");
+        ExtraModuleNames.Add("KabileSavaslariEditor");
     }
 }
