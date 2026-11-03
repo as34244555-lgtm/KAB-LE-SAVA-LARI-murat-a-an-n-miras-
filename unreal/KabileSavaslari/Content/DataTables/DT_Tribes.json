@@ -1,0 +1,82 @@
+[
+  {
+    "id": "sariklilar",
+    "name": "Sarıklılar",
+    "epithet": "Ateşin ve Barutun Çocukları",
+    "temperament": "sicak",
+    "colors": {
+      "primary": "#c0392b",
+      "secondary": "#f4d03f",
+      "accent": "#fff4d6"
+    },
+    "combat": {
+      "class": "bomber",
+      "role": "Alan hasarı / bomba",
+      "beats": "demirhisar",
+      "losesTo": "gokhanli"
+    },
+    "accuses": "gokhanli",
+    "accusation": "Hançer bir gölge kadar sessiz saplandı. Bunu ancak rüzgârın çocukları yapardı — Gök-Hanlılar tahtın arkasında duruyordu.",
+    "voice": "sıcak, öfkeli, iğneleyici"
+  },
+  {
+    "id": "gokhanli",
+    "name": "Gök-Hanlı",
+    "epithet": "Gölgelerin ve Rüzgârın Kabilesi",
+    "temperament": "gizemli",
+    "colors": {
+      "primary": "#2c1a4d",
+      "secondary": "#7d3c98",
+      "accent": "#d7bde2"
+    },
+    "combat": {
+      "class": "skirmisher",
+      "role": "Hız / kritik hasar",
+      "beats": "sariklilar",
+      "losesTo": "demirhisar"
+    },
+    "accuses": "demirhisar",
+    "accusation": "Saraya fark edilmeden girmek için o kadar ağır bir zırh gerekir ki adımlar taşları uyutur. Demir-Hisar bunu bilir.",
+    "voice": "alçak, hızlı, iğneleyici"
+  },
+  {
+    "id": "demirhisar",
+    "name": "Demir-Hisar",
+    "epithet": "Çelik ve Yeminin Muhafızları",
+    "temperament": "onurlu",
+    "colors": {
+      "primary": "#7b241c",
+      "secondary": "#d4ac0d",
+      "accent": "#f5e6c8"
+    },
+    "combat": {
+      "class": "guardian",
+      "role": "Zırh / savunma",
+      "beats": "gokhanli",
+      "losesTo": "sariklilar"
+    },
+    "accuses": "sariklilar",
+    "accusation": "Barışı bozmak için kendi liderlerini feda edenler, barutu dualarının yanına koyanlardır. Sarıklılar tahtı yakmak istedi.",
+    "voice": "sert, onurlu, iğneleyici"
+  },
+  {
+    "id": "player",
+    "name": "Vâris",
+    "epithet": "Parşömenlerin Koruyucusu",
+    "temperament": "merakli",
+    "colors": {
+      "primary": "#2471a3",
+      "secondary": "#d4a574",
+      "accent": "#fdebd0"
+    },
+    "combat": {
+      "class": "skirmisher",
+      "role": "Keşif / komuta",
+      "beats": null,
+      "losesTo": null
+    },
+    "accuses": null,
+    "accusation": "Ben kimseyi suçlamadan önce mührü okuyacağım.",
+    "voice": "kararlı, hüzünlü"
+  }
+]

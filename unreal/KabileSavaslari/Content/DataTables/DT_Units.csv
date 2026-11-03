@@ -1,0 +1,7 @@
+---,Id,Tribe,Name,UnitClass,Lore,BaseCost,BaseHp,BaseAttack,BaseDefense,CritChance,Aoe
+barutcu,barutcu,sariklilar,Sarıklı Barutçu,bomber,Murat Ağa'nın festival gecelerinde gökyüzünü yakan ustaların torunları. Şimdi aynı kıvılcımı surlara çeviriyorlar.,40,70,28,8,0.08,0.45
+ruzgar,ruzgar,gokhanli,Gök-Hanlı Rüzgâr,skirmisher,Sessiz adımları Murat Ağa'nın av partilerinde övülürdü. Şimdi aynı adımlar şüpheyle ölçülüyor.,45,55,22,6,0.28,0
+muhafiz,muhafiz,demirhisar,Demir-Hisar Muhafızı,guardian,Aslan başlı kalkanlarını Murat Ağa'nın yeminiyle dövdüler. Zırhları hâlâ o yemini taşır.,50,110,16,22,0.04,0
+deve,deve,sariklilar,Deve Süvarisi,bomber,Çölü aşan deve sürüleri barutu ve suyu aynı semere bağlar.,62,95,24,12,0.1,0.2
+panter,panter,gokhanli,Panter İzcisi,skirmisher,"Sisli patikalarda panterle yürüyenler, hançerin gölgesini ilk duyanlardır.",68,48,26,5,0.38,0
+burc,burc,demirhisar,Burç Muhafızı,guardian,"Buz burçlarında nöbet tutanlar, yemini kalkanın arkasına yazar.",72,140,14,30,0.03,0

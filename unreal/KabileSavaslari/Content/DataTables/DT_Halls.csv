@@ -1,0 +1,10 @@
+---,Tribe,Q,R,bIsCapital,Label
+sariklilar_capital,sariklilar,-7,4,true,Sarıklılar merkezi
+sariklilar_outpost_1,sariklilar,-14,1,false,Sarıklılar karakolu
+sariklilar_outpost_2,sariklilar,-6,-3,false,Sarıklılar karakolu
+gokhanli_capital,gokhanli,0,0,true,Gök-Hanlı merkezi
+gokhanli_outpost_1,gokhanli,1,-10,false,Gök-Hanlı karakolu
+gokhanli_outpost_2,gokhanli,-8,-8,false,Gök-Hanlı karakolu
+demirhisar_capital,demirhisar,7,-3,true,Demir-Hisar merkezi
+demirhisar_outpost_1,demirhisar,13,0,false,Demir-Hisar karakolu
+demirhisar_outpost_2,demirhisar,4,-9,false,Demir-Hisar karakolu

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "barutcu",
+    "tribe": "sariklilar",
+    "name": "Sarıklı Barutçu",
+    "unitClass": "bomber",
+    "lore": "Murat Ağa'nın festival gecelerinde gökyüzünü yakan ustaların torunları. Şimdi aynı kıvılcımı surlara çeviriyorlar.",
+    "baseCost": 40,
+    "baseHp": 70,
+    "baseAttack": 28,
+    "baseDefense": 8,
+    "critChance": 0.08,
+    "aoe": 0.45
+  },
+  {
+    "id": "ruzgar",
+    "tribe": "gokhanli",
+    "name": "Gök-Hanlı Rüzgâr",
+    "unitClass": "skirmisher",
+    "lore": "Sessiz adımları Murat Ağa'nın av partilerinde övülürdü. Şimdi aynı adımlar şüpheyle ölçülüyor.",
+    "baseCost": 45,
+    "baseHp": 55,
+    "baseAttack": 22,
+    "baseDefense": 6,
+    "critChance": 0.28,
+    "aoe": 0
+  },
+  {
+    "id": "muhafiz",
+    "tribe": "demirhisar",
+    "name": "Demir-Hisar Muhafızı",
+    "unitClass": "guardian",
+    "lore": "Aslan başlı kalkanlarını Murat Ağa'nın yeminiyle dövdüler. Zırhları hâlâ o yemini taşır.",
+    "baseCost": 50,
+    "baseHp": 110,
+    "baseAttack": 16,
+    "baseDefense": 22,
+    "critChance": 0.04,
+    "aoe": 0
+  },
+  {
+    "id": "deve",
+    "tribe": "sariklilar",
+    "name": "Deve Süvarisi",
+    "unitClass": "bomber",
+    "lore": "Çölü aşan deve sürüleri barutu ve suyu aynı semere bağlar.",
+    "baseCost": 62,
+    "baseHp": 95,
+    "baseAttack": 24,
+    "baseDefense": 12,
+    "critChance": 0.1,
+    "aoe": 0.2
+  },
+  {
+    "id": "panter",
+    "tribe": "gokhanli",
+    "name": "Panter İzcisi",
+    "unitClass": "skirmisher",
+    "lore": "Sisli patikalarda panterle yürüyenler, hançerin gölgesini ilk duyanlardır.",
+    "baseCost": 68,
+    "baseHp": 48,
+    "baseAttack": 26,
+    "baseDefense": 5,
+    "critChance": 0.38,
+    "aoe": 0
+  },
+  {
+    "id": "burc",
+    "tribe": "demirhisar",
+    "name": "Burç Muhafızı",
+    "unitClass": "guardian",
+    "lore": "Buz burçlarında nöbet tutanlar, yemini kalkanın arkasına yazar.",
+    "baseCost": 72,
+    "baseHp": 140,
+    "baseAttack": 14,
+    "baseDefense": 30,
+    "critChance": 0.03,
+    "aoe": 0
+  }
+]

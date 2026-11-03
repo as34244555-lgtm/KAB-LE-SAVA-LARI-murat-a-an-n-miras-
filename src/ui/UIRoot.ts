@@ -87,6 +87,9 @@ export class UIRoot {
             <button class="neu-btn gold" data-act="new-game">Yeni Yemin</button>
             <button class="neu-btn" data-act="continue">Kayıttan Devam</button>
           </div>
+          <div class="row">
+            <a class="neu-btn slim ghost" href="./kabile-savaslari-unreal-engine-5.zip" download="kabile-savaslari-unreal-engine-5.zip">Unreal Engine 5 Paketi İndir (.zip)</a>
+          </div>
           <p class="fine">Sarıklılar • Gök-Hanlı • Demir-Hisar — ve sisin ardındaki dördüncü gölge.</p>
         </div>
       </section>`;
@@ -232,6 +235,7 @@ export class UIRoot {
       <div class="row">
         <button class="neu-btn slim" data-act="save">Mühürle</button>
         <button class="neu-btn slim ghost" data-act="menu">Menü</button>
+        <a class="neu-btn slim ghost" href="./kabile-savaslari-unreal-engine-5.zip" download="kabile-savaslari-unreal-engine-5.zip">UE5 Paketi (.zip)</a>
       </div>`;
   }
 
