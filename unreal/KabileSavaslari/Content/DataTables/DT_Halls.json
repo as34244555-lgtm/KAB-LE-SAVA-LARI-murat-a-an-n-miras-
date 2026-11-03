@@ -1,0 +1,74 @@
+[
+  {
+    "rowName": "sariklilar_capital",
+    "tribe": "sariklilar",
+    "q": -7,
+    "r": 4,
+    "isCapital": true,
+    "label": "Sarıklılar merkezi"
+  },
+  {
+    "rowName": "sariklilar_outpost_1",
+    "tribe": "sariklilar",
+    "q": -14,
+    "r": 1,
+    "isCapital": false,
+    "label": "Sarıklılar karakolu"
+  },
+  {
+    "rowName": "sariklilar_outpost_2",
+    "tribe": "sariklilar",
+    "q": -6,
+    "r": -3,
+    "isCapital": false,
+    "label": "Sarıklılar karakolu"
+  },
+  {
+    "rowName": "gokhanli_capital",
+    "tribe": "gokhanli",
+    "q": 0,
+    "r": 0,
+    "isCapital": true,
+    "label": "Gök-Hanlı merkezi"
+  },
+  {
+    "rowName": "gokhanli_outpost_1",
+    "tribe": "gokhanli",
+    "q": 1,
+    "r": -10,
+    "isCapital": false,
+    "label": "Gök-Hanlı karakolu"
+  },
+  {
+    "rowName": "gokhanli_outpost_2",
+    "tribe": "gokhanli",
+    "q": -8,
+    "r": -8,
+    "isCapital": false,
+    "label": "Gök-Hanlı karakolu"
+  },
+  {
+    "rowName": "demirhisar_capital",
+    "tribe": "demirhisar",
+    "q": 7,
+    "r": -3,
+    "isCapital": true,
+    "label": "Demir-Hisar merkezi"
+  },
+  {
+    "rowName": "demirhisar_outpost_1",
+    "tribe": "demirhisar",
+    "q": 13,
+    "r": 0,
+    "isCapital": false,
+    "label": "Demir-Hisar karakolu"
+  },
+  {
+    "rowName": "demirhisar_outpost_2",
+    "tribe": "demirhisar",
+    "q": 4,
+    "r": -9,
+    "isCapital": false,
+    "label": "Demir-Hisar karakolu"
+  }
+]

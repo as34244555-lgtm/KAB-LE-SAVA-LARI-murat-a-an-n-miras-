@@ -1,0 +1,702 @@
+[
+  {
+    "level": 1,
+    "title": "Kanlı Taht",
+    "body": "Gece yarısı hançer kalbe girdi. Mühürler mor ışık saçtı. Ben, Murat Ağa, bu satırları henüz yaşıyorken değil — vârisimin okuması için bırakıyorum. İlk yalan çok yakında başlayacak.",
+    "misdirection": "none",
+    "tone": "suspicion"
+  },
+  {
+    "level": 2,
+    "title": "Sessiz Sapış",
+    "body": "Hançer bir nefes kadar sessizdi. Saray muhafızları bile dönmedi. Gök-Hanlılar rüzgârı böyle kullanır. Kalemim onları işaret ediyor — belki de işaret etmemi istiyorlar.",
+    "misdirection": "gokhanli",
+    "tone": "suspicion"
+  },
+  {
+    "level": 3,
+    "title": "Turbanın Külü",
+    "body": "Sarıklılar festival barutunu bu gece sakladılar. 'Yas gününde kıvılcım olmaz' dediler. Yas henüz ilan edilmemişti.",
+    "misdirection": "sariklilar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 4,
+    "title": "Ağır Adımlar",
+    "body": "Taht salonunun eşiğinde çamur izi var. İz, Demir-Hisar çizmelerine uyuyor. Zırh ağırsa gölge de ağır olur, derler.",
+    "misdirection": "demirhisar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 5,
+    "title": "Üç Banner",
+    "body": "Sarıklılar Gök-Hanlı'yı, Gök-Hanlı Demir-Hisar'ı, Demir-Hisar Sarıklılar'ı suçluyor. Bu daire birinin işine yarıyor.",
+    "misdirection": "none",
+    "tone": "suspicion"
+  },
+  {
+    "level": 6,
+    "title": "Mor Kabza",
+    "body": "Kabzanın mührü üç kabilenin de arşivinde yok. Yine de her kabile 'bu bizden değil, ötekinden' diyor. Çok eminler.",
+    "misdirection": "gokhanli",
+    "tone": "suspicion"
+  },
+  {
+    "level": 7,
+    "title": "Fener Sönmesi",
+    "body": "Suikast gecesi kuzey feneri sönmüş. Gök-Hanlı nöbetçisi 'rüzgâr aldı' diyor. Rüzgâr feneri seçmez.",
+    "misdirection": "gokhanli",
+    "tone": "suspicion"
+  },
+  {
+    "level": 8,
+    "title": "Barut Defteri",
+    "body": "Sarıklı kâtip, o gece bir fıçı eksik olduğunu yazmış. Sonra satırı silmiş. Silgi izi, itiraftan daha yüksek sesle konuşur.",
+    "misdirection": "sariklilar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 9,
+    "title": "Kalkan Çizigi",
+    "body": "Demir-Hisar kalkanında taze bir çizik var. 'Talim' diyorlar. Talim kalkanı tahtın kumaşına sürülmez.",
+    "misdirection": "demirhisar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 10,
+    "title": "Tuz ve Yemin",
+    "body": "Korsan Leyla'nın mektubu: Murat Ağa denizi yeminle bağlardı. Kıyıda mor sandal görülmüş. Gök-Hanlı rumu, diyorlar.",
+    "misdirection": "gokhanli",
+    "tone": "suspicion"
+  },
+  {
+    "level": 11,
+    "title": "Çelik Kokusu",
+    "body": "Hançerin yanında yağ lekesi. Demirhane yağı. Demir-Hisar ustaları bu kokuyu 'onur' diye adlandırır.",
+    "misdirection": "demirhisar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 12,
+    "title": "Gölge Adımı",
+    "body": "İkinci gece nöbetçi, duvarda bir gölgenin 'yanlış yönde' düştüğünü söyledi. Gök-Hanlılar gölgeyi evcilleştirir.",
+    "misdirection": "gokhanli",
+    "tone": "suspicion"
+  },
+  {
+    "level": 13,
+    "title": "Kızgın Tava",
+    "body": "Sarıklı bir usta, 'barış bizi boğuyor' demiş. Söz, hançerden önce söylenmiş. Öfke, planın kıyafetidir.",
+    "misdirection": "sariklilar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 14,
+    "title": "Aslan Yüzü",
+    "body": "Tahtın kolundaki aslanın gözü oyulmuş. Demir-Hisar bunu kendi amblemine hakaret sayar — ya da kendi elleriyle yaptı, suçlu aransın diye.",
+    "misdirection": "demirhisar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 15,
+    "title": "Yanlış Tanık",
+    "body": "Üç tanık, üç farklı kabile gördüğünü iddia ediyor. Hepsi aynı koridorda, aynı anda. Bu matematik değil, tiyatro.",
+    "misdirection": "none",
+    "tone": "suspicion"
+  },
+  {
+    "level": 16,
+    "title": "Rüzgâr Mührü",
+    "body": "Bir parşömen kılıfında Gök-Hanlı tüy motifi. Çok görünür. Gizemli bir kabile izini bu kadar özenle bırakmaz — bırakır gibi yapar.",
+    "misdirection": "gokhanli",
+    "tone": "suspicion"
+  },
+  {
+    "level": 17,
+    "title": "Festival Borcu",
+    "body": "Sarıklılar, Murat Ağa'nın festival vergisini kestiğini unutmamış. Öfke sıcak tutulursa hançer de ısınır.",
+    "misdirection": "sariklilar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 18,
+    "title": "Nöbet Değişimi",
+    "body": "Demir-Hisar, suikast saatinde nöbeti 'tesadüfen' erken teslim etmiş. Onur, bazen kapıyı açık bırakır.",
+    "misdirection": "demirhisar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 19,
+    "title": "İğne Cümle",
+    "body": "Gök-Hanlı elçi, Sarıklı beye 'barutunuz tahttan daha yüksek konuşuyor' demiş. Savaş, dilden önce başlar.",
+    "misdirection": "gokhanli",
+    "tone": "suspicion"
+  },
+  {
+    "level": 20,
+    "title": "Bozkır Zırhı",
+    "body": "Moğol Han Batu, kırık bir Demir-Hisar parçasını gönderdi. 'Bunu çadırımın önünde buldum. Tuz hakkına rağmen.'",
+    "misdirection": "demirhisar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 21,
+    "title": "Kendi Liderleri",
+    "body": "Bir fısıltı: Sarıklılar barışı bozmak için kendi ağalarını feda etti. Fısıltı Demir-Hisar ocaklarından geliyor.",
+    "misdirection": "sariklilar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 22,
+    "title": "Kırmızı Toz",
+    "body": "Taht basamağında kırmızı toz. Sarıklı barut. Ya da kırmızı toprak — ama herkes barut demek istiyor.",
+    "misdirection": "sariklilar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 23,
+    "title": "Tüy ve Zehir",
+    "body": "Gök-Hanlı ok ucunda acı badem kokusu. Zehir mi, yoksa merhem mi? Şüphe, ikisini de aynı şişeye koyar.",
+    "misdirection": "gokhanli",
+    "tone": "suspicion"
+  },
+  {
+    "level": 24,
+    "title": "Ağır Kapı",
+    "body": "Sarayın arka kapısı içeriden kilitliydi. Bunu ancak zırhlı bir omuz zorlar, diyor Gök-Hanlılar. Kapı çiziksiz.",
+    "misdirection": "demirhisar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 25,
+    "title": "Üç Mektup",
+    "body": "Aynı gece üç kabileye de 'yarın taht boş kalacak' diye mektup gitmiş. Mühürler farklı, el yazısı aynı.",
+    "misdirection": "none",
+    "tone": "suspicion"
+  },
+  {
+    "level": 26,
+    "title": "Sarıklı Yas",
+    "body": "Sarıklı çocuklar gerçekten ağlıyor. Büyükler ise öfkeyi Gök-Hanlı'ya çevirmekte çok hızlı. Gözyaşı samimi, parmak değil.",
+    "misdirection": "sariklilar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 27,
+    "title": "Sessiz Koro",
+    "body": "Gök-Hanlılar matemde şarkı söylemez. Bu gelenek. Bu gece de söylemediler. Suç gibi duran bir saygı.",
+    "misdirection": "gokhanli",
+    "tone": "suspicion"
+  },
+  {
+    "level": 28,
+    "title": "Çelik Yemin",
+    "body": "Demir-Hisar, 'onurumuz lekelendi' diye kılıç kaldırdı. Lekeyi kim sürdüyse, kılıcı da o yönlendiriyor.",
+    "misdirection": "demirhisar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 29,
+    "title": "Sahte İz",
+    "body": "Kum Göçebeleri'nin getirdiği mühür Sarıklı görünüyor. Şirin Ana 'koku yanlış' diyor. Sahte kanıt, gerçek öfkeden beslenir.",
+    "misdirection": "sariklilar",
+    "tone": "suspicion"
+  },
+  {
+    "level": 30,
+    "title": "Su Hakkı",
+    "body": "Murat Ağa susuzlara isim sorardı. Göçebeler hâlâ o isimleri sayıyor. Katil, isim soran birini neden öldürür?",
+    "misdirection": "none",
+    "tone": "suspicion"
+  },
+  {
+    "level": 31,
+    "title": "Dördüncü Adım",
+    "body": "Koridorda dört adım izi var. Üç kabile, üç ritim. Dördüncüsü tanıdık değil — ama evin içinde.",
+    "misdirection": "none",
+    "tone": "suspicion"
+  },
+  {
+    "level": 32,
+    "title": "Mor Işık",
+    "body": "Hançerin mühürleri gece yarısı yeniden parladı. Hiçbir kabile o ışığı sahiplenmedi. Korktular. Korku, masumiyet değildir.",
+    "misdirection": "none",
+    "tone": "suspicion"
+  },
+  {
+    "level": 33,
+    "title": "Bilgi Tüccarı",
+    "body": "Sisli haritanın kenarında bir fısıltı: 'Cevabı satanlar var.' Henüz tapınak yok. Ama fiyat konuşuluyor.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 34,
+    "title": "Karşıt Kanıt",
+    "body": "Her yeni parça önceki parçayı yalanlıyor. Bu bir soruşturma değil, bir labirent. Labirenti kim inşa eder?",
+    "misdirection": "none",
+    "tone": "suspicion"
+  },
+  {
+    "level": 35,
+    "title": "Yakın Dost",
+    "body": "Murat Ağa'nın solunda duran isimsiz danışman, matemde en çok ağlayan kişi. Gözyaşı da bir maske olabilir.",
+    "misdirection": "none",
+    "tone": "shadow"
+  },
+  {
+    "level": 36,
+    "title": "Üç Suç, Bir El",
+    "body": "Sarıklı barut, Gök-Hanlı sessizlik, Demir-Hisar ağırlık — üçü birden aynı hançerde. Bir el üçünü taklit eder.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 37,
+    "title": "Sis Çizgisi",
+    "body": "Haritanın en karanlık köşesi artık sis tutmuyor. Birileri orayı görünür kılmak istiyor.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 38,
+    "title": "Tarikat Sözü",
+    "body": "Bir keşiş: 'Biz kan dökmeyiz, sır dökeriz.' Sır, bazen kandan daha keskin.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 39,
+    "title": "Kırılma Arifesi",
+    "body": "Vâris, kırkıncı mühre yaklaş. Bundan sonra dünya biraz daha karanlık görünecek. Bu bir lanet değil, bir perde.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 40,
+    "title": "Gölge Tapınağı",
+    "body": "Haritanın en karanlık yerinde tapınak belirdi. Suikastçılar Kabilesi — ilk bakışta bilgi veren bir tarikat. Kapılarında şu yazıyor: 'Gerçeği satın al.' Murat Ağa bir zamanlar bu kapıyı çalmış.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 41,
+    "title": "Satılan Cevap",
+    "body": "Tapınak, Sarıklılar'a Gök-Hanlı'nın suçunu, Gök-Hanlı'ya Demir-Hisar'ın suçunu sattı. Herkes memnun. Gerçek ucuz kaldı.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 42,
+    "title": "Mor Kristal",
+    "body": "Tapınağın sütunları hançerle aynı kristali taşıyor. 'Kadim mühür' dedikleri şey, evlerinin tuğlası.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 43,
+    "title": "Bilgi ve Bağ",
+    "body": "Tarikat üye kaydı istiyor. 'Sadece dinle, sadece öğren.' Dinlemek de bir yemin olabilir.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 44,
+    "title": "Eski Kapı",
+    "body": "Murat Ağa'nın tapınağa girdiği gece deftere 'fiyatı sordum, vermedim' yazılmış. Vermediği şey neydi?",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 45,
+    "title": "Kabilelerin Keyfi",
+    "body": "Üç kabile tapınağı seviyor. Çünkü tapınak onların öfkesini doğruluyor. Ayna, yalancı bir dosttur.",
+    "misdirection": "none",
+    "tone": "shadow"
+  },
+  {
+    "level": 46,
+    "title": "Gölge Elçisi I",
+    "body": "Bir acemi, 'Elçi' diye bir unvan fısıldadı. Yüz yok, isim yok. Tahtın solunda duran boşluk.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 47,
+    "title": "Çelişen Keşiş",
+    "body": "İki keşiş aynı geceyi anlattı: biri Murat Ağa'nın güldüğünü, diğeri ağladığını söyledi. İkisi de yemin etti.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 48,
+    "title": "Toprak Haritası",
+    "body": "Tapınak arşivinde bütün kabile topraklarının çizimi var. Kenarda bir not: 'Birleşince tek lokma.'",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 49,
+    "title": "İnci Limanı",
+    "body": "Denizciler 'Gölge Elçisi' adını limanda duymuş. Kimse yüzünü görmemiş. İsim, dalgadan daha hızlı yayılıyor.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 50,
+    "title": "Islak Battaniye",
+    "body": "Dümenci Ömer, Murat Ağa'nın fırtınada bir çocuğu kayığa aldığını anlatır. Taht o gece ıslaktı. Katil, ıslak bir tahtı neden ister?",
+    "misdirection": "none",
+    "tone": "shadow"
+  },
+  {
+    "level": 51,
+    "title": "Sahte Dostluk",
+    "body": "Tarikat vârise hediye verdi: üç kabilenin 'suç dosyası'. Dosyalar birbirini yiyor. Hediyeler bazen tuzak tabaktır.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 52,
+    "title": "Mühür Karşılaştırması",
+    "body": "Hançerdeki mühür, tapınak kapısındaki mührün kardeşi. Keşişler 'tesadüf' diyor. Tesadüf, evlilik yapmaz.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 53,
+    "title": "Kayıp Nöbetçi",
+    "body": "Suikast gecesi kaybolan tek nöbetçi, sonradan tapınakta 'aydınlanmış' olarak belirdi. Aydınlanma, bazen bir maaş.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 54,
+    "title": "Üç Öfke, Bir Yönetmen",
+    "body": "Sarıklı öfke, Gök-Hanlı gizem, Demir-Hisar onur — üçü de gerçek. Yönetmen, oyuncuların içten oynamasını ister.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 55,
+    "title": "Elçinin Gölgesi",
+    "body": "Eski bir portrede Murat Ağa'nın solunda bir siluet var. Yüz kazınmış. Kazıyan el, titrememiş.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 56,
+    "title": "Kristal Ticaret",
+    "body": "Mor kristaller kervanlarda dolaşıyor. Kaynak: tapınak. Amaç: 'koruma tılsımı.' Tılsım, bağımlılık da olabilir.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 57,
+    "title": "Yasak Satır",
+    "body": "Murat Ağa'nın günlüklerinde bir satır kesilmiş: 'Elçi bana…' Gerisi yanık. Yangın, kütüphanede değil, vicdanda çıkmış.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 58,
+    "title": "Kabile Antlaşması",
+    "body": "Tapınak üç kabileye ayrı ayrı 'sizi koruruz' antlaşması önermiş. Aynı kâğıt, üç imza, üç düşman.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 59,
+    "title": "Yıldız Çizgisi",
+    "body": "Çöl kâhinleri gökyüzünün mor bir çizgiyle yarıldığını söyler. Kehanet üç kabileye birden suçlu der. Bozuk bir pusula.",
+    "misdirection": "none",
+    "tone": "shadow"
+  },
+  {
+    "level": 60,
+    "title": "Bozuk Kehanet",
+    "body": "Yıldızlar yalan söylemez, diyorlar. Yıldızları okuyanlar söyler. Çöl Yıldızları bile artık emin değil.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 61,
+    "title": "İçerideki Kapı",
+    "body": "Tapınağın altında ikinci bir kapı var. 'Sırların sırları.' Keşişler vârise gülümseyerek kapatıyor.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 62,
+    "title": "Asker Sayımı",
+    "body": "Tarikatın 'bilgi keşişleri' gece zırh giyiyor. Bilgi, bu kadar ağır olmamalı.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 63,
+    "title": "Murat'ın Reddi",
+    "body": "Bir keşiş itiraf etti: Murat Ağa tarikata toprak vermeyi reddetti. 'Barış satılık değil' demiş.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 64,
+    "title": "Reddin Bedeli",
+    "body": "Reddedilenler, tahtı boşaltmayı bir ticaret olarak görür. Hançer, fatura olabilir.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 65,
+    "title": "Vâris Uyarısı",
+    "body": "Anonim bir not: 'Sana gerçeği satacaklar. Sakın alma. Kendin bul.' El yazısı, Murat Ağa'nınkine çok yakın.",
+    "misdirection": "none",
+    "tone": "shadow"
+  },
+  {
+    "level": 66,
+    "title": "Çifte Oyun",
+    "body": "Gök-Hanlı bir casus, tapınağın Demir-Hisar'a 'Gök-Hanlı saldıracak' dediğini duydu. Casus, kendi kabilesini bile şüpheyle dinliyor.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 67,
+    "title": "Barut Hikâyesi",
+    "body": "Sarıklı bir yaşlı: 'Bize Gök-Hanlı'nın hançeri sessiz sapladığını tapınak söyledi. Biz de inandık, çünkü inanmak öfkeden kolaydı.'",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 68,
+    "title": "Onur Tuzağı",
+    "body": "Demir-Hisar beyi: 'Sarıklılar kendi liderlerini feda etti dediler. Onurumuz bunu kaldıramadı. Şimdi düşünüyorum: kim söyledi?'",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 69,
+    "title": "Kartal Yemini",
+    "body": "Dağ Kartalları'nın taşı: 'Hiçbir kabile diğerinin gölgesi olmayacak.' Altında dördüncü mühür. Üç kabile onu tanımıyor.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 70,
+    "title": "Dördüncü Mühür",
+    "body": "Mühür, tapınak kapısındakiyle aynı. Kartal Ana titriyor. Murat Ağa o taşı 'gelecek nesil okusun' diye gömmüş.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 71,
+    "title": "Planın İsmi",
+    "body": "Yasak bir rulo: 'Kabileleri birbirine düşür, toprağı tek elden yönet.' İmza yerine bir gölge baskısı.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 72,
+    "title": "Elçinin Yüzü",
+    "body": "Bir çocuk, tahtın solundaki adamın 'çok nazik' olduğunu söyledi. Nazik insanlar hançeri gülümseyerek taşır.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 73,
+    "title": "Yakınındaki Gölge",
+    "body": "Murat Ağa'nın en yakını, mecliste hiç oy kullanmazdı. 'Ben yalnızca taşırım' derdi. Ne taşırdı?",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 74,
+    "title": "Taşınan Emir",
+    "body": "Elçi, üç kabileye de Murat Ağa'nın ağzından emirler iletmiş. Emirlerin bir kısmı günlükte yok.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 75,
+    "title": "Sahte Ferman",
+    "body": "Bir ferman: 'Sarıklılar Gök-Hanlı kervanını durdursun.' Mühür doğru, cümle yanlış. El, mührü ödünç almış.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 76,
+    "title": "Gülümseyen Keşiş",
+    "body": "Tapınak başı vârise diyor: 'Gerçeğe yaklaştıkça karanlık artar. Bu, doğru yolda olduğunun işaretidir.' Bu cümle bir tuzak.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 77,
+    "title": "Kayıp Sayfa",
+    "body": "Günlüğün 77. yaprağı yok. Yerine tapınak ilahisi yapıştırılmış. İlahi, 'birlik' diyor. Birlik, kimin birliği?",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 78,
+    "title": "Buz Mektubu",
+    "body": "Buz Beyi'nin gönderdiği yazı: 'Kabileler birbirini yerse taht boş kalır.' İmza yok. Ama mürekkep tapınak mürekkebi.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 79,
+    "title": "Kuzey Geçidi",
+    "body": "Murat Ağa kuzeyi kapatmıştı. Elçi, 'açın' diye ferman uydurmuş. Geçit açılınca mor kervan geçmiş.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 80,
+    "title": "Boş Taht Teorisi",
+    "body": "Tarikat dersi: Boş taht, dolu tarikattan iyidir. Öğrenciler bunu 'felsefe' sanıyor.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 81,
+    "title": "Üç Kurban",
+    "body": "Planın özü: üç kabile birbirini yıpratsın, dördüncü el artanı toplasın. Suikast bir cinayet değil, bir tohum.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 82,
+    "title": "Vâris Tehlikesi",
+    "body": "Elçi, vârisin parşömen topladığını öğrenmiş. 'Çocuk kağıtla savaşır' demiş. Kâğıt, bazen hançerden uzun yaşar.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 83,
+    "title": "Son Yâren",
+    "body": "Eski Yeminliler'den biri: Murat Ağa ölümünden bir gece önce 'en yakınımdakine güvenme' dedi. Sonra Elçi'ye gülümsedi.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 84,
+    "title": "Gülümseme",
+    "body": "Gülümseme, hançerin kabzasıdır. Murat Ağa bunu yazmış: 'Dostumun dişi beyaz, niyeti değil.'",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 85,
+    "title": "İsim",
+    "body": "Defterin kenarında ilk kez tam unvan: Gölge Elçisi. Yanında bir not: 'Beni o seçti. Ben onu seçmedim.'",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 86,
+    "title": "Seçilmek",
+    "body": "Elçi, Murat Ağa'nın güvenini yıllarca biriktirmiş. Güven, en pahalı silahtır. Bedava verilmez, çalınır.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 87,
+    "title": "Gece Yarısı Prova",
+    "body": "Suikasttan bir hafta önce taht salonunda 'prova' yapılmış. Muhafızlar bunu 'temizlik' sanmış. Temizlik, kanı önceden ölçer.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 88,
+    "title": "Mühürler Uyanır",
+    "body": "Kadim mühürler yalnızca Elçi'nin kanıyla parlar. Bu yüzden hançer mor. Bu yüzden kabileler o ışığı tanımıyor.",
+    "misdirection": "assassins",
+    "tone": "shadow"
+  },
+  {
+    "level": 89,
+    "title": "Yeminlilerin Fısıltısı",
+    "body": "Son yâren: 'Elçi, yıllardır tahtın solunda duran isimsiz danışmandır. İsmi yoktu çünkü isim, iz bırakır.'",
+    "misdirection": "assassins",
+    "tone": "reckoning"
+  },
+  {
+    "level": 90,
+    "title": "İsimsiz Danışman",
+    "body": "Portreler, fermanlar, nöbet listeleri — Elçi hepsinde 'boşluk'. Boşluk, en iyi kamufulajdır.",
+    "misdirection": "assassins",
+    "tone": "reckoning"
+  },
+  {
+    "level": 91,
+    "title": "Toprak İştahı",
+    "body": "Tarikat haritasının son hali: bütün kabileler silinmiş, tek bir mor sınır kalmış. Adı yok. İştahın adı olmaz.",
+    "misdirection": "assassins",
+    "tone": "reckoning"
+  },
+  {
+    "level": 92,
+    "title": "Çocuk ve Parşömen",
+    "body": "Murat Ağa vârise yazıyor: 'Eğer bunları okuyorsan yaşıyorum demektir — kâğıtta. Kanımda değil. Hançeri takip etme, yalanı takip et.'",
+    "misdirection": "none",
+    "tone": "reckoning"
+  },
+  {
+    "level": 93,
+    "title": "Yalanın Yolu",
+    "body": "Yalan üç kabileden geçti. Gerçek tek kapıdan: tapınağın altındaki ikinci kapı. Orada bir isim var.",
+    "misdirection": "assassins",
+    "tone": "reckoning"
+  },
+  {
+    "level": 94,
+    "title": "İkinci Kapı",
+    "body": "Kapının ardında hançerin kardeşi duruyor. Aynı mühür, aynı mor. 'Birinci taht içindi. İkincisi vâris için.'",
+    "misdirection": "assassins",
+    "tone": "reckoning"
+  },
+  {
+    "level": 95,
+    "title": "Vâris Hançeri",
+    "body": "Elçi seni de aynı tahta çivilemek istiyor. Miras, onun için bir engel. Senin için bir yemin.",
+    "misdirection": "assassins",
+    "tone": "reckoning"
+  },
+  {
+    "level": 96,
+    "title": "Üç Kabileye Mektup",
+    "body": "Murat Ağa'nın son isteği: Sarıklı'ya 'öfkeni yakma', Gök-Hanlı'ya 'gölgeni satma', Demir-Hisar'a 'onurunu kırdırma.'",
+    "misdirection": "none",
+    "tone": "reckoning"
+  },
+  {
+    "level": 97,
+    "title": "Birleşme",
+    "body": "Kabileler birleşirse plan çöker. Elçi bunu bildiği için onları birbirine düşürdü. Birlik, onun tek korkusu.",
+    "misdirection": "assassins",
+    "tone": "reckoning"
+  },
+  {
+    "level": 98,
+    "title": "Hüzünlü Karar",
+    "body": "Bu satırlar hüzünlü ama kararlı. Taht boş. Hançer hâlâ orada. Sen, vâris, mirası kurtaracaksın — köy inşa ederek değil, gerçeği inşa ederek.",
+    "misdirection": "none",
+    "tone": "reckoning"
+  },
+  {
+    "level": 99,
+    "title": "Son Perde",
+    "body": "Yüzüncü mühre bir adım. Elçi artık saklanmıyor; tapınak 'gerçeği' satmayı bıraktı, toprak istiyor. Perde kalkmak üzere.",
+    "misdirection": "assassins",
+    "tone": "reckoning"
+  },
+  {
+    "level": 100,
+    "title": "Gölge Elçisi",
+    "body": "Son parça: Suikastçılar, kabileleri birbirine düşürüp bütün toprakları ele geçirmek için bu planı kurdu. Katil, Murat Ağa'nın en yakınındaki Gölge Elçisi'dir. Hançer onun eli, öfke onun koroşu, boş taht onun tahtı olmak istedi. Vâris: üç kabileye gerçeği göster. Miras, kan değil; birliktir.",
+    "misdirection": "none",
+    "tone": "reckoning"
+  }
+]

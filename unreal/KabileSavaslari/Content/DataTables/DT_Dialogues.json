@@ -1,0 +1,128 @@
+[
+  {
+    "rowName": "opening_1",
+    "group": "opening",
+    "speaker": "narrator",
+    "text": "Yüzyıllardır süren Büyük Barış, kabilelerin ortak lideri Murat Ağa'nın bir gece yarısı suikasta kurban gitmesiyle bozuldu.",
+    "barb": ""
+  },
+  {
+    "rowName": "opening_2",
+    "group": "opening",
+    "speaker": "narrator",
+    "text": "Katil, kalbine mor kabzalı, üzerinde kadim mühürler olan bir hançer sapladı ve onu tahtına çiviledi.",
+    "barb": ""
+  },
+  {
+    "rowName": "opening_3",
+    "group": "opening",
+    "speaker": "narrator",
+    "text": "Şimdi üç kabile birbirini suçluyor. Sen ise vârisin kalemini taşıyorsun: bir köy inşa etmeyecek, bir cinayeti çözecek, bir mirası kurtaracaksın.",
+    "barb": ""
+  },
+  {
+    "rowName": "sariklilar_1",
+    "group": "sariklilar",
+    "speaker": "sariklilar",
+    "text": "Hançer bir gölge kadar sessiz saplandı. Rüzgâr çocukları, Gök-Hanlılar, tahtın arkasında duruyordu. Bunu bir Sarıklı yapsaydı surlar hâlâ yanıyor olurdu.",
+    "barb": "gokhanli"
+  },
+  {
+    "rowName": "sariklilar_2",
+    "group": "sariklilar",
+    "speaker": "sariklilar",
+    "text": "Demir-Hisar bizi 'kendi ağamızı kestik' diye diline doluyor. Onurları o kadar ağır ki, düşünceleri yerinden kımıldamıyor.",
+    "barb": "demirhisar"
+  },
+  {
+    "rowName": "sariklilar_3",
+    "group": "sariklilar",
+    "speaker": "sariklilar",
+    "text": "Murat Ağa festivalde çocuklara kıvılcım gösterirdi. Şimdi o kıvılcımı yas tutmak için söndürdük. Gök-Hanlılar ise hâlâ fısıldıyor.",
+    "barb": "gokhanli"
+  },
+  {
+    "rowName": "gokhanli_1",
+    "group": "gokhanli",
+    "speaker": "gokhanli",
+    "text": "Saraya fark edilmeden girmek için o kadar ağır bir zırh gerekir ki adımlar taşları uyutur. Demir-Hisar bunu 'nöbet' diye adlandırır.",
+    "barb": "demirhisar"
+  },
+  {
+    "rowName": "gokhanli_2",
+    "group": "gokhanli",
+    "speaker": "gokhanli",
+    "text": "Sarıklılar her şeyi ateşle ölçer. Sessizlik onları korkutur; korkunca bizi işaret ederler. Ne kadar da kestirme bir zekâ.",
+    "barb": "sariklilar"
+  },
+  {
+    "rowName": "gokhanli_3",
+    "group": "gokhanli",
+    "speaker": "gokhanli",
+    "text": "Murat Ağa avda bizim adımlarımızı överdi. Şimdi aynı adımlar 'suç' oldu. Demir, kıskandığı şeyi suçlar.",
+    "barb": "demirhisar"
+  },
+  {
+    "rowName": "demirhisar_1",
+    "group": "demirhisar",
+    "speaker": "demirhisar",
+    "text": "Barışı bozmak için kendi liderlerini feda edenler, barutu dualarının yanına koyanlardır. Sarıklılar tahtı yakmak istedi.",
+    "barb": "sariklilar"
+  },
+  {
+    "rowName": "demirhisar_2",
+    "group": "demirhisar",
+    "speaker": "demirhisar",
+    "text": "Gök-Hanlılar gölgeyi evcil hayvan gibi gezdirir. Sonra 'biz değiliz' derler. Onur, yüzünü gizleyenle konuşmaz.",
+    "barb": "gokhanli"
+  },
+  {
+    "rowName": "demirhisar_3",
+    "group": "demirhisar",
+    "speaker": "demirhisar",
+    "text": "Murat Ağa kalkanımıza aslanı kendi eliyle çizdi. O aslan hâlâ bakıyor. Sarıklı kıvılcımı, Gök-Hanlı fısıltısı — ikisi de yemine sığmaz.",
+    "barb": "sariklilar"
+  },
+  {
+    "rowName": "shadow_temple_1",
+    "group": "shadow_temple",
+    "speaker": "shadow",
+    "text": "Hoş geldin, vâris. Biz yalnızca bilgi satarız. Murat Ağa bile bir zamanlar kapımızı çalmıştı.",
+    "barb": ""
+  },
+  {
+    "rowName": "shadow_temple_2",
+    "group": "shadow_temple",
+    "speaker": "shadow",
+    "text": "Sarıklılar doğru söylüyor olabilir. Gök-Hanlılar da. Demir-Hisar da. Gerçek, fiyatını ödeyene görünür.",
+    "barb": ""
+  },
+  {
+    "rowName": "shadow_temple_3",
+    "group": "shadow_temple",
+    "speaker": "narrator",
+    "text": "Tapınak gülümser. Müzik alçalır. Renkler morlaşır. Bir tarikat bu kadar cömert olmamalı.",
+    "barb": ""
+  },
+  {
+    "rowName": "finale_1",
+    "group": "finale",
+    "speaker": "narrator",
+    "text": "Son parşömen açılır. Mühürler söner, sonra yeniden yanar — bu kez yalan için değil.",
+    "barb": ""
+  },
+  {
+    "rowName": "finale_2",
+    "group": "finale",
+    "speaker": "shadow",
+    "text": "Beni o seçti, vâris. Ben yalnızca taşıdım. Hançeri, öfkeyi, boş tahtı.",
+    "barb": ""
+  },
+  {
+    "rowName": "finale_3",
+    "group": "finale",
+    "speaker": "narrator",
+    "text": "Gölge Elçisi, Murat Ağa'nın en yakınıdır. Suikastçılar kabileleri birbirine düşürüp toprakları yutacaktı. Miras henüz ölmedi — sen duruyorsun.",
+    "barb": ""
+  }
+]

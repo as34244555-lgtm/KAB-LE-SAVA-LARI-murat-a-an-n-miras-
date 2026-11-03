@@ -1,0 +1,7 @@
+---,Id,Name,Lore,BaseGoldCost,BaseDiamondUpgrade,GoldPerTick,UnlockLevel
+hall,hall,Divan,Kabile merkezi.,0,2,3,1
+resource,resource,Ocak,Arazi üretimi.,40,1,2,1
+camp,camp,Kışla,Birlik eğitimi.,70,2,0,1
+tower,tower,Kule,Savunma.,40,2,0,1
+market,market,Pazar,Ticaret.,80,3,4,1
+forge,forge,Demirhane,Silah.,90,3,0,1

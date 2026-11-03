@@ -6,7 +6,8 @@
   "description": "Kabile Savaşları: Murat Ağa'nın Mirası — hikaye odaklı strateji oyunu",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5173",
-    "build": "tsc --noEmit && vite build",
+    "export:unreal": "node scripts/run-export-unreal.mjs",
+    "build": "npm run export:unreal && tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
     "test": "vitest run",
     "test:watch": "vitest"

@@ -1,0 +1,11 @@
+---,Q,R,Kind,SideId,Title,UnlockLevel,QuestId,Garrison
+Landmark_1_korsanlar,-4,-6,side,korsanlar,Tuz Korsanları,10,q-korsan-fener,7
+Landmark_2_mogollar,8,5,side,mogollar,Bozkır Moğolları,20,q-tuz-hakki,8
+Landmark_3_gocebeler,-9,7,side,gocebeler,Kum Göçebeleri,30,q-su-ismi,9
+Landmark_4_suikastcilar,0,10,temple,suikastcilar,Gölge Tapınağı,40,q-gercegi-satinalma,16
+Landmark_5_denizciler,11,-8,side,denizciler,İnci Denizcileri,50,q-islak-taht,11
+Landmark_6_colyildizlari,-12,-2,side,colyildizlari,Çöl Yıldızları,60,,12
+Landmark_7_dagkartallari,6,-11,side,dagkartallari,Dağ Kartalları,70,q-dortuncu-muhur,13
+Landmark_8_buzmuhafizlari,-2,14,side,buzmuhafizlari,Buz Muhafızları,80,,14
+Landmark_9_eskiyeminliler,14,3,side,eskiyeminliler,Eski Yeminliler,90,q-en-yakin,15
+Landmark_10_golge-elcisi,3,16,finale,golge-elcisi,Elçi Kalesi,100,q-miras,24

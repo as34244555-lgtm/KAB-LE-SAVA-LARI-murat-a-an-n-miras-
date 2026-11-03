@@ -1,0 +1,43 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.4",
+  "Category": "Games",
+  "Description": "Kabile Savaşları: Murat Ağa'nın Mirası — Tek oyunculu hikâye odaklı hex RTS (Unreal Engine 5 projesi)",
+  "Modules": [
+    {
+      "Name": "KabileSavaslari",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "AdditionalDependencies": [
+        "Engine",
+        "CoreUObject",
+        "UMG"
+      ]
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "GLTFImporter",
+      "Enabled": true
+    },
+    {
+      "Name": "EnhancedInput",
+      "Enabled": true
+    },
+    {
+      "Name": "EditorScriptingUtilities",
+      "Enabled": true
+    },
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true
+    }
+  ],
+  "TargetPlatforms": [
+    "Android",
+    "IOS",
+    "Windows",
+    "Mac",
+    "Linux"
+  ]
+}

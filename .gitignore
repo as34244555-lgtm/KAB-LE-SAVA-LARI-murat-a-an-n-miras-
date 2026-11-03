@@ -7,3 +7,9 @@ dist
 coverage
 .vite
 .wrangler
+unreal/KabileSavaslari/Content/Models
+unreal/KabileSavaslari/Content/Materials/PBR
+unreal/KabileSavaslari/Content/HDRI
+unreal/KabileSavaslari/Content/UI/Art
+public/kabile-savaslari-unreal-engine-5.zip
+
