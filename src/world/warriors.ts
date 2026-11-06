@@ -1,12 +1,14 @@
 import * as THREE from "three";
 
-const skins = new Map<string, THREE.MeshStandardMaterial>();
+const skins = new Map<string, THREE.MeshLambertMaterial>();
 
-function skin(hex: number, rough = 0.55, metal = 0.05): THREE.MeshStandardMaterial {
-  const key = `${hex}:${rough}:${metal}`;
+function skin(hex: number, rough?: number, metal?: number): THREE.MeshLambertMaterial {
+  void rough;
+  void metal;
+  const key = `${hex}`;
   const hit = skins.get(key);
   if (hit) return hit;
-  const mat = new THREE.MeshStandardMaterial({ color: hex, roughness: rough, metalness: metal });
+  const mat = new THREE.MeshLambertMaterial({ color: hex });
   skins.set(key, mat);
   return mat;
 }
@@ -20,8 +22,18 @@ function add(parent: THREE.Group, geom: THREE.BufferGeometry, mat: THREE.Materia
   return m;
 }
 
+const warriorProtos = new Map<string, THREE.Group>();
+
 /** Detailed tribal fighter — not a meeple, not a sci-fi soldier. */
 export function buildWarrior(kind: "sariklilar" | "gokhanli" | "demirhisar" | "rider" | "panther"): THREE.Group {
+  const cached = warriorProtos.get(kind);
+  if (cached) return cached.clone(true);
+  const g = createWarrior(kind);
+  warriorProtos.set(kind, g);
+  return g.clone(true);
+}
+
+function createWarrior(kind: "sariklilar" | "gokhanli" | "demirhisar" | "rider" | "panther"): THREE.Group {
   const g = new THREE.Group();
   g.name = `warrior-${kind}`;
 
@@ -40,15 +52,15 @@ export function buildWarrior(kind: "sariklilar" | "gokhanli" | "demirhisar" | "r
   const gold = skin(0xc9a227, 0.32, 0.7);
 
   if (kind === "panther") {
-    const body = add(g, new THREE.CapsuleGeometry(0.16, 0.42, 6, 10), skin(0x1a1420, 0.55, 0.08), 0, 0.22, 0);
+    const body = add(g, new THREE.CapsuleGeometry(0.16, 0.42, 3, 6), skin(0x1a1420, 0.55, 0.08), 0, 0.22, 0);
     body.rotation.z = Math.PI / 2;
-    add(g, new THREE.SphereGeometry(0.14, 12, 10), skin(0x1a1420, 0.55, 0.08), 0.28, 0.26, 0);
+    add(g, new THREE.SphereGeometry(0.14, 8, 6), skin(0x1a1420, 0.55, 0.08), 0.28, 0.26, 0);
     add(g, new THREE.CylinderGeometry(0.045, 0.05, 0.28, 8), skin(0x1a1420), 0.22, 0.12, 0.1);
     add(g, new THREE.CylinderGeometry(0.045, 0.05, 0.28, 8), skin(0x1a1420), 0.22, 0.12, -0.1);
     add(g, new THREE.CylinderGeometry(0.045, 0.05, 0.28, 8), skin(0x1a1420), -0.18, 0.12, 0.1);
     add(g, new THREE.CylinderGeometry(0.045, 0.05, 0.28, 8), skin(0x1a1420), -0.18, 0.12, -0.1);
     add(g, new THREE.ConeGeometry(0.04, 0.22, 6), skin(0x1a1420), -0.32, 0.2, 0).rotation.z = 1.2;
-    const rider = buildWarrior("gokhanli");
+    const rider = createWarrior("gokhanli");
     rider.scale.setScalar(0.72);
     rider.position.set(0, 0.38, 0);
     g.add(rider);
@@ -56,32 +68,32 @@ export function buildWarrior(kind: "sariklilar" | "gokhanli" | "demirhisar" | "r
   }
 
   if (kind === "rider") {
-    const horse = add(g, new THREE.CapsuleGeometry(0.18, 0.5, 6, 10), skin(0x4a3020, 0.7, 0.04), 0, 0.28, 0);
+    const horse = add(g, new THREE.CapsuleGeometry(0.18, 0.5, 3, 6), skin(0x4a3020, 0.7, 0.04), 0, 0.28, 0);
     horse.rotation.z = Math.PI / 2;
-    add(g, new THREE.SphereGeometry(0.14, 12, 10), skin(0x4a3020), 0.32, 0.36, 0);
+    add(g, new THREE.SphereGeometry(0.14, 8, 6), skin(0x4a3020), 0.32, 0.36, 0);
     add(g, new THREE.CylinderGeometry(0.05, 0.055, 0.34, 8), skin(0x3a2418), 0.2, 0.16, 0.1);
     add(g, new THREE.CylinderGeometry(0.05, 0.055, 0.34, 8), skin(0x3a2418), 0.2, 0.16, -0.1);
     add(g, new THREE.CylinderGeometry(0.05, 0.055, 0.34, 8), skin(0x3a2418), -0.2, 0.16, 0.1);
     add(g, new THREE.CylinderGeometry(0.05, 0.055, 0.34, 8), skin(0x3a2418), -0.2, 0.16, -0.1);
-    const rider = buildWarrior("sariklilar");
+    const rider = createWarrior("sariklilar");
     rider.scale.setScalar(0.7);
     rider.position.set(0, 0.48, 0);
     g.add(rider);
     return g;
   }
 
-  add(g, new THREE.CylinderGeometry(0.09, 0.11, 0.38, 10), cloth, 0, 0.42, 0);
-  add(g, new THREE.SphereGeometry(0.11, 14, 12), flesh, 0, 0.72, 0);
-  add(g, new THREE.SphereGeometry(0.115, 12, 10), hair, 0, 0.76, -0.01);
+  add(g, new THREE.CylinderGeometry(0.09, 0.11, 0.38, 6), cloth, 0, 0.42, 0);
+  add(g, new THREE.SphereGeometry(0.11, 8, 6), flesh, 0, 0.72, 0);
+  add(g, new THREE.SphereGeometry(0.115, 8, 6), hair, 0, 0.76, -0.01);
   add(g, new THREE.BoxGeometry(0.22, 0.08, 0.16), leather, 0, 0.56, 0.02);
 
-  const armL = add(g, new THREE.CapsuleGeometry(0.035, 0.22, 4, 8), flesh, -0.16, 0.5, 0);
+  const armL = add(g, new THREE.CapsuleGeometry(0.035, 0.22, 2, 5), flesh, -0.16, 0.5, 0);
   armL.rotation.z = 0.35;
-  const armR = add(g, new THREE.CapsuleGeometry(0.035, 0.22, 4, 8), flesh, 0.16, 0.5, 0);
+  const armR = add(g, new THREE.CapsuleGeometry(0.035, 0.22, 2, 5), flesh, 0.16, 0.5, 0);
   armR.rotation.z = -0.35;
 
-  add(g, new THREE.CapsuleGeometry(0.04, 0.26, 4, 8), cloth, -0.05, 0.16, 0);
-  add(g, new THREE.CapsuleGeometry(0.04, 0.26, 4, 8), cloth, 0.05, 0.16, 0);
+  add(g, new THREE.CapsuleGeometry(0.04, 0.26, 2, 5), cloth, -0.05, 0.16, 0);
+  add(g, new THREE.CapsuleGeometry(0.04, 0.26, 2, 5), cloth, 0.05, 0.16, 0);
   add(g, new THREE.BoxGeometry(0.07, 0.04, 0.12), leather, -0.05, 0.02, 0.02);
   add(g, new THREE.BoxGeometry(0.07, 0.04, 0.12), leather, 0.05, 0.02, 0.02);
 
@@ -96,7 +108,7 @@ export function buildWarrior(kind: "sariklilar" | "gokhanli" | "demirhisar" | "r
     add(g, new THREE.CylinderGeometry(0.02, 0.05, 0.18, 6), gold, 0, 0.58, 0.1);
     add(g, new THREE.SphereGeometry(0.03, 8, 8), skin(0x6ec8ff, 0.2, 0.4), 0, 0.7, 0.1);
   } else {
-    add(g, new THREE.SphereGeometry(0.13, 12, 10), steel, 0, 0.78, 0);
+    add(g, new THREE.SphereGeometry(0.13, 8, 6), steel, 0, 0.78, 0);
     add(g, new THREE.BoxGeometry(0.26, 0.22, 0.18), steel, 0, 0.52, 0);
     add(g, new THREE.BoxGeometry(0.08, 0.36, 0.04), steel, 0.22, 0.55, 0.02);
     add(g, new THREE.BoxGeometry(0.18, 0.22, 0.04), steel, -0.16, 0.5, 0.02);
@@ -107,14 +119,9 @@ export function buildWarrior(kind: "sariklilar" | "gokhanli" | "demirhisar" | "r
 
 export function garrisonFor(tribe: "sariklilar" | "gokhanli" | "demirhisar", count: number): THREE.Group {
   const root = new THREE.Group();
-  const n = Math.min(5, Math.max(1, count));
-  for (let i = 0; i < n; i++) {
-    const kind = tribe === "gokhanli" && i === 0 ? "panther" : tribe === "sariklilar" && i === 0 ? "rider" : tribe;
-    const w = buildWarrior(kind);
-    w.scale.setScalar(kind === "panther" || kind === "rider" ? 0.85 : 0.72);
-    w.position.set((i - (n - 1) / 2) * 0.38, 0, (i % 2) * 0.18);
-    w.rotation.y = Math.PI * 0.15 * (i - 1);
-    root.add(w);
-  }
+  const kind = tribe === "gokhanli" ? "panther" : tribe === "sariklilar" ? "rider" : tribe;
+  const w = buildWarrior(kind);
+  w.scale.setScalar(0.72 + Math.min(3, Math.max(1, count)) * 0.03);
+  root.add(w);
   return root;
 }

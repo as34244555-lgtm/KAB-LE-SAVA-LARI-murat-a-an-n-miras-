@@ -2,14 +2,19 @@ import * as THREE from "three";
 import type { Palette } from "../managers/NarrativeManager";
 import { pbr } from "./textures";
 
+const toyCache = new Map<string, THREE.MeshLambertMaterial>();
+
 export function toyMaterial(color: string | number, opts: { roughness?: number; metal?: number; emissive?: number; emit?: number } = {}) {
-  return new THREE.MeshStandardMaterial({
+  const key = `${color}:${opts.emissive ?? 0}:${opts.emit ?? 0}`;
+  const hit = toyCache.get(key);
+  if (hit) return hit;
+  const mat = new THREE.MeshLambertMaterial({
     color,
-    roughness: opts.roughness ?? 0.42,
-    metalness: opts.metal ?? 0.18,
     emissive: opts.emissive ?? 0x000000,
     emissiveIntensity: opts.emit ?? 0,
   });
+  toyCache.set(key, mat);
+  return mat;
 }
 
 export function applyPalette(
@@ -51,7 +56,12 @@ export function makeBanner(color: number, emblem: number): THREE.Group {
   return group;
 }
 
+const people = new Map<string, THREE.Group>();
+
 export function stylizedPerson(primary: number, accent: number, hat: "turban" | "hood" | "helm" | "none" = "none"): THREE.Group {
+  const cacheKey = `${primary}:${accent}:${hat}`;
+  const cached = people.get(cacheKey);
+  if (cached) return cached.clone(true);
   const g = new THREE.Group();
   const skin = toyMaterial(0xc68642, { roughness: 0.58, metal: 0 });
   const cloth = pbr("plaster", primary, { repeat: 1.4 });
@@ -123,9 +133,10 @@ export function stylizedPerson(primary: number, accent: number, hat: "turban" | 
 
   g.traverse((obj) => {
     if (obj instanceof THREE.Mesh) {
-      obj.castShadow = true;
-      obj.receiveShadow = true;
+      obj.castShadow = false;
+      obj.receiveShadow = false;
     }
   });
-  return g;
+  people.set(cacheKey, g);
+  return g.clone(true);
 }

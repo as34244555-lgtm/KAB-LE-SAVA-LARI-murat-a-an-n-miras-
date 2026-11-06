@@ -19,7 +19,7 @@ import { QuestManager } from "../managers/QuestManager";
 import { AdsManager, type RewardKind } from "../managers/AdsManager";
 import { CaravanSystem } from "../economy/CaravanSystem";
 import { Soundtrack } from "../audio/Soundtrack";
-import { EXPLORE_RADIUS, capitalOf, climateHint, ensureTiles, generateWorld, hexById, stampLandmarks, startingBanner } from "../data/hexMap";
+import { EXPLORE_RADIUS, capitalOf, climateHint, ensureTiles, generateWorld, stampLandmarks, startingBanner } from "../data/hexMap";
 import { scrollForLevel } from "../data/scrolls";
 import { sideTribeForLevel } from "../data/sideTribes";
 import { kitFor, TRAIN_COST, UPGRADE_COST, canPay, pay, slotKit } from "../data/tribeKits";
@@ -68,6 +68,7 @@ export class Game {
   stance: BattleStance = "assault";
   commit: number | null = null;
   private prodAcc = 0;
+  private tilesById = new Map<string, HexTile>();
 
   constructor(initial?: PlayerSave) {
     this.data = initial ?? emptySave();
@@ -92,7 +93,19 @@ export class Game {
       this.data.army = rosterSum(this.data.roster);
       stampLandmarks(this.data.tiles);
     }
+    this.tilesById.clear();
     this.flush();
+  }
+
+  private reindexTiles(): void {
+    if (this.tilesById.size === this.data.tiles.length && this.tilesById.size > 0) return;
+    this.tilesById.clear();
+    for (const tile of this.data.tiles) this.tilesById.set(tile.id, tile);
+  }
+
+  private tileAt(q: number, r: number): HexTile | undefined {
+    this.reindexTiles();
+    return this.tilesById.get(hexKey(q, r));
   }
 
   get kit() {
@@ -100,7 +113,8 @@ export class Game {
   }
 
   get selectedTile() {
-    return this.data.selectedHex ? hexById(this.data.tiles, this.data.selectedHex) : undefined;
+    this.reindexTiles();
+    return this.data.selectedHex ? this.tilesById.get(this.data.selectedHex) : undefined;
   }
 
   private flush(): void {
@@ -327,16 +341,18 @@ export class Game {
   }
 
   adjacentToPlayer(tileId: string): boolean {
-    const tile = hexById(this.data.tiles, tileId);
+    this.reindexTiles();
+    const tile = this.tilesById.get(tileId);
     if (!tile || !this.data.chosenTribe) return false;
     return neighbors(tile.q, tile.r).some((n) => {
-      const next = this.data.tiles.find((item) => item.q === n.q && item.r === n.r);
+      const next = this.tileAt(n.q, n.r);
       return next ? this.isMine(next.owner) : false;
     });
   }
 
   claimOrAttack(id?: string): string {
-    const tile = id ? hexById(this.data.tiles, id) : this.selectedTile;
+    this.reindexTiles();
+    const tile = id ? this.tilesById.get(id) : this.selectedTile;
     if (!tile || !this.data.chosenTribe) return "Hedef altıgen yok.";
     if (this.isMine(tile.owner)) return "Bu toprak zaten senin.";
     if (!this.adjacentToPlayer(tile.id)) return "Sadece komşu altıgene yürüyebilirsin.";
@@ -344,7 +360,7 @@ export class Game {
 
     const sent = this.sentTroops();
     const flanking = neighbors(tile.q, tile.r).filter((n) => {
-      const next = this.data.tiles.find((item) => item.q === n.q && item.r === n.r);
+      const next = this.tileAt(n.q, n.r);
       return next ? this.isMine(next.owner) : false;
     }).length;
 
@@ -668,7 +684,7 @@ export class Game {
     const out: HexTile[] = [];
     for (const tile of owned) {
       for (const n of neighbors(tile.q, tile.r)) {
-        const next = this.data.tiles.find((item) => item.q === n.q && item.r === n.r);
+        const next = this.tileAt(n.q, n.r);
         if (!next || seen.has(next.id) || next.owner === tile.owner) continue;
         seen.add(next.id);
         out.push(next);

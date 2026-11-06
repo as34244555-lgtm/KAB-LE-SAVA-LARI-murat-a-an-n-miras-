@@ -1,22 +1,37 @@
 import * as THREE from "three";
 import type { BuildingSlot, HexTile, PlayableTribe } from "../core/types";
 
-const mats = new Map<string, THREE.MeshStandardMaterial>();
+const mats = new Map<string, THREE.MeshLambertMaterial>();
+const geos = new Map<string, THREE.BufferGeometry>();
 
-function mat(hex: number, rough = 0.7, metal = 0.04): THREE.MeshStandardMaterial {
-  const key = `${hex}:${rough}:${metal}`;
+function mat(hex: number, rough?: number, metal?: number): THREE.MeshLambertMaterial {
+  void rough;
+  void metal;
+  const key = `${hex}`;
   const hit = mats.get(key);
   if (hit) return hit;
-  const made = new THREE.MeshStandardMaterial({ color: hex, roughness: rough, metalness: metal });
+  const made = new THREE.MeshLambertMaterial({ color: hex });
   mats.set(key, made);
   return made;
 }
 
+function share(geom: THREE.BufferGeometry): THREE.BufferGeometry {
+  const pos = geom.getAttribute("position");
+  const key = `${geom.type}:${pos.count}:${pos.getX(0).toFixed(3)}:${pos.getY(0).toFixed(3)}:${pos.getZ(1).toFixed(3)}`;
+  const hit = geos.get(key);
+  if (hit) {
+    geom.dispose();
+    return hit;
+  }
+  geos.set(key, geom);
+  return geom;
+}
+
 function mesh(geom: THREE.BufferGeometry, material: THREE.Material, x: number, y: number, z: number): THREE.Mesh {
-  const m = new THREE.Mesh(geom, material);
+  const m = new THREE.Mesh(share(geom), material);
   m.position.set(x, y, z);
   m.castShadow = false;
-  m.receiveShadow = true;
+  m.receiveShadow = false;
   return m;
 }
 
