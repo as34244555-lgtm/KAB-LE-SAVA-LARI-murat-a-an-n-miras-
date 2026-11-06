@@ -35,14 +35,14 @@ export class ThroneScene {
   private buildHall() {
     const floor = new THREE.Mesh(new THREE.BoxGeometry(16, 0.35, 18), pbr("wood", 0xffffff, { repeat: 4 }));
     floor.position.y = -0.17;
-    floor.receiveShadow = true;
+    floor.receiveShadow = false;
     const rug = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.06, 7), pbr("plaster", 0x8b1e1e, { repeat: 2 }));
     rug.position.set(0, 0.04, 1.2);
     const back = new THREE.Mesh(new THREE.BoxGeometry(16, 9, 0.4), pbr("stone", 0xffffff, { repeat: 3 }));
     back.position.set(0, 4.2, -6.4);
     const window = new THREE.Mesh(
-      new THREE.CircleGeometry(1.7, 32),
-      new THREE.MeshPhysicalMaterial({ color: 0x9fd4ff, emissive: 0x7ec8ff, emissiveIntensity: 0.7, roughness: 0.15, transmission: 0.2 }),
+      new THREE.CircleGeometry(1.7, 20),
+      new THREE.MeshLambertMaterial({ color: 0x9fd4ff, emissive: 0x7ec8ff, emissiveIntensity: 0.45 }),
     );
     window.position.set(0, 5.1, -6.15);
     const left = new THREE.Mesh(new THREE.BoxGeometry(0.4, 9, 18), pbr("wall", 0xffffff, { repeat: 2.4 }));
@@ -74,8 +74,8 @@ export class ThroneScene {
     const lionR = lionL.clone();
     lionR.position.x = 0.85;
     for (const mesh of [seat, cushion, back, crest, jewel, armL, armR, lionL, lionR]) {
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
+      mesh.castShadow = false;
+      mesh.receiveShadow = false;
       this.root.add(mesh);
     }
   }
@@ -114,7 +114,7 @@ export class ThroneScene {
     for (const x of [-5.2, 5.2]) {
       const light = new THREE.PointLight(0xff9933, 1.8, 10, 2);
       light.position.set(x, 3.2, -1.4);
-      light.castShadow = true;
+      light.castShadow = false;
       this.torches.push(light);
       const bowl = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), toyMaterial(0xffcc66, { emissive: 0xff8f00, emit: 0.9 }));
       bowl.position.copy(light.position);

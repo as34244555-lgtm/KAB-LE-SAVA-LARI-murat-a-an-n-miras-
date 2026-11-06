@@ -3,8 +3,8 @@ import { mapped, maps } from "./textures";
 import { stylizedPerson, toyMaterial } from "./materials";
 
 export function lit(mesh: THREE.Mesh): THREE.Mesh {
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
+  mesh.castShadow = false;
+  mesh.receiveShadow = false;
   return mesh;
 }
 
@@ -104,10 +104,11 @@ export function chimney(): THREE.Group {
   return g;
 }
 
+const SMOKE_GEO = new THREE.SphereGeometry(0.16, 8, 6);
+const SMOKE_MAT = new THREE.MeshLambertMaterial({ color: 0x4a4a4a, transparent: true, opacity: 0.45 });
+
 export function smokePuff(): THREE.Mesh {
-  const puff = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), toyMaterial(0x4a4a4a, { roughness: 1, metal: 0 }));
-  (puff.material as THREE.MeshStandardMaterial).transparent = true;
-  (puff.material as THREE.MeshStandardMaterial).opacity = 0.45;
+  const puff = new THREE.Mesh(SMOKE_GEO, SMOKE_MAT);
   puff.castShadow = false;
   return puff;
 }

@@ -9,7 +9,8 @@ function loadMap(url: string, srgb: boolean, repeat: number): THREE.Texture {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   texture.repeat.set(repeat, repeat);
-  texture.anisotropy = 8;
+  texture.anisotropy = 1;
+  texture.generateMipmaps = true;
   return texture;
 }
 
@@ -76,12 +77,7 @@ const packs: Record<PbrKind, ReturnType<typeof pack>> = {
   beam,
 };
 
-function cloneMap(source: THREE.Texture, repeat: number): THREE.Texture {
-  const texture = source.clone();
-  texture.repeat.set(repeat, repeat);
-  texture.needsUpdate = true;
-  return texture;
-}
+const mappedCache = new Map<string, THREE.MeshLambertMaterial>();
 
 export function mapped(
   color: number,
@@ -96,18 +92,17 @@ export function mapped(
     env?: number;
   } = {},
 ) {
-  return new THREE.MeshStandardMaterial({
+  const key = `${map.uuid}:${color}:${opts.emissive ?? 0}:${opts.emit ?? 0}`;
+  const hit = mappedCache.get(key);
+  if (hit) return hit;
+  const mat = new THREE.MeshLambertMaterial({
     color,
     map,
-    normalMap: opts.normal,
-    normalScale: opts.normal ? new THREE.Vector2(1.15, 1.15) : undefined,
-    roughnessMap: opts.rough,
-    roughness: opts.rough ? 1 : (opts.roughness ?? 0.72),
-    metalness: opts.metal ?? 0.04,
     emissive: opts.emissive ?? 0x000000,
     emissiveIntensity: opts.emit ?? 0,
-    envMapIntensity: opts.env ?? 1.05,
   });
+  mappedCache.set(key, mat);
+  return mat;
 }
 
 export function pbr(
@@ -115,29 +110,16 @@ export function pbr(
   color = 0xffffff,
   opts: { repeat?: number; metal?: number; roughness?: number; env?: number } = {},
 ) {
+  void opts;
   const src = packs[kind];
-  const repeat = opts.repeat ?? src.repeat;
-  return mapped(color, cloneMap(src.map, repeat), {
-    normal: cloneMap(src.normal, repeat),
-    rough: cloneMap(src.rough, repeat),
-    metal: opts.metal,
-    roughness: opts.roughness,
-    env: opts.env,
-  });
+  return mapped(color, src.map);
 }
-
-const pbrCache = new Map<string, THREE.MeshStandardMaterial>();
 
 /** Aynı malzeme anahtarını paylaş — her hex için yeni texture klonu üretmez. */
 export function cachedPbr(
   kind: PbrKind,
   color = 0xffffff,
   opts: { repeat?: number; metal?: number; roughness?: number; env?: number } = {},
-): THREE.MeshStandardMaterial {
-  const key = `${kind}:${color}:${opts.repeat ?? ""}:${opts.metal ?? ""}:${opts.roughness ?? ""}`;
-  const hit = pbrCache.get(key);
-  if (hit) return hit;
-  const mat = pbr(kind, color, opts);
-  pbrCache.set(key, mat);
-  return mat;
+): THREE.MeshLambertMaterial {
+  return pbr(kind, color, opts);
 }

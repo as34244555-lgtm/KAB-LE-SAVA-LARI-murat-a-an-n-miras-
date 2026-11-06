@@ -42,7 +42,7 @@ export class BattleScene {
     this.root.name = "battle";
     const ground = new THREE.Mesh(new THREE.CircleGeometry(9, 40), pbr("sand", 0xffffff, { repeat: 5 }));
     ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
+    ground.receiveShadow = false;
     const ring = new THREE.Mesh(new THREE.TorusGeometry(6.4, 0.14, 8, 40), toyMaterial(0xd4af37, { metal: 0.55 }));
     ring.rotation.x = Math.PI / 2;
     ring.position.y = 0.07;
@@ -168,15 +168,15 @@ export class BattleScene {
   }
 
   private spark(x: number, y: number, z: number) {
-    const flash = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.08),
-      new THREE.MeshBasicMaterial({ color: 0xffe08a }),
-    );
+    const flash = new THREE.Mesh(SPARK_GEO, SPARK_MAT);
     flash.position.set(x + (Math.random() - 0.5) * 0.3, y, z + (Math.random() - 0.5) * 0.2);
     this.sparks.add(flash);
     if (this.sparks.children.length > 14) this.sparks.remove(this.sparks.children[0]);
   }
 }
+
+const SPARK_GEO = new THREE.OctahedronGeometry(0.08);
+const SPARK_MAT = new THREE.MeshBasicMaterial({ color: 0xffe08a });
 
 function walkBob(mesh: THREE.Group, t: number, speed: number) {
   mesh.position.y = Math.abs(Math.sin(t * speed)) * 0.06;

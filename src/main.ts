@@ -3,6 +3,7 @@ import { Game } from "./core/Game";
 import type { DockPanel, GamePhase, PlayableTribe } from "./core/types";
 import { UIRoot } from "./ui/UIRoot";
 import { SceneHost } from "./world/SceneHost";
+import { targetFrameMs } from "./world/perf";
 import "./style.css";
 
 const app = document.querySelector<HTMLDivElement>("#app");
@@ -84,8 +85,10 @@ bus.on("hex-select", (id: string) => {
 });
 
 bus.on("explore", (at: { q: number; r: number }) => {
-  if (game.ensureAround(at.q, at.r)) paint();
-  else world.syncMap(game.data);
+  const dirty = game.mapDirty;
+  const added = game.ensureAround(at.q, at.r);
+  world.syncMap(game.data);
+  if (added && !dirty) game.mapDirty = false;
 });
 
 bus.on("levelup", () => {
@@ -118,25 +121,34 @@ function paint() {
 let last = performance.now();
 let saveAcc = 0;
 let battleWatch = 0;
+let renderAcc = 0;
+const frameMs = targetFrameMs();
 function loop(now: number) {
-  const dt = Math.min(100, now - last);
+  requestAnimationFrame(loop);
+  const dt = Math.min(50, now - last);
   last = now;
+  if (document.hidden) return;
   game.tick(dt);
   if (game.mapDirty || game.toast) paint();
   saveAcc += dt;
   if (saveAcc > 20000) {
     saveAcc = 0;
-    void game.persist();
+    const write = () => void game.persist();
+    if (typeof requestIdleCallback === "function") requestIdleCallback(write, { timeout: 1500 });
+    else write();
   }
-  world.frame(dt / 1000);
+  renderAcc += dt;
+  if (renderAcc < frameMs) return;
+  const step = Math.min(0.05, renderAcc / 1000);
+  renderAcc = 0;
+  world.frame(step);
   if (screen === "battle") {
-    battleWatch += dt;
+    battleWatch += step * 1000;
     if (battleWatch > 6200) world.battle.finished = true;
     if (world.battle.consumeFinished()) paint();
   } else {
     battleWatch = 0;
   }
-  requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
